@@ -10,6 +10,7 @@ import { mapStatus, readStatus, statusFields } from "./lib/status";
 class SnapmakerU1 extends utils.Adapter {
 	private pollTimer?: ioBroker.Timeout;
 	private stopping = false;
+	private connectionFailed = false;
 	private commandQueue: Promise<void> = Promise.resolve();
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
@@ -127,9 +128,22 @@ class SnapmakerU1 extends utils.Adapter {
 				true,
 			);
 			await this.setStateChangedAsync("printer.info.lastUpdate", Date.now(), true);
+			if (this.connectionFailed) {
+				this.log.info("Connection to Moonraker restored.");
+			}
+			this.connectionFailed = false;
 		} catch (error) {
+			if (this.stopping) {
+				return;
+			}
 			await this.setStateChangedAsync("info.connection", false, true);
-			this.log.warn(`Could not reach Moonraker: ${error instanceof Error ? error.message : String(error)}`);
+			const message = `Could not reach Moonraker: ${error instanceof Error ? error.message : String(error)}`;
+			if (this.connectionFailed) {
+				this.log.debug(message);
+			} else {
+				this.log.warn(message);
+			}
+			this.connectionFailed = true;
 		} finally {
 			this.schedulePoll();
 		}
