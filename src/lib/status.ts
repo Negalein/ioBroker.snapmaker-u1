@@ -11,6 +11,10 @@ export const statusFields: Array<[string, string, string, ioBroker.CommonType, s
 	["heater_bed", "temperature", "bed.temperature", "number", "value.temperature", "°C"],
 	["heater_bed", "target", "bed.target", "number", "value.temperature", "°C"],
 	["temperature_sensor cavity", "temperature", "chamber.temperature", "number", "value.temperature", "°C"],
+	["fan_generic circulation_fan", "speed", "cover.circulation.speed", "number", "value", "%"],
+	["fan_generic circulation_fan", "rpm", "cover.circulation.rpm", "number", "value", "rpm"],
+	["fan_generic exhaust_fan", "speed", "cover.exhaust.speed", "number", "value", "%"],
+	["fan_generic exhaust_fan", "rpm", "cover.exhaust.rpm", "number", "value", "rpm"],
 ];
 for (let index = 0; index < 4; index++) {
 	const object = index === 0 ? "extruder" : `extruder${index}`;
@@ -21,6 +25,9 @@ for (let index = 0; index < 4; index++) {
 	);
 }
 
+/**
+ * Retrieves read-only printer status.
+ */
 export async function readStatus(host: string, port: number, timeoutMs: number): Promise<Record<string, unknown>> {
 	const url = new URL("printer/objects/query", createMoonrakerBaseUrl(host, port));
 	for (const object of new Set(statusFields.map(field => field[0]))) {
@@ -31,7 +38,13 @@ export async function readStatus(host: string, port: number, timeoutMs: number):
 		throw new Error(`Status query returned HTTP ${response.status}`);
 	}
 	const body = (await response.json()) as {
+		/**
+		 * Moonraker result envelope.
+		 */
 		result?: {
+			/**
+			 * Requested printer objects.
+			 */
 			status?: Record<string, unknown>;
 		};
 	};
@@ -41,6 +54,9 @@ export async function readStatus(host: string, port: number, timeoutMs: number):
 	return body.result.status;
 }
 
+/**
+ * Converts printer values into ioBroker state values.
+ */
 export function mapStatus(status: Record<string, unknown>): Record<string, string | number | boolean> {
 	const values: Record<string, string | number | boolean> = {};
 	for (const [object, key, id, type] of statusFields) {
@@ -54,7 +70,9 @@ export function mapStatus(status: Record<string, unknown>): Record<string, strin
 		}
 		if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
 			values[id] =
-				id === "job.progress" && typeof value === "number" ? Math.max(0, Math.min(100, value * 100)) : value;
+				(id === "job.progress" || id.endsWith(".speed")) && typeof value === "number"
+					? Math.max(0, Math.min(100, value * 100))
+					: value;
 		}
 	}
 	return values;

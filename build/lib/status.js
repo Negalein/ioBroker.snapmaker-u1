@@ -15,11 +15,18 @@ exports.statusFields = [
     ["heater_bed", "temperature", "bed.temperature", "number", "value.temperature", "°C"],
     ["heater_bed", "target", "bed.target", "number", "value.temperature", "°C"],
     ["temperature_sensor cavity", "temperature", "chamber.temperature", "number", "value.temperature", "°C"],
+    ["fan_generic circulation_fan", "speed", "cover.circulation.speed", "number", "value", "%"],
+    ["fan_generic circulation_fan", "rpm", "cover.circulation.rpm", "number", "value", "rpm"],
+    ["fan_generic exhaust_fan", "speed", "cover.exhaust.speed", "number", "value", "%"],
+    ["fan_generic exhaust_fan", "rpm", "cover.exhaust.rpm", "number", "value", "rpm"],
 ];
 for (let index = 0; index < 4; index++) {
     const object = index === 0 ? "extruder" : `extruder${index}`;
     exports.statusFields.push([object, "temperature", `tools.tool${index}.temperature`, "number", "value.temperature", "°C"], [object, "target", `tools.tool${index}.target`, "number", "value.temperature", "°C"], [object, "state", `tools.tool${index}.status`, "string", "text"]);
 }
+/**
+ * Retrieves read-only printer status.
+ */
 async function readStatus(host, port, timeoutMs) {
     const url = new URL("printer/objects/query", (0, moonraker_1.createMoonrakerBaseUrl)(host, port));
     for (const object of new Set(exports.statusFields.map(field => field[0]))) {
@@ -35,6 +42,9 @@ async function readStatus(host, port, timeoutMs) {
     }
     return body.result.status;
 }
+/**
+ * Converts printer values into ioBroker state values.
+ */
 function mapStatus(status) {
     const values = {};
     for (const [object, key, id, type] of exports.statusFields) {
@@ -48,7 +58,9 @@ function mapStatus(status) {
         }
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
             values[id] =
-                id === "job.progress" && typeof value === "number" ? Math.max(0, Math.min(100, value * 100)) : value;
+                (id === "job.progress" || id.endsWith(".speed")) && typeof value === "number"
+                    ? Math.max(0, Math.min(100, value * 100))
+                    : value;
         }
     }
     return values;

@@ -23,6 +23,9 @@ class SnapmakerU1 extends utils.Adapter {
 	private async onReady(): Promise<void> {
 		await this.setStateAsync("info.connection", false, true);
 		for (const channel of [
+			"cover",
+			"cover.circulation",
+			"cover.exhaust",
 			"job",
 			"tools",
 			"bed",
