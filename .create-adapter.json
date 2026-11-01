@@ -1,0 +1,42 @@
+{
+	"cli": true,
+	"target": "directory",
+	"adapterName": "snapmaker-u1",
+	"description": "Integrates Snapmaker U1 3D printers via Moonraker.",
+	"authorName": "Negalein",
+	"authorGithub": "Negalein",
+	"authorEmail": "45309436+Negalein@users.noreply.github.com",
+	"gitRemoteProtocol": "HTTPS",
+	"dependabot": "yes",
+	"license": "MIT License",
+	"releaseScript": "yes",
+	"gitCommit": "no",
+	"defaultBranch": "main",
+	"startMode": "daemon",
+	"features": [
+		"adapter"
+	],
+	"connectionIndicator": "yes",
+	"type": "infrastructure",
+	"adminFeatures": [
+		"custom"
+	],
+	"adminUi": "json",
+	"tabReact": "no",
+	"eslintConfig": "official",
+	"language": "TypeScript",
+	"title": "Snapmaker U1",
+	"tools": [
+		"ESLint",
+		"code coverage"
+	],
+	"indentation": "Tab",
+	"quotes": "double",
+	"replay": "C:\\Users\\User\\Documents\\Codex\\2026-11-01\\referenced-chatgpt-conversation-this-is-an\\work\\create-adapter-snapmaker-u1.json",
+	"expert": "",
+	"connectionType": "",
+	"dataSource": "",
+	"nodeVersion": "20",
+	"devServer": "local",
+	"creatorVersion": "3.1.5"
+}

@@ -1,0 +1,189 @@
+{
+	"common": {
+		"name": "snapmaker-u1",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"uk": "Початкова версія",
+				"zh-cn": "首次出版"
+			}
+		},
+		"titleLang": {
+			"en": "Snapmaker U1",
+			"de": "Snapmaker U1",
+			"ru": "Снэпмейкер U1",
+			"pt": "Snapmaker U1",
+			"nl": "Snapmaker U1",
+			"fr": "Snapmaker U1",
+			"it": "SnapMaker U1",
+			"es": "Snapmaker U1",
+			"pl": "Snapmaker U1",
+			"uk": "Snapmaker U1",
+			"zh-cn": "Snapmaker U1"
+		},
+		"desc": {
+			"en": "Integrates Snapmaker U1 3D printers via Moonraker.",
+			"de": "Integriert Snapmaker U1 3D-Drucker über Moonraker.",
+			"ru": "Интегрирует 3D-принтеры Snapmaker U1 через Moonraker.",
+			"pt": "Integra impressoras 3D Snapmaker U1 via Moonraker.",
+			"nl": "Integreert Snapmaker U1 3D-printers via Moonraker.",
+			"fr": "Intègre les imprimantes 3D Snapmaker U1 via Moonraker.",
+			"it": "Integra le stampanti 3D Snapmaker U1 tramite Moonraker.",
+			"es": "Integra impresoras 3D Snapmaker U1 a través de Moonraker.",
+			"pl": "Integruje drukarki 3D Snapmaker U1 poprzez Moonraker.",
+			"uk": "Інтегрує 3D-принтери Snapmaker U1 через Moonraker.",
+			"zh-cn": "通过 Moonraker 集成 Snapmaker U1 3D 打印机。"
+		},
+		"authors": [
+			"Negalein <45309436+Negalein@users.noreply.github.com>"
+		],
+		"keywords": [
+			"iobroker",
+			"snapmaker",
+			"u1",
+			"3d-printer",
+			"moonraker",
+			"klipper"
+		],
+		"licenseInformation": {
+			"type": "free",
+			"license": "MIT"
+		},
+		"platform": "Javascript/Node.js",
+		"icon": "snapmaker-u1.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/Negalein/ioBroker.snapmaker-u1/main/admin/snapmaker-u1.png",
+		"readme": "https://github.com/Negalein/ioBroker.snapmaker-u1/blob/main/README.md",
+		"loglevel": "info",
+		"tier": 3,
+		"mode": "daemon",
+		"type": "infrastructure",
+		"connectionType": "local",
+		"dataSource": "poll",
+		"compact": true,
+		"adminUI": {
+			"config": "json"
+		},
+		"supportCustoms": true,
+		"dependencies": [
+			{
+				"js-controller": ">=6.0.11"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": ">=7.0.23"
+			}
+		]
+	},
+	"native": {
+		"host": "",
+		"port": 7125,
+		"firmware": "auto",
+		"requestTimeout": 10,
+		"pollInterval": 30,
+		"spoolmanEnabled": false,
+		"spoolmanUrl": ""
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "printer",
+			"type": "device",
+			"common": {
+				"name": "Printer"
+			},
+			"native": {}
+		},
+		{
+			"_id": "printer.info",
+			"type": "channel",
+			"common": {
+				"name": "Printer information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "printer.info.hostname",
+			"type": "state",
+			"common": {
+				"role": "info.name",
+				"name": "Printer hostname",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "printer.info.firmware",
+			"type": "state",
+			"common": {
+				"role": "info.version",
+				"name": "Moonraker version",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "printer.info.status",
+			"type": "state",
+			"common": {
+				"role": "text",
+				"name": "Printer status",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "printer.info.lastUpdate",
+			"type": "state",
+			"common": {
+				"role": "value.time",
+				"name": "Last successful update",
+				"type": "number",
+				"read": true,
+				"write": false,
+				"def": 0
+			},
+			"native": {}
+		},
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}

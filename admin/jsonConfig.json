@@ -1,0 +1,98 @@
+{
+	"i18n": true,
+	"type": "panel",
+	"items": {
+		"host": {
+			"type": "text",
+			"label": "Moonraker host or IP address",
+			"help": "Moonraker host help",
+			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"port": {
+			"type": "number",
+			"label": "Moonraker port",
+			"min": 1,
+			"max": 65535,
+			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"firmware": {
+			"type": "select",
+			"label": "Firmware mode",
+			"options": [
+				{
+					"label": "Auto detect",
+					"value": "auto"
+				},
+				{
+					"label": "Original firmware",
+					"value": "original"
+				},
+				{
+					"label": "PAXX12 firmware",
+					"value": "paxx12"
+				}
+			],
+			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"requestTimeout": {
+			"type": "number",
+			"label": "Request timeout (seconds)",
+			"min": 1,
+			"max": 120,
+			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"pollInterval": {
+			"type": "number",
+			"label": "Polling interval (seconds)",
+			"min": 5,
+			"max": 3600,
+			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"spoolmanEnabled": {
+			"type": "checkbox",
+			"label": "Enable Spoolman integration",
+			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"spoolmanUrl": {
+			"type": "text",
+			"label": "Spoolman URL",
+			"help": "Spoolman URL help",
+			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		}
+	}
+}
