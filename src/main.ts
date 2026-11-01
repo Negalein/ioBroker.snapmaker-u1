@@ -4,6 +4,7 @@
 
 import * as utils from "@iobroker/adapter-core";
 import { getPrinterInfo } from "./lib/moonraker";
+import { mapStatus, readStatus, statusFields } from "./lib/status";
 
 class SnapmakerU1 extends utils.Adapter {
 	private pollTimer?: ioBroker.Timeout;
@@ -21,6 +22,29 @@ class SnapmakerU1 extends utils.Adapter {
 	/** Initializes the adapter after ioBroker has loaded the instance configuration. */
 	private async onReady(): Promise<void> {
 		await this.setStateAsync("info.connection", false, true);
+		for (const channel of [
+			"job",
+			"tools",
+			"bed",
+			"chamber",
+			"tools.tool0",
+			"tools.tool1",
+			"tools.tool2",
+			"tools.tool3",
+		]) {
+			await this.setObjectNotExistsAsync(`printer.${channel}`, {
+				type: "channel",
+				common: { name: channel },
+				native: {},
+			});
+		}
+		for (const [, , id, type, role, unit] of statusFields) {
+			await this.setObjectNotExistsAsync(`printer.${id}`, {
+				type: "state",
+				common: { name: id, type, role, read: true, write: false, ...(unit ? { unit } : {}) },
+				native: {},
+			});
+		}
 
 		if (!this.config.host.trim()) {
 			this.log.warn("Moonraker host is not configured. Set it in the adapter settings to connect the printer.");
@@ -39,6 +63,13 @@ class SnapmakerU1 extends utils.Adapter {
 				timeoutMs: this.config.requestTimeout * 1_000,
 			});
 
+			const status = await readStatus(this.config.host, this.config.port, this.config.requestTimeout * 1_000);
+			if (this.stopping) {
+				return;
+			}
+			for (const [id, value] of Object.entries(mapStatus(status))) {
+				await this.setStateChangedAsync(`printer.${id}`, value, true);
+			}
 			await this.setStateChangedAsync("info.connection", true, true);
 			await this.setStateChangedAsync("printer.info.hostname", printerInfo.hostname ?? "", true);
 			await this.setStateChangedAsync("printer.info.firmware", printerInfo.softwareVersion ?? "", true);

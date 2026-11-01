@@ -11,6 +11,16 @@ An ioBroker adapter for monitoring a Snapmaker U1 through its local Moonraker se
 
 ## Current functionality
 
+Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
+
+- `printer.job`: state, filename, elapsed print duration (seconds), filament used (mm), progress (percent), and paused flag.
+- `printer.tools.active`: active extruder name.
+- `printer.tools.tool0` through `tool3`: actual temperature, target temperature, and tool status.
+- `printer.bed`: actual and target temperature.
+- `printer.chamber.temperature`: chamber temperature.
+
+All states are read-only. Missing or invalid values are skipped. Validation so far covers an idle printer; behavior during a live print still needs validation. AFC material information is not synchronized yet.
+
 - Connects locally to Moonraker at a configurable host and port (default: `7125`).
 - Publishes `info.connection`, printer hostname, Moonraker version, status, and the last successful update.
 - Supports the original firmware and PAXX12 as selectable configuration modes; protocol-specific features will follow after validation against real devices.
