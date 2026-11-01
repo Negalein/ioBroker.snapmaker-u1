@@ -3,6 +3,7 @@
  */
 
 import * as utils from "@iobroker/adapter-core";
+import { cameraUrl, discoverCameras, previewUrl } from "./lib/media";
 import { fanNames, setFanSpeed } from "./lib/fans";
 import { getPrinterInfo } from "./lib/moonraker";
 import { mapStatus, readStatus, statusFields } from "./lib/status";
@@ -19,6 +20,23 @@ class SnapmakerU1 extends utils.Adapter {
 			name: "snapmaker-u1",
 		});
 		this.on("ready", this.onReady.bind(this));
+		this.on("message", async obj => {
+			if (obj.command !== "discoverCameras" || !obj.callback) {
+				return;
+			}
+			try {
+				const cameras = await discoverCameras(this.config.host, this.config.port);
+				this.sendTo(
+					obj.from,
+					obj.command,
+					cameras.filter(c => c.enabled).map(c => ({ label: c.name, value: c.uid })),
+					obj.callback,
+				);
+			} catch (error) {
+				this.log.warn(`Camera discovery failed: ${String(error)}`);
+				this.sendTo(obj.from, obj.command, [], obj.callback);
+			}
+		});
 		this.on("stateChange", (id, state) => {
 			if (!state || state.ack || this.stopping) {
 				return;
@@ -98,6 +116,55 @@ class SnapmakerU1 extends utils.Adapter {
 		await this.pollPrinter();
 	}
 
+	private async updateMedia(filename: string): Promise<void> {
+		const write = async (id: string, value: string | number | boolean): Promise<void> => {
+			await this.setObjectNotExistsAsync(id, {
+				type: "state",
+				common: {
+					name: id,
+					type: typeof value as "string" | "number" | "boolean",
+					role: "state",
+					read: true,
+					write: false,
+				},
+				native: {},
+			});
+			if (!this.stopping) {
+				await this.setStateChangedAsync(id, value, true);
+			}
+		};
+		await this.setObjectNotExistsAsync("cameras", {
+			type: "channel",
+			common: { name: "Selected cameras" },
+			native: {},
+		});
+		if (this.config.selectedCameras?.length) {
+			const cameras = await discoverCameras(this.config.host, this.config.port);
+			for (const camera of cameras.filter(c => this.config.selectedCameras.includes(c.uid))) {
+				const id = `cameras.${camera.uid.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+				await this.setObjectNotExistsAsync(id, { type: "channel", common: { name: camera.name }, native: {} });
+				for (const [key, value] of Object.entries({
+					name: camera.name,
+					enabled: camera.enabled,
+					streamUrl: cameraUrl(camera.stream_url, this.config.host),
+					snapshotUrl: cameraUrl(camera.snapshot_url, this.config.host),
+					service: camera.service,
+					rotation: camera.rotation,
+					flipHorizontal: camera.flip_horizontal,
+					flipVertical: camera.flip_vertical,
+				})) {
+					if (value !== undefined) {
+						await write(`${id}.${key}`, value);
+					}
+				}
+			}
+		}
+		await write(
+			"printer.job.previewUrl",
+			this.config.previewEnabled ? await previewUrl(this.config.host, this.config.port, filename) : "",
+		);
+	}
+
 	/** Retrieves printer metadata and schedules the next request. */
 	private async pollPrinter(): Promise<void> {
 		try {
@@ -128,6 +195,11 @@ class SnapmakerU1 extends utils.Adapter {
 				true,
 			);
 			await this.setStateChangedAsync("printer.info.lastUpdate", Date.now(), true);
+			try {
+				await this.updateMedia(String(mapStatus(status)["job.filename"] ?? ""));
+			} catch (error) {
+				this.log.debug(`Media update failed: ${String(error)}`);
+			}
 			if (this.connectionFailed) {
 				this.log.info("Connection to Moonraker restored.");
 			}

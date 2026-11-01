@@ -11,6 +11,14 @@ An ioBroker adapter for monitoring a Snapmaker U1 through its local Moonraker se
 
 ## Current functionality
 
+### Cameras and print preview
+
+In the settings, open **Discover and select cameras** (German: **Kameras suchen und auswählen**) to retrieve enabled cameras from Moonraker and save a multiple selection. Save the printer host first and keep the adapter running for discovery. No network scan is performed.
+
+Selected cameras are published under `cameras.<Moonraker UID>` with name, enabled flag, stream URL, snapshot URL, service, rotation and mirror settings. The adapter reads camera configuration only; it does not open continuous video streams or claim that a camera is reachable. WebRTC requires a compatible viewer. Historical camera objects remain after deselection but are no longer refreshed.
+
+`printer.job.previewUrl` contains the largest embedded thumbnail of the current G-code file. It is cleared when no file is selected or preview is disabled. Camera/thumbnail failures are logged at debug level and do not mark the printer disconnected. Camera URLs must be reachable from the browser displaying them. This implementation has been checked against the printer's `case`, `Top`, `gui` entries and an existing 300×300 thumbnail; the settings selection still needs an installed Admin test.
+
 Top-cover fan control: write a numeric percentage (0–100, `ack=false`) to `printer.cover.circulation.speed` or `printer.cover.exhaust.speed`. Commands are serialized and acknowledged from a subsequent printer status query. Both fans were live-tested with a five-percentage-point change and restored. Firmware automation may subsequently change fan speeds. Invalid values are rejected.
 
 Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. These values are read through Moonraker; the separate Spoolman URL is reserved for future inventory queries. No spool assignments or consumption reports are written by this adapter.

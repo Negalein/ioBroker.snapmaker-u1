@@ -4,6 +4,8 @@
 declare global {
 	namespace ioBroker {
 		interface AdapterConfig {
+			selectedCameras: string[];
+			previewEnabled: boolean;
 			host: string;
 			port: number;
 			firmware: "auto" | "original" | "paxx12";

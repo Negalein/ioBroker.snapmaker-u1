@@ -2,6 +2,22 @@
 	"i18n": true,
 	"type": "panel",
 	"items": {
+		"selectedCameras": {
+			"type": "selectSendTo",
+			"label": { "de": "Kameras suchen und auswählen", "en": "Discover and select cameras" },
+			"command": "discoverCameras",
+			"multiple": true,
+			"manual": false,
+			"noTranslation": true,
+			"newLine": true,
+			"xs": 12
+		},
+		"previewEnabled": {
+			"type": "checkbox",
+			"label": { "de": "Druckvorschau aktivieren", "en": "Enable print preview" },
+			"newLine": true,
+			"xs": 12
+		},
 		"host": {
 			"type": "text",
 			"label": "Moonraker host or IP address",

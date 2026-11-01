@@ -37,6 +37,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils = __importStar(require("@iobroker/adapter-core"));
+const media_1 = require("./lib/media");
 const fans_1 = require("./lib/fans");
 const moonraker_1 = require("./lib/moonraker");
 const status_1 = require("./lib/status");
@@ -51,6 +52,19 @@ class SnapmakerU1 extends utils.Adapter {
             name: "snapmaker-u1",
         });
         this.on("ready", this.onReady.bind(this));
+        this.on("message", async (obj) => {
+            if (obj.command !== "discoverCameras" || !obj.callback) {
+                return;
+            }
+            try {
+                const cameras = await (0, media_1.discoverCameras)(this.config.host, this.config.port);
+                this.sendTo(obj.from, obj.command, cameras.filter(c => c.enabled).map(c => ({ label: c.name, value: c.uid })), obj.callback);
+            }
+            catch (error) {
+                this.log.warn(`Camera discovery failed: ${String(error)}`);
+                this.sendTo(obj.from, obj.command, [], obj.callback);
+            }
+        });
         this.on("stateChange", (id, state) => {
             if (!state || state.ack || this.stopping) {
                 return;
@@ -123,6 +137,51 @@ class SnapmakerU1 extends utils.Adapter {
         }
         await this.pollPrinter();
     }
+    async updateMedia(filename) {
+        const write = async (id, value) => {
+            await this.setObjectNotExistsAsync(id, {
+                type: "state",
+                common: {
+                    name: id,
+                    type: typeof value,
+                    role: "state",
+                    read: true,
+                    write: false,
+                },
+                native: {},
+            });
+            if (!this.stopping) {
+                await this.setStateChangedAsync(id, value, true);
+            }
+        };
+        await this.setObjectNotExistsAsync("cameras", {
+            type: "channel",
+            common: { name: "Selected cameras" },
+            native: {},
+        });
+        if (this.config.selectedCameras?.length) {
+            const cameras = await (0, media_1.discoverCameras)(this.config.host, this.config.port);
+            for (const camera of cameras.filter(c => this.config.selectedCameras.includes(c.uid))) {
+                const id = `cameras.${camera.uid.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+                await this.setObjectNotExistsAsync(id, { type: "channel", common: { name: camera.name }, native: {} });
+                for (const [key, value] of Object.entries({
+                    name: camera.name,
+                    enabled: camera.enabled,
+                    streamUrl: (0, media_1.cameraUrl)(camera.stream_url, this.config.host),
+                    snapshotUrl: (0, media_1.cameraUrl)(camera.snapshot_url, this.config.host),
+                    service: camera.service,
+                    rotation: camera.rotation,
+                    flipHorizontal: camera.flip_horizontal,
+                    flipVertical: camera.flip_vertical,
+                })) {
+                    if (value !== undefined) {
+                        await write(`${id}.${key}`, value);
+                    }
+                }
+            }
+        }
+        await write("printer.job.previewUrl", this.config.previewEnabled ? await (0, media_1.previewUrl)(this.config.host, this.config.port, filename) : "");
+    }
     /** Retrieves printer metadata and schedules the next request. */
     async pollPrinter() {
         try {
@@ -143,6 +202,12 @@ class SnapmakerU1 extends utils.Adapter {
             await this.setStateChangedAsync("printer.info.firmware", printerInfo.softwareVersion ?? "", true);
             await this.setStateChangedAsync("printer.info.status", printerInfo.stateMessage ?? printerInfo.state ?? "unknown", true);
             await this.setStateChangedAsync("printer.info.lastUpdate", Date.now(), true);
+            try {
+                await this.updateMedia(String((0, status_1.mapStatus)(status)["job.filename"] ?? ""));
+            }
+            catch (error) {
+                this.log.debug(`Media update failed: ${String(error)}`);
+            }
             if (this.connectionFailed) {
                 this.log.info("Connection to Moonraker restored.");
             }
