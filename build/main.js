@@ -37,17 +37,44 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils = __importStar(require("@iobroker/adapter-core"));
+const fans_1 = require("./lib/fans");
 const moonraker_1 = require("./lib/moonraker");
 const status_1 = require("./lib/status");
 class SnapmakerU1 extends utils.Adapter {
     pollTimer;
     stopping = false;
+    commandQueue = Promise.resolve();
     constructor(options = {}) {
         super({
             ...options,
             name: "snapmaker-u1",
         });
         this.on("ready", this.onReady.bind(this));
+        this.on("stateChange", (id, state) => {
+            if (!state || state.ack || this.stopping) {
+                return;
+            }
+            const relativeId = id.slice(this.namespace.length + 1);
+            if (!fans_1.fanNames[relativeId]) {
+                return;
+            }
+            this.commandQueue = this.commandQueue.then(async () => {
+                if (this.stopping) {
+                    return;
+                }
+                try {
+                    await (0, fans_1.setFanSpeed)(this.config.host, this.config.port, relativeId, state.val);
+                    const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000);
+                    const value = (0, status_1.mapStatus)(status)[relativeId.replace("printer.", "")];
+                    if (!this.stopping && value !== undefined) {
+                        await this.setStateAsync(relativeId, value, true);
+                    }
+                }
+                catch (error) {
+                    this.log.warn(`Fan command failed: ${error instanceof Error ? error.message : String(error)}`);
+                }
+            });
+        });
         this.on("unload", this.onUnload.bind(this));
     }
     /** Initializes the adapter after ioBroker has loaded the instance configuration. */
@@ -88,6 +115,10 @@ class SnapmakerU1 extends utils.Adapter {
         if (!this.config.host.trim()) {
             this.log.warn("Moonraker host is not configured. Set it in the adapter settings to connect the printer.");
             return;
+        }
+        for (const id of Object.keys(fans_1.fanNames)) {
+            await this.extendObjectAsync(id, { common: { write: true, min: 0, max: 100, role: "level.speed" } });
+            this.subscribeStates(id);
         }
         await this.pollPrinter();
     }

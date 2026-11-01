@@ -3,12 +3,14 @@
  */
 
 import * as utils from "@iobroker/adapter-core";
+import { fanNames, setFanSpeed } from "./lib/fans";
 import { getPrinterInfo } from "./lib/moonraker";
 import { mapStatus, readStatus, statusFields } from "./lib/status";
 
 class SnapmakerU1 extends utils.Adapter {
 	private pollTimer?: ioBroker.Timeout;
 	private stopping = false;
+	private commandQueue: Promise<void> = Promise.resolve();
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -16,6 +18,34 @@ class SnapmakerU1 extends utils.Adapter {
 			name: "snapmaker-u1",
 		});
 		this.on("ready", this.onReady.bind(this));
+		this.on("stateChange", (id, state) => {
+			if (!state || state.ack || this.stopping) {
+				return;
+			}
+			const relativeId = id.slice(this.namespace.length + 1);
+			if (!fanNames[relativeId]) {
+				return;
+			}
+			this.commandQueue = this.commandQueue.then(async () => {
+				if (this.stopping) {
+					return;
+				}
+				try {
+					await setFanSpeed(this.config.host, this.config.port, relativeId, state.val);
+					const status = await readStatus(
+						this.config.host,
+						this.config.port,
+						this.config.requestTimeout * 1_000,
+					);
+					const value = mapStatus(status)[relativeId.replace("printer.", "")];
+					if (!this.stopping && value !== undefined) {
+						await this.setStateAsync(relativeId, value, true);
+					}
+				} catch (error) {
+					this.log.warn(`Fan command failed: ${error instanceof Error ? error.message : String(error)}`);
+				}
+			});
+		});
 		this.on("unload", this.onUnload.bind(this));
 	}
 
@@ -58,6 +88,10 @@ class SnapmakerU1 extends utils.Adapter {
 		if (!this.config.host.trim()) {
 			this.log.warn("Moonraker host is not configured. Set it in the adapter settings to connect the printer.");
 			return;
+		}
+		for (const id of Object.keys(fanNames)) {
+			await this.extendObjectAsync(id, { common: { write: true, min: 0, max: 100, role: "level.speed" } });
+			this.subscribeStates(id);
 		}
 
 		await this.pollPrinter();
