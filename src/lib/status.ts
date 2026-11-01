@@ -16,6 +16,31 @@ export const statusFields: Array<[string, string, string, ioBroker.CommonType, s
 	["fan_generic exhaust_fan", "speed", "cover.exhaust.speed", "number", "value", "%"],
 	["fan_generic exhaust_fan", "rpm", "cover.exhaust.rpm", "number", "value", "rpm"],
 ];
+statusFields.push(
+	["AFC", "current_lane", "afc.currentLane", "string", "text"],
+	["AFC", "error_state", "afc.error", "boolean", "indicator.error"],
+	["AFC", "spoolman", "afc.spoolmanEnabled", "boolean", "indicator"],
+	["spoolman", "spoolman_connected", "spoolman.connected", "boolean", "indicator.connected"],
+	["spoolman", "spool_id", "spoolman.activeSpoolId", "number", "value"],
+);
+for (let lane = 0; lane < 4; lane++) {
+	for (const [key, type] of [
+		["material", "string"],
+		["filament_name", "string"],
+		["color", "string"],
+		["spool_id", "number"],
+		["tool_loaded", "boolean"],
+		["status", "string"],
+	] as const) {
+		statusFields.push([
+			`AFC_lane E${lane}`,
+			key,
+			`afc.lane${lane}.${key}`,
+			type,
+			type === "boolean" ? "indicator" : type === "number" ? "value" : "text",
+		]);
+	}
+}
 for (let index = 0; index < 4; index++) {
 	const object = index === 0 ? "extruder" : `extruder${index}`;
 	statusFields.push(
@@ -28,9 +53,17 @@ for (let index = 0; index < 4; index++) {
 /**
  * Retrieves read-only printer status.
  */
-export async function readStatus(host: string, port: number, timeoutMs: number): Promise<Record<string, unknown>> {
+export async function readStatus(
+	host: string,
+	port: number,
+	timeoutMs: number,
+	spoolmanEnabled = false,
+): Promise<Record<string, unknown>> {
 	const url = new URL("printer/objects/query", createMoonrakerBaseUrl(host, port));
 	for (const object of new Set(statusFields.map(field => field[0]))) {
+		if (object === "spoolman" || (!spoolmanEnabled && object.startsWith("AFC"))) {
+			continue;
+		}
 		url.searchParams.set(object, "");
 	}
 	const response = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
@@ -50,6 +83,17 @@ export async function readStatus(host: string, port: number, timeoutMs: number):
 	};
 	if (!body.result?.status || typeof body.result.status !== "object") {
 		throw new Error("Invalid printer status response");
+	}
+	if (spoolmanEnabled) {
+		const spoolResponse = await fetch(new URL("/server/spoolman/status", url), {
+			signal: AbortSignal.timeout(timeoutMs),
+		});
+		if (spoolResponse.ok) {
+			const spoolBody = (await spoolResponse.json()) as { result?: Record<string, unknown> };
+			if (spoolBody.result) {
+				body.result.status.spoolman = spoolBody.result;
+			}
+		}
 	}
 	return body.result.status;
 }

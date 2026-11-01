@@ -54,6 +54,12 @@ class SnapmakerU1 extends utils.Adapter {
     async onReady() {
         await this.setStateAsync("info.connection", false, true);
         for (const channel of [
+            "afc",
+            "afc.lane0",
+            "afc.lane1",
+            "afc.lane2",
+            "afc.lane3",
+            "spoolman",
             "cover",
             "cover.circulation",
             "cover.exhaust",
@@ -93,7 +99,7 @@ class SnapmakerU1 extends utils.Adapter {
                 port: this.config.port,
                 timeoutMs: this.config.requestTimeout * 1_000,
             });
-            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000);
+            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000, this.config.spoolmanEnabled);
             if (this.stopping) {
                 return;
             }

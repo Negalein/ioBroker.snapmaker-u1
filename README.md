@@ -11,6 +11,8 @@ An ioBroker adapter for monitoring a Snapmaker U1 through its local Moonraker se
 
 ## Current functionality
 
+Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. These values are read through Moonraker; the separate Spoolman URL is reserved for future inventory queries. No spool assignments or consumption reports are written by this adapter.
+
 Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
 
 - `printer.job`: state, filename, elapsed print duration (seconds), filament used (mm), progress (percent), and paused flag.
