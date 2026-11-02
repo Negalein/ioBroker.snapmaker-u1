@@ -1,6 +1,6 @@
 {
   "name": "iobroker.snapmaker-u1",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Integrates Snapmaker U1 3D printers via Moonraker.",
   "author": {
     "name": "Negalein",

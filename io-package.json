@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.1",
+		"version": "0.0.2",
 		"news": {
+			"0.0.2": {
+				"en": "Enable trusted publishing through GitHub Actions.",
+				"de": "Trusted Publishing über GitHub Actions eingerichtet.",
+				"ru": "Настроена доверенная публикация через GitHub Actions.",
+				"pt": "Publicação confiável através do GitHub Actions.",
+				"nl": "Vertrouwd publiceren via GitHub Actions ingesteld.",
+				"fr": "Publication de confiance via GitHub Actions configurée.",
+				"it": "Pubblicazione attendibile tramite GitHub Actions configurata.",
+				"es": "Publicación de confianza mediante GitHub Actions configurada.",
+				"pl": "Skonfigurowano zaufane publikowanie przez GitHub Actions.",
+				"uk": "Налаштовано довірену публікацію через GitHub Actions.",
+				"zh-cn": "通过 GitHub Actions 配置可信发布。"
+			},
 			"0.0.1": {
 				"en": "initial release",
 				"de": "Erstveröffentlichung",

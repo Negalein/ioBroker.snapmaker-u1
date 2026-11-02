@@ -86,8 +86,8 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 ## Changelog
 
-### **WORK IN PROGRESS**
-- (Negalein) Initial development version with printer monitoring, fan control, AFC/Spoolman metadata, camera discovery and print preview.
+### 0.0.2 (2026-11-02)
+- (Negalein) Enable trusted publishing through GitHub Actions after successful checks.
 
 ### 0.0.1 (2026-11-01)
 - (Negalein) Created the initial adapter scaffold.
