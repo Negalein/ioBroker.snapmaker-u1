@@ -139,7 +139,7 @@
 			"type": "state",
 			"common": {
 				"role": "text",
-				"name": "Moonraker version",
+				"name": "Klipper software version",
 				"type": "string",
 				"read": true,
 				"write": false,

@@ -5,9 +5,9 @@
 [![NPM version](https://img.shields.io/npm/v/iobroker.snapmaker-u1.svg)](https://www.npmjs.com/package/iobroker.snapmaker-u1)
 [![Tests](https://github.com/Negalein/ioBroker.snapmaker-u1/actions/workflows/test-and-release.yml/badge.svg)](https://github.com/Negalein/ioBroker.snapmaker-u1/actions/workflows/test-and-release.yml)
 
-An ioBroker adapter for monitoring a Snapmaker U1 through its local Moonraker service.
+An ioBroker adapter for monitoring a [Snapmaker U1](https://www.snapmaker.com/) through its local Moonraker service, with top-cover fan control, AFC/Spoolman metadata, camera discovery and print-preview URLs.
 
-> This is an early development version. It only performs read-only Moonraker health checks and exposes basic printer information. It does not send print, motion, heater, or other control commands.
+> This is an early development version. Printer monitoring and media discovery are read-only. The two top-cover fan speed states can send fan commands. Print, motion and heater control are not implemented.
 
 ## Current functionality
 
@@ -17,7 +17,7 @@ In the settings, open **Discover and select cameras** (German: **Kameras suchen 
 
 Selected cameras are published under `cameras.<Moonraker UID>` with name, enabled flag, stream URL, snapshot URL, service, rotation and mirror settings. The adapter reads camera configuration only; it does not open continuous video streams or claim that a camera is reachable. WebRTC requires a compatible viewer. Historical camera objects remain after deselection but are no longer refreshed.
 
-`printer.job.previewUrl` contains the largest embedded thumbnail of the current G-code file. It is cleared when no file is selected or preview is disabled. Camera/thumbnail failures are logged at debug level and do not mark the printer disconnected. Camera URLs must be reachable from the browser displaying them. This implementation has been checked against the printer's `case`, `Top`, `gui` entries and an existing 300×300 thumbnail; the settings selection still needs an installed Admin test.
+`printer.job.previewUrl` contains the largest embedded thumbnail of the current G-code file. It is cleared when no file is selected or preview is disabled. Camera/thumbnail failures are logged at debug level and do not mark the printer disconnected. Camera URLs must be reachable from the browser displaying them. Camera discovery, settings and data points have been tested in an installed ioBroker instance with PAXX12. A configured camera entry is not proof of a reachable stream.
 
 Top-cover fan control: write a numeric percentage (0–100, `ack=false`) to `printer.cover.circulation.speed` or `printer.cover.exhaust.speed`. Commands are serialized and acknowledged from a subsequent printer status query. Both fans were live-tested with a five-percentage-point change and restored. Firmware automation may subsequently change fan speeds. Invalid values are rejected.
 
@@ -31,12 +31,12 @@ Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
 - `printer.bed`: actual and target temperature.
 - `printer.chamber.temperature`: chamber temperature.
 
-All states are read-only. Missing or invalid values are skipped. Validation so far covers an idle printer; behavior during a live print still needs validation. AFC material information is not synchronized yet.
+The monitoring states are read-only; only the two fan speed states are writable. Missing or invalid values are skipped. The owner has tested version 0.0.2 in ioBroker, including live printer data, cameras, AFC/Spoolman metadata and reconnection after power-off. Original firmware compatibility remains unverified.
 
 - Connects locally to Moonraker at a configurable host and port (default: `7125`).
-- Publishes `info.connection`, printer hostname, Moonraker version, status, and the last successful update.
+- Publishes `info.connection`, printer hostname, Klipper software version, status, and the last successful update. The existing state ID `printer.info.firmware` is retained.
 - Supports the original firmware and PAXX12 as selectable configuration modes; protocol-specific features will follow after validation against real devices.
-- Keeps optional Spoolman connection settings for a later, separate integration.
+- Reads AFC and Spoolman metadata through Moonraker. Direct Spoolman inventory access is not implemented.
 
 ## Configuration
 
@@ -47,7 +47,10 @@ All states are read-only. Missing or invalid values are skipped. Validation so f
 | Firmware mode | Auto detect, original firmware, or PAXX12. |
 | Request timeout | Maximum duration of one Moonraker request, in seconds. |
 | Polling interval | Time between health checks, in seconds. |
-| Spoolman | Optional placeholder settings for a later integration. |
+| Spoolman integration | Enables AFC lane and Spoolman status queries through Moonraker. |
+| Spoolman host and port | Reserved for future direct inventory queries; currently not used for communication. |
+| Discover and select cameras | Reads enabled Moonraker camera entries and saves the selected cameras. |
+| Print preview | Enables the current G-code thumbnail URL. |
 
 ## States
 
@@ -55,7 +58,7 @@ All states are read-only. Missing or invalid values are skipped. Validation so f
 | --- | --- | --- |
 | `info.connection` | boolean | Whether the latest Moonraker health check succeeded. |
 | `printer.info.hostname` | string | Hostname reported by Moonraker. |
-| `printer.info.firmware` | string | Moonraker software version. |
+| `printer.info.firmware` | string | Klipper software version returned by Moonraker's printer info endpoint. |
 | `printer.info.status` | string | Printer state message reported by Moonraker. |
 | `printer.info.lastUpdate` | number | Timestamp of the last successful query. |
 
@@ -76,9 +79,9 @@ The repository was generated with the official [`@iobroker/create-adapter`](http
 ## Roadmap
 
 1. Validate the Moonraker payload and capabilities on a physical Snapmaker U1 for both supported firmware variants.
-2. Add read-only print, job, and material states with documented state roles.
-3. Add carefully scoped control states with correct `ack` handling.
-4. Implement Spoolman synchronization after the printer-facing state model is stable.
+2. Extend automated tests for print, material and media data.
+3. Validate shutdown and restart in compact mode.
+4. Add direct Spoolman inventory access if required.
 
 ## Disclaimer
 

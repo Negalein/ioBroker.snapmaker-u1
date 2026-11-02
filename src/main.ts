@@ -13,6 +13,7 @@ class SnapmakerU1 extends utils.Adapter {
 	private stopping = false;
 	private connectionFailed = false;
 	private commandQueue: Promise<void> = Promise.resolve();
+	private readonly initializedMediaRoles = new Set<string>();
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -118,17 +119,32 @@ class SnapmakerU1 extends utils.Adapter {
 
 	private async updateMedia(filename: string): Promise<void> {
 		const write = async (id: string, value: string | number | boolean): Promise<void> => {
+			const role = id.endsWith("streamUrl")
+				? "url.cam"
+				: id.endsWith("snapshotUrl")
+					? "link.camera"
+					: id.endsWith("previewUrl")
+						? "url.icon"
+						: typeof value === "boolean"
+							? "indicator"
+							: typeof value === "number"
+								? "value"
+								: "text";
 			await this.setObjectNotExistsAsync(id, {
 				type: "state",
 				common: {
 					name: id,
 					type: typeof value as "string" | "number" | "boolean",
-					role: "state",
+					role,
 					read: true,
 					write: false,
 				},
 				native: {},
 			});
+			if (!this.initializedMediaRoles.has(id)) {
+				await this.extendObjectAsync(id, { common: { role } });
+				this.initializedMediaRoles.add(id);
+			}
 			if (!this.stopping) {
 				await this.setStateChangedAsync(id, value, true);
 			}
