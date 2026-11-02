@@ -84,4 +84,4 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 ## License
 
-MIT License. Copyright (c) 2026 Negalein.
+MIT License. Copyright (c) 2026 Negalein <negalein@gmail.com>.

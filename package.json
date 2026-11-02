@@ -4,7 +4,7 @@
   "description": "Integrates Snapmaker U1 3D printers via Moonraker.",
   "author": {
     "name": "Negalein",
-    "email": "45309436+Negalein@users.noreply.github.com"
+    "email": "negalein@gmail.com"
   },
   "contributors": [],
   "homepage": "https://github.com/Negalein/ioBroker.snapmaker-u1",

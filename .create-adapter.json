@@ -5,7 +5,7 @@
 	"description": "Integrates Snapmaker U1 3D printers via Moonraker.",
 	"authorName": "Negalein",
 	"authorGithub": "Negalein",
-	"authorEmail": "45309436+Negalein@users.noreply.github.com",
+	"authorEmail": "negalein@gmail.com",
 	"gitRemoteProtocol": "HTTPS",
 	"dependabot": "yes",
 	"license": "MIT License",
