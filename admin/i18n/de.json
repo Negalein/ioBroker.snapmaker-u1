@@ -11,5 +11,5 @@
 	"Polling interval (seconds)": "Aktualisierungsintervall (Sekunden)",
 	"Enable Spoolman integration": "Spoolman-Integration aktivieren",
 	"Spoolman URL": "Spoolman-URL",
-	"Spoolman URL help": "Optionale lokale URL des Spoolman-Dienstes. Diese erste Version speichert die Einstellung für eine spätere Integration."
+	"Spoolman URL help": "Optionale lokale URL des Spoolman-Dienstes."
 }
