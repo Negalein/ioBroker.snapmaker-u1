@@ -1,0 +1,1250 @@
+{
+  "snapmaker-u1.0.cameras": {
+    "type": "channel",
+    "common": {
+      "name": "Selected cameras"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e": {
+    "type": "channel",
+    "common": {
+      "name": "Top"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.enabled": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.enabled",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.enabled"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.flipHorizontal": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.flipHorizontal",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.flipHorizontal"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.flipVertical": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.flipVertical",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.flipVertical"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.name": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.name",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.name"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.rotation": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.rotation",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.rotation"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.service": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.service",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.service"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.snapshotUrl": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.snapshotUrl",
+      "type": "string",
+      "role": "link.camera",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.snapshotUrl"
+  },
+  "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.streamUrl": {
+    "type": "state",
+    "common": {
+      "name": "cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.streamUrl",
+      "type": "string",
+      "role": "url.cam",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.b5794100-5505-4541-8ceb-f3b6f84dca5e.streamUrl"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734": {
+    "type": "channel",
+    "common": {
+      "name": "case"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.enabled": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.enabled",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.enabled"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.flipHorizontal": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.flipHorizontal",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.flipHorizontal"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.flipVertical": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.flipVertical",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.flipVertical"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.name": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.name",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.name"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.rotation": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.rotation",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.rotation"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.service": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.service",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.service"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.snapshotUrl": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.snapshotUrl",
+      "type": "string",
+      "role": "link.camera",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.snapshotUrl"
+  },
+  "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.streamUrl": {
+    "type": "state",
+    "common": {
+      "name": "cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.streamUrl",
+      "type": "string",
+      "role": "url.cam",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.ccda85f8-3fbe-544c-86b9-82c84f032734.streamUrl"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e": {
+    "type": "channel",
+    "common": {
+      "name": "gui"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.enabled": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.enabled",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.enabled"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.flipHorizontal": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.flipHorizontal",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.flipHorizontal"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.flipVertical": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.flipVertical",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.flipVertical"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.name": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.name",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.name"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.rotation": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.rotation",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.rotation"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.service": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.service",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.service"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.snapshotUrl": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.snapshotUrl",
+      "type": "string",
+      "role": "link.camera",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.snapshotUrl"
+  },
+  "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.streamUrl": {
+    "type": "state",
+    "common": {
+      "name": "cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.streamUrl",
+      "type": "string",
+      "role": "url.cam",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.cameras.f10f5758-60e7-516e-912c-f5c73dbd080e.streamUrl"
+  },
+  "snapmaker-u1.0.info": {
+    "_id": "snapmaker-u1.0.info",
+    "type": "channel",
+    "common": {
+      "name": "Information"
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.info.connection": {
+    "_id": "snapmaker-u1.0.info.connection",
+    "type": "state",
+    "common": {
+      "role": "indicator.connected",
+      "name": "Device or service connected",
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "def": false
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.printer": {
+    "_id": "snapmaker-u1.0.printer",
+    "type": "device",
+    "common": {
+      "name": "Printer"
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.printer.afc": {
+    "type": "channel",
+    "common": {
+      "name": "afc"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc"
+  },
+  "snapmaker-u1.0.printer.afc.currentLane": {
+    "type": "state",
+    "common": {
+      "name": "afc.currentLane",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.currentLane"
+  },
+  "snapmaker-u1.0.printer.afc.error": {
+    "type": "state",
+    "common": {
+      "name": "afc.error",
+      "type": "boolean",
+      "role": "indicator.error",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.error"
+  },
+  "snapmaker-u1.0.printer.afc.lane0": {
+    "type": "channel",
+    "common": {
+      "name": "afc.lane0"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane0"
+  },
+  "snapmaker-u1.0.printer.afc.lane0.color": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane0.color",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane0.color"
+  },
+  "snapmaker-u1.0.printer.afc.lane0.filament_name": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane0.filament_name",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane0.filament_name"
+  },
+  "snapmaker-u1.0.printer.afc.lane0.material": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane0.material",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane0.material"
+  },
+  "snapmaker-u1.0.printer.afc.lane0.spool_id": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane0.spool_id",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane0.spool_id"
+  },
+  "snapmaker-u1.0.printer.afc.lane0.status": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane0.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane0.status"
+  },
+  "snapmaker-u1.0.printer.afc.lane0.tool_loaded": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane0.tool_loaded",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane0.tool_loaded"
+  },
+  "snapmaker-u1.0.printer.afc.lane1": {
+    "type": "channel",
+    "common": {
+      "name": "afc.lane1"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane1"
+  },
+  "snapmaker-u1.0.printer.afc.lane1.color": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane1.color",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane1.color"
+  },
+  "snapmaker-u1.0.printer.afc.lane1.filament_name": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane1.filament_name",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane1.filament_name"
+  },
+  "snapmaker-u1.0.printer.afc.lane1.material": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane1.material",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane1.material"
+  },
+  "snapmaker-u1.0.printer.afc.lane1.spool_id": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane1.spool_id",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane1.spool_id"
+  },
+  "snapmaker-u1.0.printer.afc.lane1.status": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane1.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane1.status"
+  },
+  "snapmaker-u1.0.printer.afc.lane1.tool_loaded": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane1.tool_loaded",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane1.tool_loaded"
+  },
+  "snapmaker-u1.0.printer.afc.lane2": {
+    "type": "channel",
+    "common": {
+      "name": "afc.lane2"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane2"
+  },
+  "snapmaker-u1.0.printer.afc.lane2.color": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane2.color",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane2.color"
+  },
+  "snapmaker-u1.0.printer.afc.lane2.filament_name": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane2.filament_name",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane2.filament_name"
+  },
+  "snapmaker-u1.0.printer.afc.lane2.material": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane2.material",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane2.material"
+  },
+  "snapmaker-u1.0.printer.afc.lane2.spool_id": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane2.spool_id",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane2.spool_id"
+  },
+  "snapmaker-u1.0.printer.afc.lane2.status": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane2.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane2.status"
+  },
+  "snapmaker-u1.0.printer.afc.lane2.tool_loaded": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane2.tool_loaded",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane2.tool_loaded"
+  },
+  "snapmaker-u1.0.printer.afc.lane3": {
+    "type": "channel",
+    "common": {
+      "name": "afc.lane3"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane3"
+  },
+  "snapmaker-u1.0.printer.afc.lane3.color": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane3.color",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane3.color"
+  },
+  "snapmaker-u1.0.printer.afc.lane3.filament_name": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane3.filament_name",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane3.filament_name"
+  },
+  "snapmaker-u1.0.printer.afc.lane3.material": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane3.material",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane3.material"
+  },
+  "snapmaker-u1.0.printer.afc.lane3.spool_id": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane3.spool_id",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane3.spool_id"
+  },
+  "snapmaker-u1.0.printer.afc.lane3.status": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane3.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane3.status"
+  },
+  "snapmaker-u1.0.printer.afc.lane3.tool_loaded": {
+    "type": "state",
+    "common": {
+      "name": "afc.lane3.tool_loaded",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.lane3.tool_loaded"
+  },
+  "snapmaker-u1.0.printer.afc.spoolmanEnabled": {
+    "type": "state",
+    "common": {
+      "name": "afc.spoolmanEnabled",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.afc.spoolmanEnabled"
+  },
+  "snapmaker-u1.0.printer.bed": {
+    "type": "channel",
+    "common": {
+      "name": "bed"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.bed"
+  },
+  "snapmaker-u1.0.printer.bed.target": {
+    "type": "state",
+    "common": {
+      "name": "bed.target",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.bed.target"
+  },
+  "snapmaker-u1.0.printer.bed.temperature": {
+    "type": "state",
+    "common": {
+      "name": "bed.temperature",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.bed.temperature"
+  },
+  "snapmaker-u1.0.printer.chamber": {
+    "type": "channel",
+    "common": {
+      "name": "chamber"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.chamber"
+  },
+  "snapmaker-u1.0.printer.chamber.temperature": {
+    "type": "state",
+    "common": {
+      "name": "chamber.temperature",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.chamber.temperature"
+  },
+  "snapmaker-u1.0.printer.cover": {
+    "type": "channel",
+    "common": {
+      "name": "cover"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.cover"
+  },
+  "snapmaker-u1.0.printer.cover.circulation": {
+    "type": "channel",
+    "common": {
+      "name": "cover.circulation"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.cover.circulation"
+  },
+  "snapmaker-u1.0.printer.cover.circulation.rpm": {
+    "type": "state",
+    "common": {
+      "name": "cover.circulation.rpm",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "rpm"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.cover.circulation.rpm"
+  },
+  "snapmaker-u1.0.printer.cover.circulation.speed": {
+    "type": "state",
+    "common": {
+      "name": "cover.circulation.speed",
+      "type": "number",
+      "role": "level.speed",
+      "read": true,
+      "write": true,
+      "unit": "%",
+      "min": 0,
+      "max": 100
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.cover.circulation.speed"
+  },
+  "snapmaker-u1.0.printer.cover.exhaust": {
+    "type": "channel",
+    "common": {
+      "name": "cover.exhaust"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.cover.exhaust"
+  },
+  "snapmaker-u1.0.printer.cover.exhaust.rpm": {
+    "type": "state",
+    "common": {
+      "name": "cover.exhaust.rpm",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "rpm"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.cover.exhaust.rpm"
+  },
+  "snapmaker-u1.0.printer.cover.exhaust.speed": {
+    "type": "state",
+    "common": {
+      "name": "cover.exhaust.speed",
+      "type": "number",
+      "role": "level.speed",
+      "read": true,
+      "write": true,
+      "unit": "%",
+      "min": 0,
+      "max": 100
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.cover.exhaust.speed"
+  },
+  "snapmaker-u1.0.printer.info": {
+    "_id": "snapmaker-u1.0.printer.info",
+    "type": "channel",
+    "common": {
+      "name": "Printer information"
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.printer.info.firmware": {
+    "_id": "snapmaker-u1.0.printer.info.firmware",
+    "type": "state",
+    "common": {
+      "role": "text",
+      "name": "Moonraker version",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.printer.info.hostname": {
+    "_id": "snapmaker-u1.0.printer.info.hostname",
+    "type": "state",
+    "common": {
+      "role": "info.name",
+      "name": "Printer hostname",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.printer.info.lastUpdate": {
+    "_id": "snapmaker-u1.0.printer.info.lastUpdate",
+    "type": "state",
+    "common": {
+      "role": "value.time",
+      "name": "Last successful update",
+      "type": "number",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.printer.info.status": {
+    "_id": "snapmaker-u1.0.printer.info.status",
+    "type": "state",
+    "common": {
+      "role": "text",
+      "name": "Printer status",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "snapmaker-u1.0.printer.job": {
+    "type": "channel",
+    "common": {
+      "name": "job"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job"
+  },
+  "snapmaker-u1.0.printer.job.duration": {
+    "type": "state",
+    "common": {
+      "name": "job.duration",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "s"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job.duration"
+  },
+  "snapmaker-u1.0.printer.job.filamentUsed": {
+    "type": "state",
+    "common": {
+      "name": "job.filamentUsed",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "mm"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job.filamentUsed"
+  },
+  "snapmaker-u1.0.printer.job.filename": {
+    "type": "state",
+    "common": {
+      "name": "job.filename",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job.filename"
+  },
+  "snapmaker-u1.0.printer.job.paused": {
+    "type": "state",
+    "common": {
+      "name": "job.paused",
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job.paused"
+  },
+  "snapmaker-u1.0.printer.job.previewUrl": {
+    "type": "state",
+    "common": {
+      "name": "printer.job.previewUrl",
+      "type": "string",
+      "role": "url.icon",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job.previewUrl"
+  },
+  "snapmaker-u1.0.printer.job.progress": {
+    "type": "state",
+    "common": {
+      "name": "job.progress",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "%"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job.progress"
+  },
+  "snapmaker-u1.0.printer.job.state": {
+    "type": "state",
+    "common": {
+      "name": "job.state",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.job.state"
+  },
+  "snapmaker-u1.0.printer.spoolman": {
+    "type": "channel",
+    "common": {
+      "name": "spoolman"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.spoolman"
+  },
+  "snapmaker-u1.0.printer.spoolman.activeSpoolId": {
+    "type": "state",
+    "common": {
+      "name": "spoolman.activeSpoolId",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.spoolman.activeSpoolId"
+  },
+  "snapmaker-u1.0.printer.spoolman.connected": {
+    "type": "state",
+    "common": {
+      "name": "spoolman.connected",
+      "type": "boolean",
+      "role": "indicator.connected",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.spoolman.connected"
+  },
+  "snapmaker-u1.0.printer.tools": {
+    "type": "channel",
+    "common": {
+      "name": "tools"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools"
+  },
+  "snapmaker-u1.0.printer.tools.active": {
+    "type": "state",
+    "common": {
+      "name": "tools.active",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.active"
+  },
+  "snapmaker-u1.0.printer.tools.tool0": {
+    "type": "channel",
+    "common": {
+      "name": "tools.tool0"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool0"
+  },
+  "snapmaker-u1.0.printer.tools.tool0.status": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool0.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool0.status"
+  },
+  "snapmaker-u1.0.printer.tools.tool0.target": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool0.target",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool0.target"
+  },
+  "snapmaker-u1.0.printer.tools.tool0.temperature": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool0.temperature",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool0.temperature"
+  },
+  "snapmaker-u1.0.printer.tools.tool1": {
+    "type": "channel",
+    "common": {
+      "name": "tools.tool1"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool1"
+  },
+  "snapmaker-u1.0.printer.tools.tool1.status": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool1.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool1.status"
+  },
+  "snapmaker-u1.0.printer.tools.tool1.target": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool1.target",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool1.target"
+  },
+  "snapmaker-u1.0.printer.tools.tool1.temperature": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool1.temperature",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool1.temperature"
+  },
+  "snapmaker-u1.0.printer.tools.tool2": {
+    "type": "channel",
+    "common": {
+      "name": "tools.tool2"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool2"
+  },
+  "snapmaker-u1.0.printer.tools.tool2.status": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool2.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool2.status"
+  },
+  "snapmaker-u1.0.printer.tools.tool2.target": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool2.target",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool2.target"
+  },
+  "snapmaker-u1.0.printer.tools.tool2.temperature": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool2.temperature",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool2.temperature"
+  },
+  "snapmaker-u1.0.printer.tools.tool3": {
+    "type": "channel",
+    "common": {
+      "name": "tools.tool3"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool3"
+  },
+  "snapmaker-u1.0.printer.tools.tool3.status": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool3.status",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool3.status"
+  },
+  "snapmaker-u1.0.printer.tools.tool3.target": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool3.target",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool3.target"
+  },
+  "snapmaker-u1.0.printer.tools.tool3.temperature": {
+    "type": "state",
+    "common": {
+      "name": "tools.tool3.temperature",
+      "type": "number",
+      "role": "value.temperature",
+      "read": true,
+      "write": false,
+      "unit": "°C"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.0.printer.tools.tool3.temperature"
+  },
+  "snapmaker-u1.admin": {
+    "type": "meta",
+    "common": {
+      "name": "admin",
+      "type": "admin"
+    },
+    "native": {},
+    "_id": "snapmaker-u1.admin"
+  }
+}
