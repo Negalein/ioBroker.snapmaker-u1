@@ -61,7 +61,7 @@ All states are read-only. Missing or invalid values are skipped. Validation so f
 
 ## Development
 
-Requires Node.js 22.19.0 or newer and ioBroker Admin 7.6.20 or newer. CI covers Node.js 22 and 24.
+Requires Node.js 22.19.0 or newer and ioBroker Admin 7.6.20 or newer. CI covers Node.js 22, 24 and 26.
 
 ```bash
 npm install
@@ -84,6 +84,16 @@ The repository was generated with the official [`@iobroker/create-adapter`](http
 
 Snapmaker and U1 are trademarks of their respective owners. This is an independent community project and is not affiliated with or endorsed by Snapmaker.
 
+## Changelog
+
+### **WORK IN PROGRESS**
+- (Negalein) Initial development version with printer monitoring, fan control, AFC/Spoolman metadata, camera discovery and print preview.
+
+### 0.0.1 (2026-11-01)
+- (Negalein) Created the initial adapter scaffold.
+
 ## License
 
-MIT License. Copyright (c) 2026 Negalein <negalein@gmail.com>.
+Copyright (c) 2026 Negalein <negalein@gmail.com>
+
+Licensed under the [MIT License](LICENSE).

@@ -3,22 +3,19 @@ updates:
   - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: monthly
-      day: 2
-      time: "00:05"
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
-    assignees:
-      - Negalein
-    versioning-strategy: increase
-
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 15
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    assignees: [Negalein]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
-      day: 2
-      time: "00:05"
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
-    assignees:
-      - Negalein
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 15
+    assignees: [Negalein]

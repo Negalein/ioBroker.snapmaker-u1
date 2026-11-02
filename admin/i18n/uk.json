@@ -1,3 +1,15 @@
 {
-  "snapmaker-u1 adapter settings": "Налаштування адаптера для snapmaker-u1"
+  "snapmaker-u1 adapter settings": "Налаштування адаптера для snapmaker-u1",
+  "Moonraker host or IP address": "Хост або IP-адреса Moonraker",
+  "Moonraker host help": "Ім’я хоста або локальна IP-адреса без протоколу та шляху.",
+  "Moonraker port": "Порт Moonraker",
+  "Firmware mode": "Режим прошивки",
+  "Auto detect": "Визначати автоматично",
+  "Original firmware": "Оригінальна прошивка",
+  "PAXX12 firmware": "Прошивка PAXX12",
+  "Request timeout (seconds)": "Час очікування запиту (секунди)",
+  "Polling interval (seconds)": "Інтервал опитування (секунди)",
+  "Enable Spoolman integration": "Увімкнути інтеграцію Spoolman",
+  "Spoolman URL": "URL Spoolman",
+  "Spoolman URL help": "Необов’язкова локальна URL-адреса служби Spoolman."
 }

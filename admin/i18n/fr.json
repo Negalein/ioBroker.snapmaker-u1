@@ -1,3 +1,15 @@
 {
-  "snapmaker-u1 adapter settings": "Paramètres d'adaptateur pour snapmaker-u1"
+  "snapmaker-u1 adapter settings": "Paramètres d'adaptateur pour snapmaker-u1",
+  "Moonraker host or IP address": "Hôte ou adresse IP Moonraker",
+  "Moonraker host help": "Nom d’hôte ou IP locale, sans protocole ni chemin.",
+  "Moonraker port": "Port Moonraker",
+  "Firmware mode": "Mode du micrologiciel",
+  "Auto detect": "Détection automatique",
+  "Original firmware": "Micrologiciel d’origine",
+  "PAXX12 firmware": "Micrologiciel PAXX12",
+  "Request timeout (seconds)": "Délai de requête (secondes)",
+  "Polling interval (seconds)": "Intervalle de lecture (secondes)",
+  "Enable Spoolman integration": "Activer l’intégration Spoolman",
+  "Spoolman URL": "URL Spoolman",
+  "Spoolman URL help": "URL locale facultative du service Spoolman."
 }

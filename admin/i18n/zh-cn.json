@@ -1,3 +1,15 @@
 {
-  "snapmaker-u1 adapter settings": "snapmaker-u1的适配器设置"
+  "snapmaker-u1 adapter settings": "snapmaker-u1的适配器设置",
+  "Moonraker host or IP address": "Moonraker 主机或 IP 地址",
+  "Moonraker host help": "主机名或本地 IP 地址，不含协议和路径。",
+  "Moonraker port": "Moonraker 端口",
+  "Firmware mode": "固件模式",
+  "Auto detect": "自动检测",
+  "Original firmware": "原厂固件",
+  "PAXX12 firmware": "PAXX12 固件",
+  "Request timeout (seconds)": "请求超时（秒）",
+  "Polling interval (seconds)": "轮询间隔（秒）",
+  "Enable Spoolman integration": "启用 Spoolman 集成",
+  "Spoolman URL": "Spoolman URL",
+  "Spoolman URL help": "可选的 Spoolman 服务本地 URL。"
 }
