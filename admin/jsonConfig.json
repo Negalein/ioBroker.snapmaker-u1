@@ -99,16 +99,25 @@
 			"lg": 4,
 			"xl": 4
 		},
-		"spoolmanUrl": {
+		"spoolmanHost": {
 			"type": "text",
-			"label": "Spoolman URL",
-			"help": "Spoolman URL help",
+			"label": { "de": "Spoolman-IP-Adresse oder Hostname", "en": "Spoolman IP address or hostname" },
+			"help": { "de": "Ohne Protokoll und Port. Die aktuellen AFC-/Spoolman-Daten werden über Moonraker gelesen.", "en": "Without protocol or port. Current AFC/Spoolman data is read through Moonraker." },
 			"newLine": true,
 			"xs": 12,
 			"sm": 12,
 			"md": 6,
 			"lg": 4,
 			"xl": 4
+		},
+		"spoolmanPort": {
+			"type": "number",
+			"label": { "de": "Spoolman-Port", "en": "Spoolman port" },
+			"min": 1,
+			"max": 65535,
+			"xs": 12,
+			"md": 6,
+			"lg": 4
 		}
 	}
 }

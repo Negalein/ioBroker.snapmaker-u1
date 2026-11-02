@@ -13,6 +13,8 @@ declare global {
 			pollInterval: number;
 			spoolmanEnabled: boolean;
 			spoolmanUrl: string;
+			spoolmanHost: string;
+			spoolmanPort: number;
 		}
 	}
 }

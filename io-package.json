@@ -86,7 +86,9 @@
 		"requestTimeout": 10,
 		"pollInterval": 30,
 		"spoolmanEnabled": false,
-		"spoolmanUrl": ""
+		"spoolmanUrl": "",
+		"spoolmanHost": "",
+		"spoolmanPort": 7912
 	},
 	"objects": [],
 	"instanceObjects": [
