@@ -61,6 +61,8 @@ All states are read-only. Missing or invalid values are skipped. Validation so f
 
 ## Development
 
+Requires Node.js 22.19.0 or newer and ioBroker Admin 7.6.20 or newer. CI covers Node.js 22 and 24.
+
 ```bash
 npm install
 npm run check

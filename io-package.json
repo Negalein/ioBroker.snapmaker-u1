@@ -44,7 +44,7 @@
 			"zh-cn": "通过 Moonraker 集成 Snapmaker U1 3D 打印机。"
 		},
 		"authors": ["Negalein <negalein@gmail.com>"],
-		"keywords": ["iobroker", "snapmaker", "u1", "3d-printer", "moonraker", "klipper"],
+		"keywords": ["snapmaker", "u1", "3d-printer", "moonraker", "klipper"],
 		"licenseInformation": {
 			"type": "free",
 			"license": "MIT"
@@ -73,7 +73,7 @@
 		],
 		"globalDependencies": [
 			{
-				"admin": ">=7.0.23"
+				"admin": ">=7.6.20"
 			}
 		]
 	},
@@ -125,7 +125,7 @@
 			"_id": "printer.info.firmware",
 			"type": "state",
 			"common": {
-				"role": "info.version",
+				"role": "text",
 				"name": "Moonraker version",
 				"type": "string",
 				"read": true,
