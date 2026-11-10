@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.2",
+		"version": "0.0.3",
 		"news": {
+			"0.0.3": {
+				"en": "Add guarded PAXX12 motion and print controls.",
+				"de": "Fügt abgesicherte PAXX12-Bewegungs- und Drucksteuerungen hinzu.",
+				"ru": "Добавлены защищенные элементы управления движением и печатью PAXX12.",
+				"pt": "Adicionados controles protegidos de movimento e impressão para PAXX12.",
+				"nl": "Beveiligde PAXX12-bewegings- en printbediening toegevoegd.",
+				"fr": "Ajout de commandes sécurisées de mouvement et d’impression PAXX12.",
+				"it": "Aggiunti controlli protetti per movimento e stampa PAXX12.",
+				"es": "Se añaden controles protegidos de movimiento e impresión PAXX12.",
+				"pl": "Dodano zabezpieczone sterowanie ruchem i drukiem PAXX12.",
+				"uk": "Додано захищене керування рухом і друком PAXX12.",
+				"zh-cn": "新增受保护的 PAXX12 运动和打印控制。"
+			},
 			"0.0.2": {
 				"en": "Enable trusted publishing through GitHub Actions.",
 				"de": "Trusted Publishing über GitHub Actions eingerichtet.",

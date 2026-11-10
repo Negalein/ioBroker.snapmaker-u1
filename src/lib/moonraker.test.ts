@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { createMoonrakerBaseUrl, getPrinterInfo } from "./moonraker";
+import { createMoonrakerBaseUrl, executeGcodeScript, getPrinterInfo } from "./moonraker";
 
 describe("Moonraker client", () => {
 	it("creates a URL for an IPv4 host", () => {
@@ -49,5 +49,59 @@ describe("Moonraker client", () => {
 			state: "ready",
 			stateMessage: "Printer is ready",
 		});
+	});
+
+	it("posts generated G-code scripts to Moonraker's documented endpoint", async () => {
+		let requestedUrl = "";
+		let requestMethod = "";
+		let requestBody = "";
+		await executeGcodeScript({
+			host: "printer.local",
+			port: 7125,
+			timeoutMs: 1_000,
+			script: "G28",
+			fetcher: (url, options) => {
+				requestedUrl = url;
+				requestMethod = options.method ?? "";
+				requestBody = options.body ?? "";
+				return Promise.resolve({
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					json: () => Promise.resolve({ result: "ok" }),
+				});
+			},
+		});
+
+		expect(requestedUrl).to.equal("http://printer.local:7125/printer/gcode/script");
+		expect(requestMethod).to.equal("POST");
+		expect(requestBody).to.equal('{"script":"G28"}');
+	});
+
+	it("rejects malformed scripts and Moonraker errors", async () => {
+		try {
+			await executeGcodeScript({ host: "printer.local", port: 7125, timeoutMs: 1_000, script: " " });
+			expect.fail("Expected an empty script to be rejected");
+		} catch (error) {
+			expect((error as Error).message).to.contain("non-empty text");
+		}
+		try {
+			await executeGcodeScript({
+				host: "printer.local",
+				port: 7125,
+				timeoutMs: 1_000,
+				script: "G28",
+				fetcher: () =>
+					Promise.resolve({
+						ok: true,
+						status: 200,
+						statusText: "OK",
+						json: () => Promise.resolve({ error: { message: "not allowed" } }),
+					}),
+			});
+			expect.fail("Expected a Moonraker error to be rejected");
+		} catch (error) {
+			expect((error as Error).message).to.contain("rejected");
+		}
 	});
 });
