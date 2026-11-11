@@ -38,6 +38,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils = __importStar(require("@iobroker/adapter-core"));
 const control_1 = require("./lib/control");
+const config_1 = require("./lib/config");
 const media_1 = require("./lib/media");
 const fans_1 = require("./lib/fans");
 const moonraker_1 = require("./lib/moonraker");
@@ -546,7 +547,7 @@ class SnapmakerU1 extends utils.Adapter {
                 return;
             }
             try {
-                const cameras = await (0, media_1.discoverCameras)(this.config.host, this.config.port);
+                const cameras = await (0, media_1.discoverCameras)(this.config.host, this.config.port, this.getRequestTimeoutMs());
                 this.sendTo(obj.from, obj.command, cameras.filter(c => c.enabled).map(c => ({ label: c.name, value: c.uid })), obj.callback);
             }
             catch (error) {
@@ -587,8 +588,8 @@ class SnapmakerU1 extends utils.Adapter {
                     return;
                 }
                 try {
-                    await (0, fans_1.setFanSpeed)(this.config.host, this.config.port, relativeId, state.val);
-                    const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000);
+                    await (0, fans_1.setFanSpeed)(this.config.host, this.config.port, relativeId, state.val, this.getRequestTimeoutMs());
+                    const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs());
                     await this.updateStatusStates(status);
                     const value = (0, status_1.mapStatus)(status)[relativeId.replace("printer.", "")];
                     if (!this.stopping && value !== undefined) {
@@ -672,6 +673,14 @@ class SnapmakerU1 extends utils.Adapter {
         }
         await this.pollPrinter();
     }
+    /** Returns a runtime-safe request timeout even if persisted configuration was edited outside Admin. */
+    getRequestTimeoutMs() {
+        return (0, config_1.requestTimeoutMs)(this.config.requestTimeout);
+    }
+    /** Returns a runtime-safe polling delay even if persisted configuration was edited outside Admin. */
+    getPollIntervalMs() {
+        return (0, config_1.pollIntervalMs)(this.config.pollInterval);
+    }
     async updateMedia(filename) {
         const write = async (id, value) => {
             const role = id.endsWith("streamUrl")
@@ -710,10 +719,11 @@ class SnapmakerU1 extends utils.Adapter {
             native: {},
         });
         if (this.config.selectedCameras?.length) {
-            const cameras = await (0, media_1.discoverCameras)(this.config.host, this.config.port);
+            const cameras = await (0, media_1.discoverCameras)(this.config.host, this.config.port, this.getRequestTimeoutMs());
             for (const camera of cameras.filter(c => this.config.selectedCameras.includes(c.uid))) {
-                const id = `cameras.${camera.uid.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
-                await this.setObjectNotExistsAsync(id, { type: "channel", common: { name: camera.name }, native: {} });
+                const id = `cameras.${(0, media_1.cameraObjectId)(camera.uid)}`;
+                await this.setObjectNotExistsAsync(id, { type: "channel", common: { name: "Camera" }, native: {} });
+                await this.extendObjectAsync(id, { common: { name: "Camera" } });
                 for (const [key, value] of Object.entries({
                     name: camera.name,
                     enabled: camera.enabled,
@@ -730,18 +740,21 @@ class SnapmakerU1 extends utils.Adapter {
                 }
             }
         }
-        await write("printer.job.previewUrl", this.config.previewEnabled ? await (0, media_1.previewUrl)(this.config.host, this.config.port, filename) : "");
+        await write("printer.job.previewUrl", this.config.previewEnabled
+            ? await (0, media_1.previewUrl)(this.config.host, this.config.port, filename, this.getRequestTimeoutMs())
+            : "");
     }
     /** Creates motion/control states and initializes values that are writable settings or buttons. */
     async initializeControlStates() {
         for (const definition of controlStateDefinitions) {
+            const isButton = definition.role === "button";
             await this.setObjectNotExistsAsync(definition.id, {
                 type: "state",
                 common: {
                     name: definition.name,
                     type: definition.type,
                     role: definition.role,
-                    read: definition.read,
+                    read: isButton ? false : definition.read,
                     write: definition.write,
                     def: definition.def,
                     ...(definition.unit ? { unit: definition.unit } : {}),
@@ -750,6 +763,11 @@ class SnapmakerU1 extends utils.Adapter {
                 },
                 native: {},
             });
+            if (isButton) {
+                // Update existing installations as well as fresh objects to the documented
+                // write-only ioBroker button contract.
+                await this.extendObjectAsync(definition.id, { common: { read: false, write: true } });
+            }
             if (definition.write && !(await this.getStateAsync(definition.id))) {
                 await this.setStateAsync(definition.id, definition.def, true);
             }
@@ -810,7 +828,7 @@ class SnapmakerU1 extends utils.Adapter {
         if (!force && Date.now() - this.toolheadCapabilitiesUpdatedAt < 60_000) {
             return;
         }
-        const timeoutMs = this.config.requestTimeout * 1_000;
+        const timeoutMs = this.getRequestTimeoutMs();
         const objects = await (0, moonraker_1.getPrinterObjects)({
             host: this.config.host,
             port: this.config.port,
@@ -840,7 +858,7 @@ class SnapmakerU1 extends utils.Adapter {
         let status;
         try {
             await this.refreshToolheadCapabilities(true);
-            status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000, false, true);
+            status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), false, true);
             const extrusion = action.type === "extrude" ? await this.getExtrusionSettings() : undefined;
             const safety = (0, toolhead_1.checkToolheadSafety)(action, status, this.config.firmware, this.toolheadCapabilities, value, extrusion);
             await this.updateToolheadSafety(status, extrusion);
@@ -850,12 +868,12 @@ class SnapmakerU1 extends utils.Adapter {
             await (0, moonraker_1.executeGcodeScript)({
                 host: this.config.host,
                 port: this.config.port,
-                timeoutMs: this.config.requestTimeout * 1_000,
+                timeoutMs: this.getRequestTimeoutMs(),
                 script: (0, toolhead_1.createToolheadCommand)(action, typeof value === "number" ? value : undefined, extrusion),
             });
             await this.setStateAsync("printer.control.lastCommand", id, true);
             await this.setStateAsync("printer.control.lastError", "", true);
-            const updatedStatus = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000, false, true);
+            const updatedStatus = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), false, true);
             await this.updateStatusStates(updatedStatus);
             status = updatedStatus;
         }
@@ -890,7 +908,7 @@ class SnapmakerU1 extends utils.Adapter {
             return;
         }
         try {
-            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000, false);
+            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), false);
             const jog = await this.getJogSettings();
             const safety = (0, control_1.checkControlSafety)(action, status, this.config.firmware, jog);
             await this.updateControlSafety(status, jog);
@@ -900,12 +918,12 @@ class SnapmakerU1 extends utils.Adapter {
             await (0, moonraker_1.executeGcodeScript)({
                 host: this.config.host,
                 port: this.config.port,
-                timeoutMs: this.config.requestTimeout * 1_000,
+                timeoutMs: this.getRequestTimeoutMs(),
                 script: (0, control_1.createControlCommand)(action, jog),
             });
             await this.setStateAsync("printer.control.lastCommand", id, true);
             await this.setStateAsync("printer.control.lastError", "", true);
-            const updatedStatus = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000, false);
+            const updatedStatus = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), false);
             await this.updateStatusStates(updatedStatus);
         }
         catch (error) {
@@ -1007,9 +1025,9 @@ class SnapmakerU1 extends utils.Adapter {
             const printerInfo = await (0, moonraker_1.getPrinterInfo)({
                 host: this.config.host,
                 port: this.config.port,
-                timeoutMs: this.config.requestTimeout * 1_000,
+                timeoutMs: this.getRequestTimeoutMs(),
             });
-            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.config.requestTimeout * 1_000, this.config.spoolmanEnabled, (0, control_1.supportsControl)(this.config.firmware));
+            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), this.config.spoolmanEnabled, (0, control_1.supportsControl)(this.config.firmware));
             if (this.stopping) {
                 return;
             }
@@ -1062,7 +1080,7 @@ class SnapmakerU1 extends utils.Adapter {
         if (this.pollTimer) {
             this.clearTimeout(this.pollTimer);
         }
-        const intervalMs = Math.max(5, this.config.pollInterval) * 1_000;
+        const intervalMs = this.getPollIntervalMs();
         this.pollTimer = this.setTimeout(() => {
             this.pollTimer = undefined;
             void this.pollPrinter();

@@ -13,7 +13,7 @@ An ioBroker adapter for monitoring a [Snapmaker U1](https://www.snapmaker.com/) 
 
 ### Cameras and print preview
 
-In the settings, open **Discover and select cameras** (German: **Kameras suchen und auswählen**) to retrieve enabled cameras from Moonraker and save a multiple selection. Save the printer host first and keep the adapter running for discovery. No network scan is performed.
+In the settings, open **Discover and select cameras** to retrieve enabled cameras from Moonraker and save a multiple selection. Save the printer host first and keep the adapter running for discovery. No network scan is performed.
 
 Selected cameras are published under `cameras.<Moonraker UID>` with name, enabled flag, stream URL, snapshot URL, service, rotation and mirror settings. The adapter reads camera configuration only; it does not open continuous video streams or claim that a camera is reachable. WebRTC requires a compatible viewer. Historical camera objects remain after deselection but are no longer refreshed.
 
@@ -21,7 +21,7 @@ Selected cameras are published under `cameras.<Moonraker UID>` with name, enable
 
 Top-cover fan control: write a numeric percentage (0–100, `ack=false`) to `printer.cover.circulation.speed` or `printer.cover.exhaust.speed`. Commands are serialized and acknowledged from a subsequent printer status query. Both fans were live-tested with a five-percentage-point change and restored. Firmware automation may subsequently change fan speeds. Invalid values are rejected.
 
-Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. These values are read through Moonraker; the separate Spoolman URL is reserved for future inventory queries. No spool assignments or consumption reports are written by this adapter.
+Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. These values are read through Moonraker; no direct Spoolman connection is configured. No spool assignments or consumption reports are written by this adapter.
 
 Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
 
@@ -66,8 +66,6 @@ The current PAXX12 AFC Lite source documents the `CHANGE_TOOL` and `LANE_UNLOAD`
 Capability and error diagnostics are published below `printer.control.toolhead`: the detected macro names, whether `CHANGE_TOOL`/`LANE_UNLOAD` are usable, current command availability, a human-readable reason, and the latest rejected or failed control request. Existing AFC monitoring under `printer.afc` is retained; no AFC, Spoolman, camera, fan, or v0.0.3 control state is renamed or removed. In PAXX12 mode, AFC status is queried for the toolhead safety check even if the optional direct Spoolman integration is off; no Spoolman data is written.
 
 The supported AFC Lite macros are verified against [the PAXX12 AFC Lite configuration](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/main/overlays/firmware-extended/31-feature-afc-lite/root/usr/local/share/firmware-config/tweaks/klipper/afc.cfg). Capability discovery uses Moonraker's documented [printer-object list and query endpoints](https://moonraker.readthedocs.io/en/latest/external_api/printer/). Target temperatures and active-extruder behavior use Klipper's documented [`SET_HEATER_TEMPERATURE` and multi-extruder commands](https://www.klipper3d.org/G-Codes.html). This adapter release has unit tests, not a physical validation of the v0.0.4 action paths: keep attendance and verify macro behaviour on the actual printer before routine use.
-
-**Deutsch:** Die Werkzeugfunktionen sind absichtlich optional. Ohne erkannte PAXX12-Makros und AFC-Status sendet der Adapter keinen Wechsel-/Entladebefehl. Parken bleibt deaktiviert, da dafür kein verifiziertes Makro vorliegt.
 
 ## Configuration
 
@@ -115,7 +113,7 @@ The supported AFC Lite macros are verified against [the PAXX12 AFC Lite configur
 Requires Node.js 22.19.0 or newer and ioBroker Admin 7.6.20 or newer. CI covers Node.js 22, 24 and 26.
 
 ```bash
-npm install
+npm ci
 npm run check
 npm test
 npm run lint
@@ -149,6 +147,10 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 ## Changelog
 
 Full release notes: [CHANGELOG.md](CHANGELOG.md).
+
+### 0.0.5 (2026-11-11)
+
+- (Negalein) Improve ioBroker metadata, configuration safety, camera object IDs, translations, and development documentation.
 
 ### 0.0.4 (2026-11-11)
 

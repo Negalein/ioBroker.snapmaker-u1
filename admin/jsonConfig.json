@@ -4,10 +4,7 @@
   "items": {
     "selectedCameras": {
       "type": "selectSendTo",
-      "label": {
-        "de": "Kameras suchen und auswählen",
-        "en": "Discover and select cameras"
-      },
+      "label": "Discover and select cameras",
       "command": "discoverCameras",
       "multiple": true,
       "manual": false,
@@ -21,10 +18,7 @@
     },
     "previewEnabled": {
       "type": "checkbox",
-      "label": {
-        "de": "Druckvorschau aktivieren",
-        "en": "Enable print preview"
-      },
+      "label": "Enable print preview",
       "newLine": true,
       "xs": 12,
       "sm": 12,
@@ -111,37 +105,6 @@
       "sm": 12,
       "md": 6,
       "lg": 4,
-      "xl": 4
-    },
-    "spoolmanHost": {
-      "type": "text",
-      "label": {
-        "de": "Spoolman-IP-Adresse oder Hostname",
-        "en": "Spoolman IP address or hostname"
-      },
-      "help": {
-        "de": "Ohne Protokoll und Port. Die aktuellen AFC-/Spoolman-Daten werden über Moonraker gelesen.",
-        "en": "Without protocol or port. Current AFC/Spoolman data is read through Moonraker."
-      },
-      "newLine": true,
-      "xs": 12,
-      "sm": 12,
-      "md": 6,
-      "lg": 4,
-      "xl": 4
-    },
-    "spoolmanPort": {
-      "type": "number",
-      "label": {
-        "de": "Spoolman-Port",
-        "en": "Spoolman port"
-      },
-      "min": 1,
-      "max": 65535,
-      "xs": 12,
-      "md": 6,
-      "lg": 4,
-      "sm": 12,
       "xl": 4
     }
   }

@@ -10,6 +10,6 @@
   "Request timeout (seconds)": "请求超时（秒）",
   "Polling interval (seconds)": "轮询间隔（秒）",
   "Enable Spoolman integration": "启用 Spoolman 集成",
-  "Spoolman URL": "Spoolman URL",
-  "Spoolman URL help": "可选的 Spoolman 服务本地 URL。"
+  "Discover and select cameras": "发现并选择摄像头",
+  "Enable print preview": "启用打印预览"
 }

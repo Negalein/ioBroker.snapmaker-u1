@@ -10,6 +10,6 @@
   "Request timeout (seconds)": "Час очікування запиту (секунди)",
   "Polling interval (seconds)": "Інтервал опитування (секунди)",
   "Enable Spoolman integration": "Увімкнути інтеграцію Spoolman",
-  "Spoolman URL": "URL Spoolman",
-  "Spoolman URL help": "Необов’язкова локальна URL-адреса служби Spoolman."
+  "Discover and select cameras": "Знайти та вибрати камери",
+  "Enable print preview": "Увімкнути попередній перегляд друку"
 }

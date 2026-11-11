@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.4",
+		"version": "0.0.5",
 		"news": {
+			"0.0.5": {
+				"en": "Improve ioBroker metadata, configuration safety, camera object IDs and translations.",
+				"de": "Verbessert ioBroker-Metadaten, Konfigurationssicherheit, Kameraobjekt-IDs und Übersetzungen.",
+				"ru": "Улучшены метаданные ioBroker, безопасность конфигурации, идентификаторы объектов камер и переводы.",
+				"pt": "Melhora os metadados do ioBroker, a segurança da configuração, os IDs dos objetos de câmera e as traduções.",
+				"nl": "Verbetert ioBroker-metagegevens, configuratieveiligheid, cameraobject-ID's en vertalingen.",
+				"fr": "Améliore les métadonnées ioBroker, la sécurité de la configuration, les identifiants des objets caméra et les traductions.",
+				"it": "Migliora metadati ioBroker, sicurezza della configurazione, ID degli oggetti fotocamera e traduzioni.",
+				"es": "Mejora los metadatos de ioBroker, la seguridad de configuración, los ID de objetos de cámara y las traducciones.",
+				"pl": "Ulepszono metadane ioBroker, bezpieczeństwo konfiguracji, identyfikatory obiektów kamer i tłumaczenia.",
+				"uk": "Поліпшено метадані ioBroker, безпеку конфігурації, ідентифікатори об’єктів камер і переклади.",
+				"zh-cn": "改进 ioBroker 元数据、配置安全性、摄像头对象 ID 和翻译。"
+			},
 			"0.0.4": {
 				"en": "Add capability-gated PAXX12 E0–E3 tool, temperature and manual extrusion controls.",
 				"de": "Fügt fähigkeitsgeprüfte PAXX12-Steuerungen für E0–E3, Temperaturen und manuelle Extrusion hinzu.",
@@ -124,10 +137,7 @@
 		"firmware": "auto",
 		"requestTimeout": 10,
 		"pollInterval": 30,
-		"spoolmanEnabled": false,
-		"spoolmanUrl": "",
-		"spoolmanHost": "",
-		"spoolmanPort": 7912
+		"spoolmanEnabled": false
 	},
 	"objects": [],
 	"instanceObjects": [
