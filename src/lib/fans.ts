@@ -1,5 +1,7 @@
 import { createMoonrakerBaseUrl } from "./moonraker";
 
+const DEFAULT_FAN_TIMEOUT_MS = 10_000;
+
 export const fanNames: Record<string, string> = {
 	"printer.cover.circulation.speed": "circulation_fan",
 	"printer.cover.exhaust.speed": "exhaust_fan",
@@ -13,13 +15,19 @@ export function fanCommand(id: string, percent: unknown): string {
 	return `SET_FAN_SPEED FAN=${fan} SPEED=${percent / 100}`;
 }
 
-export async function setFanSpeed(host: string, port: number, id: string, percent: unknown): Promise<void> {
+export async function setFanSpeed(
+	host: string,
+	port: number,
+	id: string,
+	percent: unknown,
+	timeoutMs = DEFAULT_FAN_TIMEOUT_MS,
+): Promise<void> {
 	const script = fanCommand(id, percent);
 	const response = await fetch(new URL("printer/gcode/script", createMoonrakerBaseUrl(host, port)), {
 		method: "POST",
 		headers: { "content-type": "application/json" },
 		body: JSON.stringify({ script }),
-		signal: AbortSignal.timeout(10_000),
+		signal: AbortSignal.timeout(timeoutMs),
 	});
 	if (!response.ok) {
 		throw new Error(`Fan command failed: HTTP ${response.status}`);

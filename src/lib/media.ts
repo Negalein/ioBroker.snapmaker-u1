@@ -1,4 +1,7 @@
+import { createHash } from "node:crypto";
 import { createMoonrakerBaseUrl } from "./moonraker";
+
+const DEFAULT_MEDIA_TIMEOUT_MS = 10_000;
 
 export interface Camera {
 	uid: string;
@@ -12,9 +15,14 @@ export interface Camera {
 	flip_vertical: boolean;
 }
 
-export async function mediaRequest(host: string, port: number, path: string): Promise<Record<string, unknown>> {
+export async function mediaRequest(
+	host: string,
+	port: number,
+	path: string,
+	timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS,
+): Promise<Record<string, unknown>> {
 	const response = await fetch(new URL(path, createMoonrakerBaseUrl(host, port)), {
-		signal: AbortSignal.timeout(10_000),
+		signal: AbortSignal.timeout(timeoutMs),
 	});
 	if (!response.ok) {
 		throw new Error(`Media request failed: HTTP ${response.status}`);
@@ -26,8 +34,12 @@ export async function mediaRequest(host: string, port: number, path: string): Pr
 	return body.result;
 }
 
-export async function discoverCameras(host: string, port: number): Promise<Camera[]> {
-	const result = await mediaRequest(host, port, "/server/webcams/list");
+export async function discoverCameras(
+	host: string,
+	port: number,
+	timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS,
+): Promise<Camera[]> {
+	const result = await mediaRequest(host, port, "/server/webcams/list", timeoutMs);
 	if (!Array.isArray(result.webcams)) {
 		throw new Error("Invalid webcam list");
 	}
@@ -36,8 +48,24 @@ export async function discoverCameras(host: string, port: number): Promise<Camer
 			typeof camera === "object" &&
 			camera !== null &&
 			typeof camera.uid === "string" &&
+			camera.uid.length > 0 &&
 			typeof camera.name === "string",
 	);
+}
+
+/**
+ * Builds a stable, namespace-safe camera object ID without case-only
+ * collisions. Normal lower-case UUIDs retain their existing readable ID.
+ *
+ * @param uid Moonraker camera identifier.
+ */
+export function cameraObjectId(uid: string): string {
+	const sanitized = uid.replace(/[^a-zA-Z0-9_-]/g, "_");
+	if (sanitized === uid && uid === uid.toLowerCase()) {
+		return uid;
+	}
+	const digest = createHash("sha256").update(uid).digest("hex").slice(0, 12);
+	return `${sanitized.toLowerCase()}-${digest}`;
 }
 
 export function cameraUrl(value: string, host: string): string {
@@ -48,11 +76,21 @@ export function cameraUrl(value: string, host: string): string {
 	return ["http:", "https:", "rtsp:"].includes(url.protocol) ? url.toString() : "";
 }
 
-export async function previewUrl(host: string, port: number, filename: string): Promise<string> {
+export async function previewUrl(
+	host: string,
+	port: number,
+	filename: string,
+	timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS,
+): Promise<string> {
 	if (!filename) {
 		return "";
 	}
-	const metadata = await mediaRequest(host, port, `/server/files/metadata?filename=${encodeURIComponent(filename)}`);
+	const metadata = await mediaRequest(
+		host,
+		port,
+		`/server/files/metadata?filename=${encodeURIComponent(filename)}`,
+		timeoutMs,
+	);
 	const thumbnails = metadata.thumbnails as
 		Array<{ width: number; height: number; relative_path: string }> | undefined;
 	const thumbnail = thumbnails

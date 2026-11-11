@@ -10,6 +10,6 @@
   "Request timeout (seconds)": "Request timeout (seconds)",
   "Polling interval (seconds)": "Polling interval (seconds)",
   "Enable Spoolman integration": "Enable Spoolman integration",
-  "Spoolman URL": "Spoolman URL",
-  "Spoolman URL help": "Optional local URL of the Spoolman service."
+  "Discover and select cameras": "Discover and select cameras",
+  "Enable print preview": "Enable print preview"
 }

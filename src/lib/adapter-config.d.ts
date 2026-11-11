@@ -12,9 +12,6 @@ declare global {
 			requestTimeout: number;
 			pollInterval: number;
 			spoolmanEnabled: boolean;
-			spoolmanUrl: string;
-			spoolmanHost: string;
-			spoolmanPort: number;
 		}
 	}
 }
