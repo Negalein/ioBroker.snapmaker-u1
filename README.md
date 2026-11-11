@@ -99,6 +99,15 @@ npm run build
 
 The repository was generated with the official [`@iobroker/create-adapter`](https://github.com/ioBroker/create-adapter) tooling and uses TypeScript, JSON Config, adapter tests, and GitHub Actions.
 
+## Releases
+
+A version tag is accepted only when it matches the version in `package.json` and points to a commit on `main`. After all CI checks pass:
+
+- a stable tag such as `v0.0.4` is published to npm as `latest`, then a normal GitHub release is created;
+- a pre-release tag such as `v0.0.5-beta.1` is published to npm as `next`, then a GitHub pre-release is created.
+
+This keeps the GitHub **Latest** release and npm's `latest` tag aligned. Existing versions published before this automation are not changed retroactively.
+
 ## Roadmap
 
 1. Validate the new PAXX12 motion and print-control commands on a physical Snapmaker U1 and document the tested firmware release.
