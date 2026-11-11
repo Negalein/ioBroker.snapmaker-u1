@@ -46,10 +46,10 @@ for (let index = 0; index < 4; index++) {
 /**
  * Retrieves read-only printer status.
  */
-async function readStatus(host, port, timeoutMs, spoolmanEnabled = false) {
+async function readStatus(host, port, timeoutMs, spoolmanEnabled = false, includeAfc = spoolmanEnabled) {
     const url = new URL("printer/objects/query", (0, moonraker_1.createMoonrakerBaseUrl)(host, port));
     for (const object of new Set(exports.statusFields.map(field => field[0]))) {
-        if (object === "spoolman" || (!spoolmanEnabled && object.startsWith("AFC"))) {
+        if (object === "spoolman" || (!includeAfc && object.startsWith("AFC"))) {
             continue;
         }
         url.searchParams.set(object, "");

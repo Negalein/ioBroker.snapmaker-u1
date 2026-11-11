@@ -5,9 +5,9 @@
 [![NPM version](https://img.shields.io/npm/v/iobroker.snapmaker-u1.svg)](https://www.npmjs.com/package/iobroker.snapmaker-u1)
 [![Tests](https://github.com/Negalein/ioBroker.snapmaker-u1/actions/workflows/test-and-release.yml/badge.svg)](https://github.com/Negalein/ioBroker.snapmaker-u1/actions/workflows/test-and-release.yml)
 
-An ioBroker adapter for monitoring a [Snapmaker U1](https://www.snapmaker.com/) through its local Moonraker service, with top-cover fan control, AFC/Spoolman metadata, camera discovery, print-preview URLs and guarded PAXX12 motion/print controls.
+An ioBroker adapter for monitoring a [Snapmaker U1](https://www.snapmaker.com/) through its local Moonraker service, with top-cover fan control, AFC/Spoolman metadata, camera discovery, print-preview URLs and guarded PAXX12 motion, print and optional toolhead controls.
 
-> This is an early development version. The v0.0.3 control points are deliberately restricted to an explicitly selected **PAXX12** firmware mode. They do not claim compatibility with the original Snapmaker firmware, which has not been validated. Use motion controls only while attending a clear, safe printer.
+> This is an early development version. The v0.0.3/v0.0.4 control points are deliberately restricted to an explicitly selected **PAXX12** firmware mode. They do not claim compatibility with the original Snapmaker firmware, which has not been validated. Use printer controls only while attending a clear, safe printer.
 
 ## Current functionality
 
@@ -49,7 +49,25 @@ Each new motion/print control request first fetches a fresh Moonraker status and
 - `Pause` is permitted only while printing; `Resume` only while paused; and `Cancel` only while printing or paused.
 - Commands are serialized, buttons reset to `false` after handling, and rejected/failed requests are published in `printer.control.lastError`.
 
-The control commands and their safety rules are unit-tested, but the new motion and job-control paths still need validation on a physical PAXX12-equipped U1 before relying on them in everyday operation. Tool changes, toolhead parking, heaters and extrusion are intentionally out of scope for this version.
+The control commands and their safety rules are unit-tested, but the new motion and job-control paths still need validation on a physical PAXX12-equipped U1 before relying on them in everyday operation.
+
+### Toolhead control (PAXX12 + detected capability only)
+
+Version 0.0.4 does not assume that every PAXX12 printer has the same macros. On startup, periodically, and immediately before every toolhead request, the adapter asks Moonraker for the loaded Klipper objects. It reads Klipper's parsed extruder configuration only to determine the connected printer's safe limits. If discovery is unavailable, the command is rejected; it never falls back to guessed macro names or a free-form G-code state.
+
+The current PAXX12 AFC Lite source documents the `CHANGE_TOOL` and `LANE_UNLOAD` macros for lanes E0–E3. `CHANGE_TOOL` performs its own automatic load as part of the tool change. The adapter uses only these exact macros, and only when both the macro and the matching `AFC_lane E0`–`E3` object are present. A tool change or unload also requires an idle printer and a known, fault-free `AFC.error_state`.
+
+- `printer.control.toolhead.change.e0` through `.e3` issue the fixed `CHANGE_TOOL LANE=E0` through `E3` command. These are **change-and-load** buttons; there is no invented standalone load command.
+- `printer.control.toolhead.unload.e0` through `.e3` issue the fixed `LANE_UNLOAD LANE=E0` through `E3` command.
+- No parking button is exposed in v0.0.4. No U1/PAXX12 parking macro was verified in the supported firmware source, so `printer.control.toolhead.capabilities.parkToolhead` remains `false` rather than sending an inferred park sequence.
+- `printer.control.tools.tool0.target` through `.tool3.target` set individual targets with Klipper's documented `SET_HEATER_TEMPERATURE` only if that extruder object and its runtime `max_temp` are reported. The adapter retains a five-degree margin below the reported cutoff and excludes a PAXX12 faulty-toolhead configuration with near-zero `max_power`.
+- `printer.control.extrusion.extrude` and `.retract` move only the currently active, detected extruder. They are limited to **0.1–10 mm** at **0.1–10 mm/s**, require an idle printer, the live `can_extrude` flag, and a temperature at or above that extruder's reported minimum (Klipper's default is 170 °C). The generated script uses relative extrusion only and restores the saved G-code state.
+
+Capability and error diagnostics are published below `printer.control.toolhead`: the detected macro names, whether `CHANGE_TOOL`/`LANE_UNLOAD` are usable, current command availability, a human-readable reason, and the latest rejected or failed control request. Existing AFC monitoring under `printer.afc` is retained; no AFC, Spoolman, camera, fan, or v0.0.3 control state is renamed or removed. In PAXX12 mode, AFC status is queried for the toolhead safety check even if the optional direct Spoolman integration is off; no Spoolman data is written.
+
+The supported AFC Lite macros are verified against [the PAXX12 AFC Lite configuration](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/main/overlays/firmware-extended/31-feature-afc-lite/root/usr/local/share/firmware-config/tweaks/klipper/afc.cfg). Capability discovery uses Moonraker's documented [printer-object list and query endpoints](https://moonraker.readthedocs.io/en/latest/external_api/printer/). Target temperatures and active-extruder behavior use Klipper's documented [`SET_HEATER_TEMPERATURE` and multi-extruder commands](https://www.klipper3d.org/G-Codes.html). This adapter release has unit tests, not a physical validation of the v0.0.4 action paths: keep attendance and verify macro behaviour on the actual printer before routine use.
+
+**Deutsch:** Die Werkzeugfunktionen sind absichtlich optional. Ohne erkannte PAXX12-Makros und AFC-Status sendet der Adapter keinen Wechsel-/Entladebefehl. Parken bleibt deaktiviert, da dafür kein verifiziertes Makro vorliegt.
 
 ## Configuration
 
@@ -84,6 +102,13 @@ The control commands and their safety rules are unit-tested, but the new motion 
 | `printer.control.safety.homingAllowed`, `.joggingAllowed`, `.jobControlAllowed`                       | boolean        | Current availability hints from the last Moonraker status. Every request is checked again before sending. |
 | `printer.control.safety.reason`                                                                       | string         | Reason why control is unavailable or a reminder that individual requests are rechecked.                   |
 | `printer.control.lastCommand` / `printer.control.lastError`                                           | string         | Last accepted control state ID / latest rejected or failed request reason.                                |
+| `printer.control.toolhead.change.e0` … `.e3`                                                          | boolean button | Changes to and loads the selected AFC lane only when the matching `CHANGE_TOOL` capability is detected.   |
+| `printer.control.toolhead.unload.e0` … `.e3`                                                          | boolean button | Unloads the selected AFC lane only when the matching `LANE_UNLOAD` capability is detected.                |
+| `printer.control.tools.tool0.target` … `.tool3.target`                                                | number         | Requested target for one extruder; runtime Klipper limits are checked before sending.                     |
+| `printer.control.extrusion.distance` / `.speed`                                                       | number         | Manual extrusion amount (0.1–10 mm) / speed (0.1–10 mm/s).                                                |
+| `printer.control.extrusion.extrude` / `.retract`                                                      | boolean button | Manually extrudes or retracts the active hot tool after all live safety checks pass.                      |
+| `printer.control.toolhead.capabilities.*`                                                             | boolean/string | Detected macros and supported optional actions; verified parking remains `false` in v0.0.4.                |
+| `printer.control.toolhead.safety.*` / `.diagnostics.*`                                                | boolean/string | Current command availability, diagnostic reason, and latest failed/rejected toolhead request.             |
 
 ## Development
 
@@ -110,17 +135,25 @@ This keeps the GitHub **Latest** release and npm's `latest` tag aligned. Existin
 
 ## Roadmap
 
-1. Validate the new PAXX12 motion and print-control commands on a physical Snapmaker U1 and document the tested firmware release.
-2. Validate Moonraker payloads and capabilities on a physical U1 running original firmware before enabling any control for it.
-3. Extend automated tests for print, material and media data.
-4. Validate shutdown and restart in compact mode.
-5. Add direct Spoolman inventory access if required.
+1. Validate v0.0.4 tool change, lane unload, temperature, and manual extrusion paths on a physical PAXX12 U1, then document the tested firmware/macro combination.
+2. Add a parking control only after a U1/PAXX12 parking macro and its safe preconditions are documented and physically validated.
+3. Validate Moonraker payloads and capabilities on a physical U1 running original firmware before enabling any control for it.
+4. Extend automated tests for print, material and media data.
+5. Validate shutdown and restart in compact mode.
+6. Add direct Spoolman inventory access if required.
 
 ## Disclaimer
 
 Snapmaker and U1 are trademarks of their respective owners. This is an independent community project and is not affiliated with or endorsed by Snapmaker.
 
 ## Changelog
+
+Full release notes: [CHANGELOG.md](CHANGELOG.md).
+
+### 0.0.4 (2026-11-11)
+
+- (Negalein) Add capability-gated PAXX12 E0–E3 tool change/unload, temperature and manual extrusion controls.
+- (Negalein) Keep parking unavailable without a verified U1/PAXX12 macro and add toolhead/AFC safety diagnostics.
 
 ### 0.0.3 (2026-11-10)
 

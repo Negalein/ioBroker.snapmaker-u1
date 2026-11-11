@@ -1,6 +1,12 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { createMoonrakerBaseUrl, executeGcodeScript, getPrinterInfo } from "./moonraker";
+import {
+	createMoonrakerBaseUrl,
+	executeGcodeScript,
+	getPrinterConfiguration,
+	getPrinterInfo,
+	getPrinterObjects,
+} from "./moonraker";
 
 describe("Moonraker client", () => {
 	it("creates a URL for an IPv4 host", () => {
@@ -76,6 +82,34 @@ describe("Moonraker client", () => {
 		expect(requestedUrl).to.equal("http://printer.local:7125/printer/gcode/script");
 		expect(requestMethod).to.equal("POST");
 		expect(requestBody).to.equal('{"script":"G28"}');
+	});
+
+	it("reads live printer objects and parsed Klipper configuration for capability checks", async () => {
+		const requestedUrls: string[] = [];
+		const fetcher = (
+			url: string,
+		): Promise<{ ok: boolean; status: number; statusText: string; json: () => Promise<unknown> }> => {
+			requestedUrls.push(url);
+			return Promise.resolve({
+				ok: true,
+				status: 200,
+				statusText: "OK",
+				json: () =>
+					Promise.resolve(
+						url.endsWith("printer/objects/list")
+							? { result: { objects: ["extruder", "gcode_macro CHANGE_TOOL", 42] } }
+							: { result: { status: { configfile: { settings: { extruder: { max_temp: 300 } } } } } },
+					),
+			});
+		};
+		const options = { host: "printer.local", port: 7125, timeoutMs: 1_000, fetcher };
+
+		expect(await getPrinterObjects(options)).to.deep.equal(["extruder", "gcode_macro CHANGE_TOOL"]);
+		expect(await getPrinterConfiguration(options)).to.deep.equal({ extruder: { max_temp: 300 } });
+		expect(requestedUrls).to.deep.equal([
+			"http://printer.local:7125/printer/objects/list",
+			"http://printer.local:7125/printer/objects/query?configfile",
+		]);
 	});
 
 	it("rejects malformed scripts and Moonraker errors", async () => {

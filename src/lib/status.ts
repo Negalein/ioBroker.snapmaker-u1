@@ -58,10 +58,11 @@ export async function readStatus(
 	port: number,
 	timeoutMs: number,
 	spoolmanEnabled = false,
+	includeAfc = spoolmanEnabled,
 ): Promise<Record<string, unknown>> {
 	const url = new URL("printer/objects/query", createMoonrakerBaseUrl(host, port));
 	for (const object of new Set(statusFields.map(field => field[0]))) {
-		if (object === "spoolman" || (!spoolmanEnabled && object.startsWith("AFC"))) {
+		if (object === "spoolman" || (!includeAfc && object.startsWith("AFC"))) {
 			continue;
 		}
 		url.searchParams.set(object, "");
