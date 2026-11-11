@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.3",
+		"version": "0.0.4",
 		"news": {
+			"0.0.4": {
+				"en": "Add capability-gated PAXX12 E0–E3 tool, temperature and manual extrusion controls.",
+				"de": "Fügt fähigkeitsgeprüfte PAXX12-Steuerungen für E0–E3, Temperaturen und manuelle Extrusion hinzu.",
+				"ru": "Добавлено управление инструментами E0–E3 PAXX12, температурой и ручной экструзией с проверкой возможностей.",
+				"pt": "Adiciona controles PAXX12 com verificação de recursos para ferramentas E0–E3, temperatura e extrusão manual.",
+				"nl": "Voegt door mogelijkheden beveiligde PAXX12-bediening toe voor E0–E3, temperatuur en handmatige extrusie.",
+				"fr": "Ajoute des commandes PAXX12 E0–E3, de température et d’extrusion manuelle limitées aux capacités détectées.",
+				"it": "Aggiunge controlli PAXX12 E0–E3, temperatura ed estrusione manuale limitati alle capacità rilevate.",
+				"es": "Añade controles PAXX12 E0–E3, de temperatura y extrusión manual limitados a las capacidades detectadas.",
+				"pl": "Dodano sterowanie PAXX12 E0–E3, temperaturą i ręczną ekstruzją zależne od wykrytych możliwości.",
+				"uk": "Додано керування PAXX12 E0–E3, температурою та ручною екструзією лише для виявлених можливостей.",
+				"zh-cn": "新增受能力检测限制的 PAXX12 E0–E3 工具、温度和手动挤出控制。"
+			},
 			"0.0.3": {
 				"en": "Add guarded PAXX12 motion and print controls.",
 				"de": "Fügt abgesicherte PAXX12-Bewegungs- und Drucksteuerungen hinzu.",

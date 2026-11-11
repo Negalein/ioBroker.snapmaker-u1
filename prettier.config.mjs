@@ -5,4 +5,5 @@ export default {
 	...prettierConfig,
 	useTabs: true,
 	singleQuote: false,
+	endOfLine: "auto",
 };

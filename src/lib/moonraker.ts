@@ -10,6 +10,22 @@ interface MoonrakerResponse {
 	result: Record<string, unknown>;
 }
 
+interface PrinterObjectsResponse {
+	result: {
+		objects?: unknown;
+	};
+}
+
+interface PrinterConfigurationResponse {
+	result: {
+		status?: {
+			configfile?: {
+				settings?: unknown;
+			};
+		};
+	};
+}
+
 interface FetchResponse {
 	ok: boolean;
 	status: number;
@@ -40,6 +56,15 @@ export interface ExecuteGcodeScriptOptions {
 	script: string;
 	fetcher?: FetchImplementation;
 }
+
+export interface GetPrinterObjectsOptions {
+	host: string;
+	port: number;
+	timeoutMs: number;
+	fetcher?: FetchImplementation;
+}
+
+export type GetPrinterConfigurationOptions = GetPrinterObjectsOptions;
 
 /**
  * Builds a safe HTTP base URL from the adapter's Moonraker host and port fields.
@@ -120,8 +145,72 @@ export async function executeGcodeScript(options: ExecuteGcodeScriptOptions): Pr
 	}
 }
 
+/**
+ * Lists the Klipper objects currently loaded by Moonraker. The list is used as
+ * a capability check before the adapter offers an optional U1 feature.
+ */
+export async function getPrinterObjects(options: GetPrinterObjectsOptions): Promise<string[]> {
+	const baseUrl = createMoonrakerBaseUrl(options.host, options.port);
+	const endpoint = new URL("printer/objects/list", baseUrl).toString();
+	const fetcher = options.fetcher ?? ((url, requestOptions) => fetch(url, requestOptions));
+	const response = await fetcher(endpoint, {
+		headers: { accept: "application/json" },
+		signal: AbortSignal.timeout(options.timeoutMs),
+	});
+	if (!response.ok) {
+		throw new Error(`Moonraker object list returned HTTP ${response.status} ${response.statusText}`.trim());
+	}
+	const payload = await response.json();
+	if (!isPrinterObjectsResponse(payload) || !Array.isArray(payload.result.objects)) {
+		throw new Error("Moonraker returned an unexpected printer-object list");
+	}
+	return payload.result.objects.filter((value): value is string => typeof value === "string");
+}
+
+/**
+ * Reads Klipper's parsed configuration so temperature limits are taken from
+ * the connected printer rather than guessed by the adapter.
+ */
+export async function getPrinterConfiguration(
+	options: GetPrinterConfigurationOptions,
+): Promise<Record<string, Record<string, unknown>>> {
+	const baseUrl = createMoonrakerBaseUrl(options.host, options.port);
+	const endpoint = new URL("printer/objects/query?configfile", baseUrl).toString();
+	const fetcher = options.fetcher ?? ((url, requestOptions) => fetch(url, requestOptions));
+	const response = await fetcher(endpoint, {
+		headers: { accept: "application/json" },
+		signal: AbortSignal.timeout(options.timeoutMs),
+	});
+	if (!response.ok) {
+		throw new Error(`Moonraker configuration query returned HTTP ${response.status} ${response.statusText}`.trim());
+	}
+	const payload = await response.json();
+	if (!isPrinterConfigurationResponse(payload)) {
+		throw new Error("Moonraker returned an unexpected printer configuration");
+	}
+	const settings = payload.result.status?.configfile?.settings;
+	if (!isRecord(settings)) {
+		return {};
+	}
+	const configuration: Record<string, Record<string, unknown>> = {};
+	for (const [section, value] of Object.entries(settings)) {
+		if (isRecord(value)) {
+			configuration[section] = value;
+		}
+	}
+	return configuration;
+}
+
 function isMoonrakerResponse(value: unknown): value is MoonrakerResponse {
 	return typeof value === "object" && value !== null && "result" in value && isRecord(value.result);
+}
+
+function isPrinterObjectsResponse(value: unknown): value is PrinterObjectsResponse {
+	return isRecord(value) && isRecord(value.result);
+}
+
+function isPrinterConfigurationResponse(value: unknown): value is PrinterConfigurationResponse {
+	return isRecord(value) && isRecord(value.result);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
