@@ -17,15 +17,27 @@ interface FetchResponse {
 	json(): Promise<unknown>;
 }
 
-type FetchImplementation = (
-	url: string,
-	options: { headers: Record<string, string>; signal: AbortSignal },
-) => Promise<FetchResponse>;
+interface FetchRequestOptions {
+	headers: Record<string, string>;
+	signal: AbortSignal;
+	method?: "POST";
+	body?: string;
+}
+
+type FetchImplementation = (url: string, options: FetchRequestOptions) => Promise<FetchResponse>;
 
 export interface GetPrinterInfoOptions {
 	host: string;
 	port: number;
 	timeoutMs: number;
+	fetcher?: FetchImplementation;
+}
+
+export interface ExecuteGcodeScriptOptions {
+	host: string;
+	port: number;
+	timeoutMs: number;
+	script: string;
 	fetcher?: FetchImplementation;
 }
 
@@ -78,6 +90,34 @@ export async function getPrinterInfo(options: GetPrinterInfoOptions): Promise<Pr
 		state: getOptionalString(payload.result, "state"),
 		stateMessage: getOptionalString(payload.result, "state_message"),
 	};
+}
+
+/**
+ * Executes a pre-validated G-code script through Moonraker's documented endpoint.
+ * The caller owns command validation; this method only transports a generated script.
+ *
+ * @param options Moonraker connection and the generated G-code script.
+ */
+export async function executeGcodeScript(options: ExecuteGcodeScriptOptions): Promise<void> {
+	if (typeof options.script !== "string" || !options.script.trim() || options.script.includes("\0")) {
+		throw new Error("G-code script must be a non-empty text value");
+	}
+	const baseUrl = createMoonrakerBaseUrl(options.host, options.port);
+	const endpoint = new URL("printer/gcode/script", baseUrl).toString();
+	const fetcher = options.fetcher ?? ((url, requestOptions) => fetch(url, requestOptions));
+	const response = await fetcher(endpoint, {
+		method: "POST",
+		headers: { accept: "application/json", "content-type": "application/json" },
+		body: JSON.stringify({ script: options.script }),
+		signal: AbortSignal.timeout(options.timeoutMs),
+	});
+	if (!response.ok) {
+		throw new Error(`Moonraker returned HTTP ${response.status} ${response.statusText}`.trim());
+	}
+	const payload = await response.json();
+	if (isRecord(payload) && "error" in payload) {
+		throw new Error("Moonraker rejected the G-code command");
+	}
 }
 
 function isMoonrakerResponse(value: unknown): value is MoonrakerResponse {

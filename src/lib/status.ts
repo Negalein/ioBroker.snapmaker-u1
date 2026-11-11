@@ -103,6 +103,19 @@ export async function readStatus(
  */
 export function mapStatus(status: Record<string, unknown>): Record<string, string | number | boolean> {
 	const values: Record<string, string | number | boolean> = {};
+	const position = (status.toolhead as Record<string, unknown> | undefined)?.position;
+	if (Array.isArray(position)) {
+		for (const [axis, index] of [
+			["x", 0],
+			["y", 1],
+			["z", 2],
+		] as const) {
+			const value = position[index];
+			if (typeof value === "number" && Number.isFinite(value)) {
+				values[`motion.position.${axis}`] = value;
+			}
+		}
+	}
 	for (const [object, key, id, type] of statusFields) {
 		const source = status[object];
 		if (!source || typeof source !== "object") {

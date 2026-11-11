@@ -80,6 +80,19 @@ async function readStatus(host, port, timeoutMs, spoolmanEnabled = false) {
  */
 function mapStatus(status) {
     const values = {};
+    const position = status.toolhead?.position;
+    if (Array.isArray(position)) {
+        for (const [axis, index] of [
+            ["x", 0],
+            ["y", 1],
+            ["z", 2],
+        ]) {
+            const value = position[index];
+            if (typeof value === "number" && Number.isFinite(value)) {
+                values[`motion.position.${axis}`] = value;
+            }
+        }
+    }
     for (const [object, key, id, type] of exports.statusFields) {
         const source = status[object];
         if (!source || typeof source !== "object") {
