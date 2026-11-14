@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.5",
+		"version": "0.0.6",
 		"news": {
+			"0.0.6": {
+				"en": "Add print ETA, layer, diagnostics, and dynamically discovered read-only fan and sensor telemetry.",
+				"de": "Ergänzt Druckprognose, Schichten, Diagnosewerte sowie dynamisch erkannte schreibgeschützte Lüfter- und Sensor-Telemetrie.",
+				"ru": "Добавлены ETA печати, слои, диагностика и автоматически обнаруживаемая телеметрия вентиляторов и датчиков только для чтения.",
+				"pt": "Adiciona ETA de impressão, camadas, diagnósticos e telemetria somente leitura de ventoinhas e sensores detectados dinamicamente.",
+				"nl": "Voegt print-ETA, lagen, diagnostiek en dynamisch ontdekte alleen-lezen ventilator- en sensortelemetrie toe.",
+				"fr": "Ajoute l'estimation de fin d'impression, les couches, les diagnostics et la télémétrie en lecture seule des ventilateurs et capteurs détectés dynamiquement.",
+				"it": "Aggiunge ETA di stampa, livelli, diagnostica e telemetria in sola lettura di ventole e sensori rilevati dinamicamente.",
+				"es": "Añade ETA de impresión, capas, diagnósticos y telemetría de solo lectura de ventiladores y sensores detectados dinámicamente.",
+				"pl": "Dodano ETA wydruku, warstwy, diagnostykę i dynamicznie wykrywaną telemetrię wentylatorów oraz czujników tylko do odczytu.",
+				"uk": "Додано ETA друку, шари, діагностику та динамічно виявлену телеметрію вентиляторів і датчиків лише для читання.",
+				"zh-cn": "新增打印预计完成时间、层信息、诊断数据，以及动态发现的只读风扇和传感器遥测。"
+			},
 			"0.0.5": {
 				"en": "Improve ioBroker metadata, configuration safety, camera object IDs and translations.",
 				"de": "Verbessert ioBroker-Metadaten, Konfigurationssicherheit, Kameraobjekt-IDs und Übersetzungen.",
