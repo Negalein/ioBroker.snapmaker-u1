@@ -81,7 +81,14 @@ jobs:
           git fetch --no-tags origin main
           git merge-base --is-ancestor "$(git rev-list -n 1 "$RELEASE_TAG")" origin/main
       - name: Publish stable release using npm trusted publishing
-        run: npm publish --access public
+        run: |
+          PACKAGE_NAME="$(node -p \"require('./package.json').name\")"
+          PACKAGE_VERSION="$(node -p \"require('./package.json').version\")"
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version >/dev/null 2>&1; then
+            echo "npm package $PACKAGE_NAME@$PACKAGE_VERSION already exists; skipping publish."
+          else
+            npm publish --access public
+          fi
 
   publish-prerelease:
     needs: [check-and-lint, adapter-tests]
@@ -113,4 +120,11 @@ jobs:
           git fetch --no-tags origin main
           git merge-base --is-ancestor "$(git rev-list -n 1 "$RELEASE_TAG")" origin/main
       - name: Publish pre-release using npm trusted publishing
-        run: npm publish --access public --tag next
+        run: |
+          PACKAGE_NAME="$(node -p \"require('./package.json').name\")"
+          PACKAGE_VERSION="$(node -p \"require('./package.json').version\")"
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version >/dev/null 2>&1; then
+            echo "npm package $PACKAGE_NAME@$PACKAGE_VERSION already exists; skipping publish."
+          else
+            npm publish --access public --tag next
+          fi
