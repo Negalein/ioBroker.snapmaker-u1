@@ -4,6 +4,8 @@ exports.mediaRequest = mediaRequest;
 exports.discoverCameras = discoverCameras;
 exports.cameraObjectId = cameraObjectId;
 exports.cameraUrl = cameraUrl;
+exports.getGcodeFileMetadata = getGcodeFileMetadata;
+exports.previewUrlFromMetadata = previewUrlFromMetadata;
 exports.previewUrl = previewUrl;
 const node_crypto_1 = require("node:crypto");
 const moonraker_1 = require("./moonraker");
@@ -53,20 +55,56 @@ function cameraUrl(value, host) {
     const url = new URL(value, `http://${host}/`);
     return ["http:", "https:", "rtsp:"].includes(url.protocol) ? url.toString() : "";
 }
-async function previewUrl(host, port, filename, timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS) {
+/** Retrieves the subset of Moonraker G-code metadata used by the adapter. */
+async function getGcodeFileMetadata(host, port, filename, timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS) {
+    if (!filename) {
+        return undefined;
+    }
+    const metadata = await mediaRequest(host, port, `/server/files/metadata?filename=${encodeURIComponent(filename)}`, timeoutMs);
+    const estimatedTime = metadata.estimated_time;
+    const slicer = metadata.slicer;
+    const slicerVersion = metadata.slicer_version;
+    const thumbnails = Array.isArray(metadata.thumbnails)
+        ? metadata.thumbnails.flatMap(value => {
+            if (typeof value !== "object" || value === null || Array.isArray(value)) {
+                return [];
+            }
+            const thumbnail = value;
+            return typeof thumbnail.width === "number" &&
+                typeof thumbnail.height === "number" &&
+                typeof thumbnail.relative_path === "string"
+                ? [{ width: thumbnail.width, height: thumbnail.height, relativePath: thumbnail.relative_path }]
+                : [];
+        })
+        : [];
+    return {
+        ...(typeof estimatedTime === "number" && Number.isFinite(estimatedTime) && estimatedTime >= 0
+            ? { estimatedTime }
+            : {}),
+        ...(typeof slicer === "string" ? { slicer } : {}),
+        ...(typeof slicerVersion === "string" ? { slicerVersion } : {}),
+        thumbnails,
+    };
+}
+/** Builds the largest embedded G-code thumbnail URL from already fetched metadata. */
+function previewUrlFromMetadata(metadata, host, port, filename) {
     if (!filename) {
         return "";
     }
-    const metadata = await mediaRequest(host, port, `/server/files/metadata?filename=${encodeURIComponent(filename)}`, timeoutMs);
-    const thumbnails = metadata.thumbnails;
-    const thumbnail = thumbnails
-        ?.filter(t => typeof t.relative_path === "string")
+    const thumbnail = [...(metadata?.thumbnails ?? [])]
+        .filter(t => typeof t.relativePath === "string")
         .sort((a, b) => b.width * b.height - a.width * a.height)[0];
     if (!thumbnail) {
         return "";
     }
     const directory = filename.includes("/") ? filename.slice(0, filename.lastIndexOf("/") + 1) : "";
-    const path = (directory + thumbnail.relative_path).split("/").map(encodeURIComponent).join("/");
+    const path = (directory + thumbnail.relativePath).split("/").map(encodeURIComponent).join("/");
     return new URL(`/server/files/gcodes/${path}`, (0, moonraker_1.createMoonrakerBaseUrl)(host, port)).toString();
+}
+async function previewUrl(host, port, filename, timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS) {
+    if (!filename) {
+        return "";
+    }
+    return previewUrlFromMetadata(await getGcodeFileMetadata(host, port, filename, timeoutMs), host, port, filename);
 }
 //# sourceMappingURL=media.js.map

@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { cameraObjectId, cameraUrl } from "./media";
+import { cameraObjectId, cameraUrl, previewUrlFromMetadata } from "./media";
 
 describe("camera helpers", () => {
 	it("keeps conventional lower-case UUIDs readable", () => {
@@ -18,5 +18,23 @@ describe("camera helpers", () => {
 			"http://printer.local/webcam/?action=stream",
 		);
 		expect(cameraUrl("javascript:alert(1)", "printer.local")).to.equal("");
+	});
+
+	it("uses already fetched G-code metadata for the largest print preview", () => {
+		expect(
+			previewUrlFromMetadata(
+				{
+					estimatedTime: 900,
+					slicer: "OrcaSlicer",
+					thumbnails: [
+						{ width: 32, height: 32, relativePath: ".thumbs/small.png" },
+						{ width: 400, height: 300, relativePath: ".thumbs/large image.png" },
+					],
+				},
+				"printer.local",
+				7125,
+				"folder/cube.gcode",
+			),
+		).to.equal("http://printer.local:7125/server/files/gcodes/folder/.thumbs/large%20image.png");
 	});
 });

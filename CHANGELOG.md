@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here.
 
+## 0.0.7 — 2026-11-15
+
+### Fixed
+
+- Publish the current compiled adapter bundle for the ETA and diagnostic telemetry update.
+
+## 0.0.6 — 2026-11-15
+
+### Added
+
+- Print filename metadata, slicer estimate, calculated remaining duration and estimated completion timestamp.
+- Current/total layer, print/display messages, total duration, file position and file progress telemetry.
+- Klipper readiness/error diagnostics, last completed filename, heater power, live speed/flow factors and advanced extruder telemetry.
+- Read-only, dynamically discovered Klipper fan and temperature-source states.
+
 ## 0.0.5 — 2026-11-11
 
 ### Fixed

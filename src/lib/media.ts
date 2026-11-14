@@ -15,6 +15,13 @@ export interface Camera {
 	flip_vertical: boolean;
 }
 
+export interface GcodeFileMetadata {
+	estimatedTime?: number;
+	slicer?: string;
+	slicerVersion?: string;
+	thumbnails: Array<{ width: number; height: number; relativePath: string }>;
+}
+
 export async function mediaRequest(
 	host: string,
 	port: number,
@@ -76,6 +83,69 @@ export function cameraUrl(value: string, host: string): string {
 	return ["http:", "https:", "rtsp:"].includes(url.protocol) ? url.toString() : "";
 }
 
+/** Retrieves the subset of Moonraker G-code metadata used by the adapter. */
+export async function getGcodeFileMetadata(
+	host: string,
+	port: number,
+	filename: string,
+	timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS,
+): Promise<GcodeFileMetadata | undefined> {
+	if (!filename) {
+		return undefined;
+	}
+	const metadata = await mediaRequest(
+		host,
+		port,
+		`/server/files/metadata?filename=${encodeURIComponent(filename)}`,
+		timeoutMs,
+	);
+	const estimatedTime = metadata.estimated_time;
+	const slicer = metadata.slicer;
+	const slicerVersion = metadata.slicer_version;
+	const thumbnails = Array.isArray(metadata.thumbnails)
+		? metadata.thumbnails.flatMap(value => {
+				if (typeof value !== "object" || value === null || Array.isArray(value)) {
+					return [];
+				}
+				const thumbnail = value as Record<string, unknown>;
+				return typeof thumbnail.width === "number" &&
+					typeof thumbnail.height === "number" &&
+					typeof thumbnail.relative_path === "string"
+					? [{ width: thumbnail.width, height: thumbnail.height, relativePath: thumbnail.relative_path }]
+					: [];
+			})
+		: [];
+	return {
+		...(typeof estimatedTime === "number" && Number.isFinite(estimatedTime) && estimatedTime >= 0
+			? { estimatedTime }
+			: {}),
+		...(typeof slicer === "string" ? { slicer } : {}),
+		...(typeof slicerVersion === "string" ? { slicerVersion } : {}),
+		thumbnails,
+	};
+}
+
+/** Builds the largest embedded G-code thumbnail URL from already fetched metadata. */
+export function previewUrlFromMetadata(
+	metadata: GcodeFileMetadata | undefined,
+	host: string,
+	port: number,
+	filename: string,
+): string {
+	if (!filename) {
+		return "";
+	}
+	const thumbnail = [...(metadata?.thumbnails ?? [])]
+		.filter(t => typeof t.relativePath === "string")
+		.sort((a, b) => b.width * b.height - a.width * a.height)[0];
+	if (!thumbnail) {
+		return "";
+	}
+	const directory = filename.includes("/") ? filename.slice(0, filename.lastIndexOf("/") + 1) : "";
+	const path = (directory + thumbnail.relativePath).split("/").map(encodeURIComponent).join("/");
+	return new URL(`/server/files/gcodes/${path}`, createMoonrakerBaseUrl(host, port)).toString();
+}
+
 export async function previewUrl(
 	host: string,
 	port: number,
@@ -85,21 +155,5 @@ export async function previewUrl(
 	if (!filename) {
 		return "";
 	}
-	const metadata = await mediaRequest(
-		host,
-		port,
-		`/server/files/metadata?filename=${encodeURIComponent(filename)}`,
-		timeoutMs,
-	);
-	const thumbnails = metadata.thumbnails as
-		Array<{ width: number; height: number; relative_path: string }> | undefined;
-	const thumbnail = thumbnails
-		?.filter(t => typeof t.relative_path === "string")
-		.sort((a, b) => b.width * b.height - a.width * a.height)[0];
-	if (!thumbnail) {
-		return "";
-	}
-	const directory = filename.includes("/") ? filename.slice(0, filename.lastIndexOf("/") + 1) : "";
-	const path = (directory + thumbnail.relative_path).split("/").map(encodeURIComponent).join("/");
-	return new URL(`/server/files/gcodes/${path}`, createMoonrakerBaseUrl(host, port)).toString();
+	return previewUrlFromMetadata(await getGcodeFileMetadata(host, port, filename, timeoutMs), host, port, filename);
 }

@@ -1,8 +1,34 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.5",
+		"version": "0.0.7",
 		"news": {
+			"0.0.7": {
+				"en": "Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.",
+				"de": "Veröffentlicht das vollständige kompilierte Adapterpaket für die ETA- und Diagnose-Telemetrie-Erweiterung.",
+				"ru": "Опубликован полный скомпилированный пакет адаптера для обновления ETA и диагностической телеметрии.",
+				"pt": "Publica o pacote completo do adaptador compilado para a atualização de ETA e telemetria de diagnóstico.",
+				"nl": "Publiceert het volledige gecompileerde adapterpakket voor de ETA- en diagnostische-telemetrie-update.",
+				"fr": "Publie le paquet d'adaptateur compilé complet pour la mise à jour de l'ETA et de la télémétrie de diagnostic.",
+				"it": "Pubblica il pacchetto completo dell'adattatore compilato per l'aggiornamento ETA e telemetria diagnostica.",
+				"es": "Publica el paquete completo del adaptador compilado para la actualización de ETA y telemetría de diagnóstico.",
+				"pl": "Publikuje pełny skompilowany pakiet adaptera dla aktualizacji ETA i telemetrii diagnostycznej.",
+				"uk": "Публікує повний скомпільований пакет адаптера для оновлення ETA та діагностичної телеметрії.",
+				"zh-cn": "发布包含预计完成时间和诊断遥测更新的完整编译适配器包。"
+			},
+			"0.0.6": {
+				"en": "Add print ETA, layer, diagnostics, and dynamically discovered read-only fan and sensor telemetry.",
+				"de": "Ergänzt Druckprognose, Schichten, Diagnosewerte sowie dynamisch erkannte schreibgeschützte Lüfter- und Sensor-Telemetrie.",
+				"ru": "Добавлены ETA печати, слои, диагностика и автоматически обнаруживаемая телеметрия вентиляторов и датчиков только для чтения.",
+				"pt": "Adiciona ETA de impressão, camadas, diagnósticos e telemetria somente leitura de ventoinhas e sensores detectados dinamicamente.",
+				"nl": "Voegt print-ETA, lagen, diagnostiek en dynamisch ontdekte alleen-lezen ventilator- en sensortelemetrie toe.",
+				"fr": "Ajoute l'estimation de fin d'impression, les couches, les diagnostics et la télémétrie en lecture seule des ventilateurs et capteurs détectés dynamiquement.",
+				"it": "Aggiunge ETA di stampa, livelli, diagnostica e telemetria in sola lettura di ventole e sensori rilevati dinamicamente.",
+				"es": "Añade ETA de impresión, capas, diagnósticos y telemetría de solo lectura de ventiladores y sensores detectados dinámicamente.",
+				"pl": "Dodano ETA wydruku, warstwy, diagnostykę i dynamicznie wykrywaną telemetrię wentylatorów oraz czujników tylko do odczytu.",
+				"uk": "Додано ETA друку, шари, діагностику та динамічно виявлену телеметрію вентиляторів і датчиків лише для читання.",
+				"zh-cn": "新增打印预计完成时间、层信息、诊断数据，以及动态发现的只读风扇和传感器遥测。"
+			},
 			"0.0.5": {
 				"en": "Improve ioBroker metadata, configuration safety, camera object IDs and translations.",
 				"de": "Verbessert ioBroker-Metadaten, Konfigurationssicherheit, Kameraobjekt-IDs und Übersetzungen.",

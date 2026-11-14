@@ -1,6 +1,6 @@
 {
   "name": "iobroker.snapmaker-u1",
-  "version": "0.0.5",
+	"version": "0.0.7",
   "description": "Integrates Snapmaker U1 3D printers via Moonraker.",
   "author": {
     "name": "Negalein",
@@ -19,7 +19,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Negalein/ioBroker.snapmaker-u1.git"
+		"url": "git+https://github.com/Negalein/ioBroker.snapmaker-u1.git"
   },
   "engines": {
     "node": ">=22.19.0"

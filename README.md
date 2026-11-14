@@ -17,7 +17,7 @@ In the settings, open **Discover and select cameras** to retrieve enabled camera
 
 Selected cameras are published under `cameras.<Moonraker UID>` with name, enabled flag, stream URL, snapshot URL, service, rotation and mirror settings. The adapter reads camera configuration only; it does not open continuous video streams or claim that a camera is reachable. WebRTC requires a compatible viewer. Historical camera objects remain after deselection but are no longer refreshed.
 
-`printer.job.previewUrl` contains the largest embedded thumbnail of the current G-code file. It is cleared when no file is selected or preview is disabled. Camera/thumbnail failures are logged at debug level and do not mark the printer disconnected. Camera URLs must be reachable from the browser displaying them. Camera discovery, settings and data points have been tested in an installed ioBroker instance with PAXX12. A configured camera entry is not proof of a reachable stream.
+`printer.job.previewUrl` contains the largest embedded thumbnail of the current G-code file. It is cleared when no file is selected or preview is disabled. The same file-metadata request supplies the slicer estimate, remaining-duration forecast and estimated completion time; those values remain available when print preview is disabled. Camera/thumbnail failures are logged at debug level and do not mark the printer disconnected. Camera URLs must be reachable from the browser displaying them. Camera discovery, settings and data points have been tested in an installed ioBroker instance with PAXX12. A configured camera entry is not proof of a reachable stream.
 
 Top-cover fan control: write a numeric percentage (0–100, `ack=false`) to `printer.cover.circulation.speed` or `printer.cover.exhaust.speed`. Commands are serialized and acknowledged from a subsequent printer status query. Both fans were live-tested with a five-percentage-point change and restored. Firmware automation may subsequently change fan speeds. Invalid values are rejected.
 
@@ -26,10 +26,12 @@ Enable **Spoolman integration** to read AFC lane material, filament name, color,
 Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
 
 - `printer.job`: state, filename, elapsed print duration (seconds), filament used (mm), progress (percent), and paused flag.
+- `printer.job`: slicer name/version, slicer estimate, calculated remaining duration, estimated completion timestamp, layers, messages, file progress and last completed filename where Moonraker provides the underlying values.
 - `printer.tools.active`: active extruder name.
-- `printer.tools.tool0` through `tool3`: actual temperature, target temperature, and tool status.
-- `printer.bed`: actual and target temperature.
+- `printer.tools.tool0` through `tool3`: actual temperature, target temperature, heater power, pressure advance, smooth time, and tool status.
+- `printer.bed`: actual and target temperature plus heater power.
 - `printer.chamber.temperature`: chamber temperature.
+- `printer.fans.*` and `printer.sensors.*`: dynamically discovered, read-only fan/RPM and temperature telemetry. Existing named cover-fan states remain unchanged.
 
 The monitoring states are read-only. The two fan speed states and the guarded PAXX12 control states described below are writable. Missing or invalid values are skipped. The owner has tested version 0.0.2 in ioBroker, including live printer data, cameras, AFC/Spoolman metadata and reconnection after power-off. Original firmware compatibility remains unverified.
 
@@ -89,8 +91,18 @@ The supported AFC Lite macros are verified against [the PAXX12 AFC Lite configur
 | `printer.info.hostname`                                                                               | string         | Hostname reported by Moonraker.                                                                           |
 | `printer.info.firmware`                                                                               | string         | Klipper software version returned by Moonraker's printer info endpoint.                                   |
 | `printer.info.status`                                                                                 | string         | Printer state message reported by Moonraker.                                                              |
+| `printer.info.klippyState` / `.ready` / `.lastError`                                                   | string/boolean | Klipper state, readiness and latest connection error.                                                     |
 | `printer.info.lastUpdate`                                                                             | number         | Timestamp of the last successful query.                                                                   |
+| `printer.job.filename`, `.duration`, `.totalDuration`, `.message`, `.displayMessage`                  | string/number  | Current file, elapsed/total duration and printer messages.                                                |
+| `printer.job.slicer`, `.slicerVersion`, `.slicerEstimatedDuration`                                    | string/number  | Slicer metadata extracted by Moonraker from the G-code file.                                             |
+| `printer.job.remaining`, `.slicerRemaining`, `.estimatedEnd`, `.estimateAvailable`                    | number/boolean | Live ETA forecast in seconds and predicted completion timestamp.                                          |
+| `printer.job.layer.current`, `.total`, `.progress`                                                     | number         | Current and total layers plus calculated layer progress.                                                  |
+| `printer.job.filePosition`, `.fileProgress`, `.lastCompletedFile`                                      | number/string  | G-code byte position, file progress and last live-completed file.                                        |
 | `printer.motion.position.x`, `.y`, `.z`                                                               | number         | Current toolhead coordinates reported by Moonraker, in mm.                                                |
+| `printer.motion.maxVelocity`, `.maxAcceleration`, `.commandedSpeed`, `.speedFactor`, `.flowFactor`     | number         | Read-only motion limits, latest commanded speed, speed and flow factors.                                 |
+| `printer.tools.tool0` … `.tool3`                                                                      | number/string  | Includes read-only heater power, pressure advance and smooth-time telemetry when reported.                |
+| `printer.bed.power`                                                                                    | number         | Read-only bed heater output in percent.                                                                   |
+| `printer.fans.*` / `printer.sensors.*`                                                                 | number         | Dynamically discovered read-only fan/RPM and temperature telemetry.                                       |
 | `printer.control.home.all`, `.x`, `.y`, `.z`                                                          | boolean button | Write `true` to home all axes or the selected axis. Resets to `false`.                                    |
 | `printer.control.jog.step`                                                                            | number         | Jog distance in mm (0.1–25).                                                                              |
 | `printer.control.jog.speed`                                                                           | number         | Jog speed in mm/s (1–100).                                                                                |
@@ -147,6 +159,14 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 ## Changelog
 
 Full release notes: [CHANGELOG.md](CHANGELOG.md).
+
+### 0.0.7 (2026-11-15)
+
+- (Negalein) Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.
+
+### 0.0.6 (2026-11-15)
+
+- (Negalein) Add print ETA, completion timestamp, layers, messages, diagnostic telemetry, and dynamic read-only fan/sensor discovery.
 
 ### 0.0.5 (2026-11-11)
 
