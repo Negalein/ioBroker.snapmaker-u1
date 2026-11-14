@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 0.0.7 — 2026-11-15
+
+### Fixed
+
+- Publish the current compiled adapter bundle for the ETA and diagnostic telemetry update.
+
 ## 0.0.6 — 2026-11-15
 
 ### Added

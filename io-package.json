@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.6",
+		"version": "0.0.7",
 		"news": {
+			"0.0.7": {
+				"en": "Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.",
+				"de": "Veröffentlicht das vollständige kompilierte Adapterpaket für die ETA- und Diagnose-Telemetrie-Erweiterung.",
+				"ru": "Опубликован полный скомпилированный пакет адаптера для обновления ETA и диагностической телеметрии.",
+				"pt": "Publica o pacote completo do adaptador compilado para a atualização de ETA e telemetria de diagnóstico.",
+				"nl": "Publiceert het volledige gecompileerde adapterpakket voor de ETA- en diagnostische-telemetrie-update.",
+				"fr": "Publie le paquet d'adaptateur compilé complet pour la mise à jour de l'ETA et de la télémétrie de diagnostic.",
+				"it": "Pubblica il pacchetto completo dell'adattatore compilato per l'aggiornamento ETA e telemetria diagnostica.",
+				"es": "Publica el paquete completo del adaptador compilado para la actualización de ETA y telemetría de diagnóstico.",
+				"pl": "Publikuje pełny skompilowany pakiet adaptera dla aktualizacji ETA i telemetrii diagnostycznej.",
+				"uk": "Публікує повний скомпільований пакет адаптера для оновлення ETA та діагностичної телеметрії.",
+				"zh-cn": "发布包含预计完成时间和诊断遥测更新的完整编译适配器包。"
+			},
 			"0.0.6": {
 				"en": "Add print ETA, layer, diagnostics, and dynamically discovered read-only fan and sensor telemetry.",
 				"de": "Ergänzt Druckprognose, Schichten, Diagnosewerte sowie dynamisch erkannte schreibgeschützte Lüfter- und Sensor-Telemetrie.",

@@ -160,6 +160,10 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 Full release notes: [CHANGELOG.md](CHANGELOG.md).
 
+### 0.0.7 (2026-11-15)
+
+- (Negalein) Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.
+
 ### 0.0.6 (2026-11-15)
 
 - (Negalein) Add print ETA, completion timestamp, layers, messages, diagnostic telemetry, and dynamic read-only fan/sensor discovery.

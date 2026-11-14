@@ -42,6 +42,7 @@ const config_1 = require("./lib/config");
 const media_1 = require("./lib/media");
 const fans_1 = require("./lib/fans");
 const moonraker_1 = require("./lib/moonraker");
+const print_estimate_1 = require("./lib/print-estimate");
 const status_1 = require("./lib/status");
 const toolhead_1 = require("./lib/toolhead");
 const jogStepId = "printer.control.jog.step";
@@ -536,6 +537,11 @@ class SnapmakerU1 extends utils.Adapter {
     initializedMediaRoles = new Set();
     toolheadCapabilities = (0, toolhead_1.discoverToolheadCapabilities)([], {});
     toolheadCapabilitiesUpdatedAt = 0;
+    discoveredTelemetryObjects = [];
+    discoveredTelemetryObjectsUpdatedAt = 0;
+    printMetadata;
+    previousPrintState;
+    latestPrintFilename;
     constructor(options = {}) {
         super({
             ...options,
@@ -617,6 +623,7 @@ class SnapmakerU1 extends utils.Adapter {
             "cover.circulation",
             "cover.exhaust",
             "job",
+            "job.layer",
             "tools",
             "bed",
             "chamber",
@@ -626,6 +633,8 @@ class SnapmakerU1 extends utils.Adapter {
             "tools.tool3",
             "motion",
             "motion.position",
+            "fans",
+            "sensors",
             "control",
             "control.home",
             "control.jog",
@@ -657,6 +666,13 @@ class SnapmakerU1 extends utils.Adapter {
                 native: {},
             });
         }
+        for (const [id, type, role, unit] of status_1.derivedStatusFields) {
+            await this.setObjectNotExistsAsync(`printer.${id}`, {
+                type: "state",
+                common: { name: id, type, role, read: true, write: false, ...(unit ? { unit } : {}) },
+                native: {},
+            });
+        }
         await this.initializeControlStates();
         if (!this.config.host.trim()) {
             this.log.warn("Moonraker host is not configured. Set it in the adapter settings to connect the printer.");
@@ -681,7 +697,70 @@ class SnapmakerU1 extends utils.Adapter {
     getPollIntervalMs() {
         return (0, config_1.pollIntervalMs)(this.config.pollInterval);
     }
-    async updateMedia(filename) {
+    /** Discovers optional fans and temperature sources without enabling writes for them. */
+    async refreshDiscoveredTelemetryObjects(force = false) {
+        if (!force && Date.now() - this.discoveredTelemetryObjectsUpdatedAt < 60_000) {
+            return;
+        }
+        const objects = await (0, moonraker_1.getPrinterObjects)({
+            host: this.config.host,
+            port: this.config.port,
+            timeoutMs: this.getRequestTimeoutMs(),
+        });
+        this.discoveredTelemetryObjects = (0, status_1.discoverTelemetryObjects)(objects);
+        this.discoveredTelemetryObjectsUpdatedAt = Date.now();
+    }
+    /** Retrieves static G-code metadata at most once a minute for the selected file. */
+    async getCurrentPrintMetadata(filename) {
+        if (!filename) {
+            this.printMetadata = undefined;
+            return undefined;
+        }
+        const now = Date.now();
+        if (this.printMetadata?.filename === filename && now - this.printMetadata.fetchedAt < 60_000) {
+            return this.printMetadata.metadata;
+        }
+        try {
+            const metadata = await (0, media_1.getGcodeFileMetadata)(this.config.host, this.config.port, filename, this.getRequestTimeoutMs());
+            this.printMetadata = { filename, fetchedAt: now, metadata };
+            return metadata;
+        }
+        catch (error) {
+            this.log.debug(`G-code metadata query failed: ${String(error)}`);
+            this.printMetadata = { filename, fetchedAt: now };
+            return undefined;
+        }
+    }
+    /** Publishes file metadata and a live ETA independently of the preview setting. */
+    async updatePrintMetadata(status) {
+        const values = (0, status_1.mapStatus)(status);
+        const filename = values["job.filename"];
+        const metadata = await this.getCurrentPrintMetadata(typeof filename === "string" ? filename : "");
+        const fileProgress = values["job.fileProgress"];
+        const displayProgress = values["job.progress"];
+        const progress = typeof fileProgress === "number" && fileProgress > 0
+            ? fileProgress
+            : typeof displayProgress === "number"
+                ? displayProgress
+                : undefined;
+        const estimate = (0, print_estimate_1.calculatePrintEstimate)({
+            printState: values["job.state"],
+            printDuration: values["job.duration"],
+            progressPercent: progress,
+            slicerEstimatedDuration: metadata?.estimatedTime,
+        });
+        await Promise.all([
+            this.setStateChangedAsync("printer.job.slicer", metadata?.slicer ?? "", true),
+            this.setStateChangedAsync("printer.job.slicerVersion", metadata?.slicerVersion ?? "", true),
+            this.setStateChangedAsync("printer.job.slicerEstimatedDuration", metadata?.estimatedTime ?? 0, true),
+            this.setStateChangedAsync("printer.job.slicerRemaining", estimate.slicerRemaining ?? 0, true),
+            this.setStateChangedAsync("printer.job.remaining", estimate.remaining ?? 0, true),
+            this.setStateChangedAsync("printer.job.estimatedEnd", estimate.estimatedEnd ?? 0, true),
+            this.setStateChangedAsync("printer.job.estimateAvailable", estimate.remaining !== undefined, true),
+        ]);
+        return metadata;
+    }
+    async updateMedia(filename, metadata) {
         const write = async (id, value) => {
             const role = id.endsWith("streamUrl")
                 ? "url.cam"
@@ -741,7 +820,7 @@ class SnapmakerU1 extends utils.Adapter {
             }
         }
         await write("printer.job.previewUrl", this.config.previewEnabled
-            ? await (0, media_1.previewUrl)(this.config.host, this.config.port, filename, this.getRequestTimeoutMs())
+            ? (0, media_1.previewUrlFromMetadata)(metadata, this.config.host, this.config.port, filename)
             : "");
     }
     /** Creates motion/control states and initializes values that are writable settings or buttons. */
@@ -1004,6 +1083,48 @@ class SnapmakerU1 extends utils.Adapter {
             this.setStateAsync("printer.control.toolhead.diagnostics.lastFailure", message, true),
         ]);
     }
+    /** Creates and updates optional read-only fan and temperature states discovered from Klipper. */
+    async updateDiscoveredTelemetry(status) {
+        for (const telemetry of (0, status_1.mapDiscoveredTelemetry)(status, this.discoveredTelemetryObjects)) {
+            const [category, objectId] = telemetry.id.split(".");
+            if (!category || !objectId) {
+                continue;
+            }
+            await this.setObjectNotExistsAsync(`printer.${category}.${objectId}`, {
+                type: "channel",
+                common: { name: objectId },
+                native: {},
+            });
+            await this.setObjectNotExistsAsync(`printer.${telemetry.id}`, {
+                type: "state",
+                common: {
+                    name: telemetry.name,
+                    type: telemetry.type,
+                    role: telemetry.role,
+                    read: true,
+                    write: false,
+                    ...(telemetry.unit ? { unit: telemetry.unit } : {}),
+                },
+                native: {},
+            });
+            await this.setStateChangedAsync(`printer.${telemetry.id}`, telemetry.value, true);
+        }
+    }
+    /** Persists the filename only when a live print transitions to complete. */
+    async updateLastCompletedFile(values) {
+        const filename = values["job.filename"];
+        if (typeof filename === "string" && filename) {
+            this.latestPrintFilename = filename;
+        }
+        const printState = values["job.state"];
+        if (typeof printState !== "string") {
+            return;
+        }
+        if (printState === "complete" && this.previousPrintState && this.previousPrintState !== "complete") {
+            await this.setStateChangedAsync("printer.job.lastCompletedFile", this.latestPrintFilename ?? "", true);
+        }
+        this.previousPrintState = printState;
+    }
     /** Maps polling or post-command Moonraker state into ioBroker states. */
     async updateStatusStates(status) {
         const values = (0, status_1.mapStatus)(status);
@@ -1016,6 +1137,8 @@ class SnapmakerU1 extends utils.Adapter {
                 await this.setStateChangedAsync(`printer.control.tools.tool${tool}.target`, target, true);
             }
         }
+        await this.updateLastCompletedFile(values);
+        await this.updateDiscoveredTelemetry(status);
         await this.updateControlSafety(status);
         await this.updateToolheadSafety(status);
     }
@@ -1027,7 +1150,13 @@ class SnapmakerU1 extends utils.Adapter {
                 port: this.config.port,
                 timeoutMs: this.getRequestTimeoutMs(),
             });
-            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), this.config.spoolmanEnabled, (0, control_1.supportsControl)(this.config.firmware));
+            try {
+                await this.refreshDiscoveredTelemetryObjects();
+            }
+            catch (error) {
+                this.log.debug(`Fan and sensor discovery failed: ${String(error)}`);
+            }
+            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), this.config.spoolmanEnabled, (0, control_1.supportsControl)(this.config.firmware), this.discoveredTelemetryObjects);
             if (this.stopping) {
                 return;
             }
@@ -1042,12 +1171,17 @@ class SnapmakerU1 extends utils.Adapter {
             await this.setStateChangedAsync("printer.info.hostname", printerInfo.hostname ?? "", true);
             await this.setStateChangedAsync("printer.info.firmware", printerInfo.softwareVersion ?? "", true);
             await this.setStateChangedAsync("printer.info.status", printerInfo.stateMessage ?? printerInfo.state ?? "unknown", true);
+            await this.setStateChangedAsync("printer.info.klippyState", printerInfo.state ?? "", true);
+            await this.setStateChangedAsync("printer.info.ready", printerInfo.state?.toLowerCase() === "ready", true);
+            await this.setStateChangedAsync("printer.info.lastError", "", true);
             await this.setStateChangedAsync("printer.info.lastUpdate", Date.now(), true);
             try {
-                await this.updateMedia(String((0, status_1.mapStatus)(status)["job.filename"] ?? ""));
+                const filename = String((0, status_1.mapStatus)(status)["job.filename"] ?? "");
+                const metadata = await this.updatePrintMetadata(status);
+                await this.updateMedia(filename, metadata);
             }
             catch (error) {
-                this.log.debug(`Media update failed: ${String(error)}`);
+                this.log.debug(`Media or print metadata update failed: ${String(error)}`);
             }
             if (this.connectionFailed) {
                 this.log.info("Connection to Moonraker restored.");
@@ -1060,6 +1194,8 @@ class SnapmakerU1 extends utils.Adapter {
             }
             await this.setStateChangedAsync("info.connection", false, true);
             const message = `Could not reach Moonraker: ${error instanceof Error ? error.message : String(error)}`;
+            await this.setStateChangedAsync("printer.info.ready", false, true);
+            await this.setStateChangedAsync("printer.info.lastError", message, true);
             if (this.connectionFailed) {
                 this.log.debug(message);
             }
