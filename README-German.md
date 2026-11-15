@@ -100,6 +100,10 @@ Snapmaker und U1 sind Marken ihrer jeweiligen Inhaber. Dies ist ein unabhängige
 
 ## Änderungsprotokoll
 
+### 0.0.12 (2026-11-15)
+
+- (Negalein) Offiziellen ioBroker-Release-Workflow verwendet und die sieben neuesten veröffentlichten Release-Hinweise beibehalten.
+
 ### 0.0.11 (2026-11-15)
 
 - (Negalein) Ungültige Rolle des Beschleunigungsdatenpunkts korrigiert und bestehende Installationen migriert.
