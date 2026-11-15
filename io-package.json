@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.8",
+		"version": "0.0.9",
 		"news": {
+			"0.0.9": {
+				"en": "Restore the English main README and add a separate German README.",
+				"de": "Stellt die englische Haupt-README wieder her und ergänzt eine eigene deutsche README.",
+				"ru": "Восстановлен основной README на английском языке и добавлен отдельный README на немецком языке.",
+				"pt": "Restaura o README principal em inglês e adiciona um README separado em alemão.",
+				"nl": "Herstelt de Engelse hoofd-README en voegt een aparte Duitse README toe.",
+				"fr": "Restaure le README principal en anglais et ajoute un README allemand distinct.",
+				"it": "Ripristina il README principale in inglese e aggiunge un README tedesco separato.",
+				"es": "Restaura el README principal en inglés y añade un README alemán independiente.",
+				"pl": "Przywraca główny README po angielsku i dodaje osobny README po niemiecku.",
+				"uk": "Відновлює основний README англійською та додає окремий README німецькою.",
+				"zh-cn": "恢复英文主 README，并添加单独的德语 README。"
+			},
 			"0.0.8": {
 				"en": "Translate the README into German for GitHub and npm.",
 				"de": "Übersetzt die README für GitHub und npm ins Deutsche.",
