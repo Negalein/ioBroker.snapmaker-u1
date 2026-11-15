@@ -2,127 +2,76 @@
 
 # ioBroker.snapmaker-u1
 
-[![NPM version](https://img.shields.io/npm/v/iobroker.snapmaker-u1.svg)](https://www.npmjs.com/package/iobroker.snapmaker-u1)
+[![NPM-Version](https://img.shields.io/npm/v/iobroker.snapmaker-u1.svg)](https://www.npmjs.com/package/iobroker.snapmaker-u1)
 [![Tests](https://github.com/Negalein/ioBroker.snapmaker-u1/actions/workflows/test-and-release.yml/badge.svg)](https://github.com/Negalein/ioBroker.snapmaker-u1/actions/workflows/test-and-release.yml)
 
-An ioBroker adapter for monitoring a [Snapmaker U1](https://www.snapmaker.com/) through its local Moonraker service, with top-cover fan control, AFC/Spoolman metadata, camera discovery, print-preview URLs and guarded PAXX12 motion, print and optional toolhead controls.
+Deutscher ioBroker-Adapter zur lokalen Überwachung eines [Snapmaker U1](https://www.snapmaker.com/) über Moonraker. Er stellt Druckstatus, ETA, Kameras, AFC-/Spoolman-Metadaten, Druckvorschauen und abgesicherte PAXX12-Steuerungen bereit.
 
-> This is an early development version. The v0.0.3/v0.0.4 control points are deliberately restricted to an explicitly selected **PAXX12** firmware mode. They do not claim compatibility with the original Snapmaker firmware, which has not been validated. Use printer controls only while attending a clear, safe printer.
+> **Frühe Entwicklungsversion:** Steuerfunktionen sind nur für den ausdrücklich gewählten Modus **PAXX12** vorgesehen. Die Original-Firmware wurde für Steuerbefehle nicht validiert. Den Drucker während jeder Steuerung beaufsichtigen.
 
-## Current functionality
+## Funktionen
 
-### Cameras and print preview
+- Lokale Moonraker-Verbindung über konfigurierbaren Host und Port (Standard: `7125`).
+- Druckstatus, Dateiname, Filamentverbrauch, Fortschritt, Pausenstatus, Meldungen, Schichten und Dateifortschritt.
+- Slicer-Metadaten, Restzeit, Slicer-Restzeit und geschätzte Endzeit unter `printer.job.*`.
+- Klipper-Status, Bereitschaft und Verbindungsfehler unter `printer.info.*`.
+- Tool-, Bett- und Kammertemperaturen, Sollwerte, Heizleistungen, Pressure Advance, Smooth Time sowie Bewegungs- und Flow-Diagnosen.
+- Kameraerkennung und Druckvorschau-URL. Die ETA bleibt auch bei deaktivierter Vorschau verfügbar.
+- Automatisch erkannte, schreibgeschützte Lüfter-/RPM- und Temperatursensorwerte unter `printer.fans.*` und `printer.sensors.*`.
+- AFC-/Spoolman-Status und Lane-Metadaten über Moonraker; keine direkte Spoolman-Verbindung und keine Schreibvorgänge.
+- Abgesicherte Home-, Jog-, Druck-, Toolhead- und Extrusionssteuerung für PAXX12.
 
-In the settings, open **Discover and select cameras** to retrieve enabled cameras from Moonraker and save a multiple selection. Save the printer host first and keep the adapter running for discovery. No network scan is performed.
+## Kameras, Vorschau und Lüfter
 
-Selected cameras are published under `cameras.<Moonraker UID>` with name, enabled flag, stream URL, snapshot URL, service, rotation and mirror settings. The adapter reads camera configuration only; it does not open continuous video streams or claim that a camera is reachable. WebRTC requires a compatible viewer. Historical camera objects remain after deselection but are no longer refreshed.
+Mit **Kameras erkennen und auswählen** werden aktive Moonraker-Kameras ausgelesen und gespeichert; es findet kein Netzwerkscan statt. Ausgewählte Kameras erscheinen unter `cameras.<Moonraker UID>` mit Name, Aktiv-Status, Stream-/Snapshot-URL, Dienst, Drehung und Spiegelung. Der Adapter liest nur die Konfiguration, öffnet keine Dauerstreams und kann die Erreichbarkeit nicht garantieren.
 
-`printer.job.previewUrl` contains the largest embedded thumbnail of the current G-code file. It is cleared when no file is selected or preview is disabled. The same file-metadata request supplies the slicer estimate, remaining-duration forecast and estimated completion time; those values remain available when print preview is disabled. Camera/thumbnail failures are logged at debug level and do not mark the printer disconnected. Camera URLs must be reachable from the browser displaying them. Camera discovery, settings and data points have been tested in an installed ioBroker instance with PAXX12. A configured camera entry is not proof of a reachable stream.
+`printer.job.previewUrl` enthält das größte eingebettete Vorschaubild der ausgewählten G-Code-Datei. Kamera- und Thumbnail-Fehler werden nur auf Debug-Ebene protokolliert und trennen den Drucker nicht.
 
-Top-cover fan control: write a numeric percentage (0–100, `ack=false`) to `printer.cover.circulation.speed` or `printer.cover.exhaust.speed`. Commands are serialized and acknowledged from a subsequent printer status query. Both fans were live-tested with a five-percentage-point change and restored. Firmware automation may subsequently change fan speeds. Invalid values are rejected.
+Die Deckellüfter werden über `printer.cover.circulation.speed` und `printer.cover.exhaust.speed` gesteuert. Einen Prozentwert 0–100 mit `ack=false` schreiben. Befehle sind serialisiert und ungültige Werte werden abgelehnt.
 
-Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. These values are read through Moonraker; no direct Spoolman connection is configured. No spool assignments or consumption reports are written by this adapter.
+## PAXX12-Sicherheit
 
-Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
+Zum Aktivieren der Steuerung den **Firmware-Modus** auf **PAXX12-Firmware** setzen. `auto` und `original` lehnen bewusst alle Home-, Jog- und Drucksteuerungsanfragen ab.
 
-- `printer.job`: state, filename, elapsed print duration (seconds), filament used (mm), progress (percent), and paused flag.
-- `printer.job`: slicer name/version, slicer estimate, calculated remaining duration, estimated completion timestamp, layers, messages, file progress and last completed filename where Moonraker provides the underlying values.
-- `printer.tools.active`: active extruder name.
-- `printer.tools.tool0` through `tool3`: actual temperature, target temperature, heater power, pressure advance, smooth time, and tool status.
-- `printer.bed`: actual and target temperature plus heater power.
-- `printer.chamber.temperature`: chamber temperature.
-- `printer.fans.*` and `printer.sensors.*`: dynamically discovered, read-only fan/RPM and temperature telemetry. Existing named cover-fan states remain unchanged.
+Jede Anfrage holt zuerst einen frischen Moonraker-Status und durchläuft eine Sicherheitsprüfung. Der Adapter sendet ausschließlich feste, intern erzeugte Klipper-Befehle; es gibt keinen frei beschreibbaren G-Code-Datenpunkt.
 
-The monitoring states are read-only. The two fan speed states and the guarded PAXX12 control states described below are writable. Missing or invalid values are skipped. The owner has tested version 0.0.2 in ioBroker, including live printer data, cameras, AFC/Spoolman metadata and reconnection after power-off. Original firmware compatibility remains unverified.
+- `printer.control.home.all`, `.x`, `.y` und `.z` verwenden `G28` und sind nur im Leerlauf erlaubt.
+- Jog-Befehle sind auf **0,1–25 mm** bei **1–100 mm/s** begrenzt. Sie verlangen referenzierte Achsen und gültige Moonraker-Achsgrenzen.
+- `Pause` ist nur beim Drucken, `Resume` nur bei Pause und `Cancel` nur beim Drucken oder bei Pause verfügbar.
+- Fehler und abgelehnte Anfragen stehen in `printer.control.lastError`.
 
-- Connects locally to Moonraker at a configurable host and port (default: `7125`).
-- Publishes `info.connection`, printer hostname, Klipper software version, status, and the last successful update. The existing state ID `printer.info.firmware` is retained.
-- Supports the original firmware and PAXX12 as selectable configuration modes; protocol-specific features will follow after validation against real devices.
-- Reads AFC and Spoolman metadata through Moonraker. Direct Spoolman inventory access is not implemented.
+Für Toolheads erkennt der Adapter die tatsächlichen Klipper-Objekte und sicheren Laufzeitgrenzen. Bei vorhandenen PAXX12-AFC-Lite-Makros werden ausschließlich `CHANGE_TOOL LANE=E0` bis `E3` und `LANE_UNLOAD LANE=E0` bis `E3` verwendet. Einzelne Solltemperaturen und manuelle Extrusion werden zusätzlich gegen Live-Temperatur, Extruderstatus und gemeldete Grenzen geprüft. Eine Parkfunktion bleibt deaktiviert, bis ein sicheres U1-/PAXX12-Parkmakro validiert ist.
 
-### Motion and print control (PAXX12 only)
+Die Makros sind anhand [der PAXX12-AFC-Lite-Konfiguration](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/main/overlays/firmware-extended/31-feature-afc-lite/root/usr/local/share/firmware-config/tweaks/klipper/afc.cfg) überprüft. Die Daten werden über Moonrakers [Printer-Object-Endpunkte](https://moonraker.readthedocs.io/en/latest/external_api/printer/) abgefragt; Temperaturbefehle basieren auf Klippers [G-Code-Dokumentation](https://www.klipper3d.org/G-Codes.html).
 
-Set **Firmware mode** to **PAXX12 firmware** to enable the control states. `auto` and `original` modes deliberately reject every Home, Jog, Pause, Resume and Cancel request. This avoids claiming support for the original firmware before it has been physically verified.
+## Konfiguration
 
-Each new motion/print control request first fetches a fresh Moonraker status and passes one central safety check. The adapter sends only fixed, internally generated Klipper commands; it does not expose a free-form G-code state.
+| Einstellung | Bedeutung |
+| --- | --- |
+| Moonraker-Host oder IP-Adresse | Lokaler Hostname oder IP-Adresse, ohne `http://` und ohne Pfad. |
+| Moonraker-Port | HTTP-Port von Moonraker, standardmäßig `7125`. |
+| Firmware-Modus | Automatisch erkennen, Original-Firmware oder PAXX12. |
+| Anfrage-Timeout | Maximale Dauer einer Moonraker-Anfrage in Sekunden. |
+| Polling-Intervall | Zeit zwischen Statusprüfungen in Sekunden. |
+| Spoolman-Integration | Aktiviert AFC- und Spoolman-Statusabfragen über Moonraker. |
+| Kameras erkennen und auswählen | Liest aktive Kameras und speichert die Auswahl. |
+| Druckvorschau | Aktiviert die Thumbnail-URL der aktuellen G-Code-Datei. |
 
-- Home commands use `G28` or `G28 X`, `G28 Y`, `G28 Z` and are allowed only when `print_stats.state` is `standby`, `complete` or `cancelled`.
-- Jog commands are limited to **0.1–25 mm** at **1–100 mm/s**. They require an idle printer, a homed target axis, finite current coordinates, and Moonraker-reported `axis_minimum`/`axis_maximum` values that contain the target. The generated script saves and restores the Klipper G-code state.
-- `Pause` is permitted only while printing; `Resume` only while paused; and `Cancel` only while printing or paused.
-- Commands are serialized, buttons reset to `false` after handling, and rejected/failed requests are published in `printer.control.lastError`.
+## Wichtige Datenpunktgruppen
 
-The control commands and their safety rules are unit-tested, but the new motion and job-control paths still need validation on a physical PAXX12-equipped U1 before relying on them in everyday operation.
+| Gruppe | Inhalt |
+| --- | --- |
+| `info.connection` / `printer.info.*` | Verbindung, Hostname, Firmware, Klippy-Status und Fehler. |
+| `printer.job.*` | Datei, Zeiten, ETA, Slicer, Schichten, Meldungen, Fortschritt und Vorschau. |
+| `printer.motion.*` | Position, Bewegungsgrenzen, Geschwindigkeit sowie Speed-/Flow-Faktor. |
+| `printer.tools.*` / `printer.bed.*` | Temperaturen, Sollwerte, Leistung und erweiterte Extruderdaten. |
+| `printer.fans.*` / `printer.sensors.*` | Dynamisch erkannte schreibgeschützte Lüfter-/RPM- und Sensorwerte. |
+| `printer.afc.*` / `printer.spoolman.*` | AFC-Lanes, Fehler und Spoolman-Metadaten. |
+| `printer.control.*` | Abgesicherte PAXX12-Steuerungen und deren Diagnosen. |
 
-### Toolhead control (PAXX12 + detected capability only)
+## Entwicklung
 
-Version 0.0.4 does not assume that every PAXX12 printer has the same macros. On startup, periodically, and immediately before every toolhead request, the adapter asks Moonraker for the loaded Klipper objects. It reads Klipper's parsed extruder configuration only to determine the connected printer's safe limits. If discovery is unavailable, the command is rejected; it never falls back to guessed macro names or a free-form G-code state.
-
-The current PAXX12 AFC Lite source documents the `CHANGE_TOOL` and `LANE_UNLOAD` macros for lanes E0–E3. `CHANGE_TOOL` performs its own automatic load as part of the tool change. The adapter uses only these exact macros, and only when both the macro and the matching `AFC_lane E0`–`E3` object are present. A tool change or unload also requires an idle printer and a known, fault-free `AFC.error_state`.
-
-- `printer.control.toolhead.change.e0` through `.e3` issue the fixed `CHANGE_TOOL LANE=E0` through `E3` command. These are **change-and-load** buttons; there is no invented standalone load command.
-- `printer.control.toolhead.unload.e0` through `.e3` issue the fixed `LANE_UNLOAD LANE=E0` through `E3` command.
-- No parking button is exposed in v0.0.4. No U1/PAXX12 parking macro was verified in the supported firmware source, so `printer.control.toolhead.capabilities.parkToolhead` remains `false` rather than sending an inferred park sequence.
-- `printer.control.tools.tool0.target` through `.tool3.target` set individual targets with Klipper's documented `SET_HEATER_TEMPERATURE` only if that extruder object and its runtime `max_temp` are reported. The adapter retains a five-degree margin below the reported cutoff and excludes a PAXX12 faulty-toolhead configuration with near-zero `max_power`.
-- `printer.control.extrusion.extrude` and `.retract` move only the currently active, detected extruder. They are limited to **0.1–10 mm** at **0.1–10 mm/s**, require an idle printer, the live `can_extrude` flag, and a temperature at or above that extruder's reported minimum (Klipper's default is 170 °C). The generated script uses relative extrusion only and restores the saved G-code state.
-
-Capability and error diagnostics are published below `printer.control.toolhead`: the detected macro names, whether `CHANGE_TOOL`/`LANE_UNLOAD` are usable, current command availability, a human-readable reason, and the latest rejected or failed control request. Existing AFC monitoring under `printer.afc` is retained; no AFC, Spoolman, camera, fan, or v0.0.3 control state is renamed or removed. In PAXX12 mode, AFC status is queried for the toolhead safety check even if the optional direct Spoolman integration is off; no Spoolman data is written.
-
-The supported AFC Lite macros are verified against [the PAXX12 AFC Lite configuration](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/main/overlays/firmware-extended/31-feature-afc-lite/root/usr/local/share/firmware-config/tweaks/klipper/afc.cfg). Capability discovery uses Moonraker's documented [printer-object list and query endpoints](https://moonraker.readthedocs.io/en/latest/external_api/printer/). Target temperatures and active-extruder behavior use Klipper's documented [`SET_HEATER_TEMPERATURE` and multi-extruder commands](https://www.klipper3d.org/G-Codes.html). This adapter release has unit tests, not a physical validation of the v0.0.4 action paths: keep attendance and verify macro behaviour on the actual printer before routine use.
-
-## Configuration
-
-| Setting                      | Description                                                                         |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
-| Moonraker host or IP address | Hostname or local IP address of the printer. Do not include `http://` or a path.    |
-| Moonraker port               | Moonraker HTTP port; `7125` by default.                                             |
-| Firmware mode                | Auto detect, original firmware, or PAXX12.                                          |
-| Request timeout              | Maximum duration of one Moonraker request, in seconds.                              |
-| Polling interval             | Time between health checks, in seconds.                                             |
-| Spoolman integration         | Enables AFC lane and Spoolman status queries through Moonraker.                     |
-| Spoolman host and port       | Reserved for future direct inventory queries; currently not used for communication. |
-| Discover and select cameras  | Reads enabled Moonraker camera entries and saves the selected cameras.              |
-| Print preview                | Enables the current G-code thumbnail URL.                                           |
-
-## States
-
-| State                                                                                                 | Type           | Meaning                                                                                                   |
-| ----------------------------------------------------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------- |
-| `info.connection`                                                                                     | boolean        | Whether the latest Moonraker health check succeeded.                                                      |
-| `printer.info.hostname`                                                                               | string         | Hostname reported by Moonraker.                                                                           |
-| `printer.info.firmware`                                                                               | string         | Klipper software version returned by Moonraker's printer info endpoint.                                   |
-| `printer.info.status`                                                                                 | string         | Printer state message reported by Moonraker.                                                              |
-| `printer.info.klippyState` / `.ready` / `.lastError`                                                   | string/boolean | Klipper state, readiness and latest connection error.                                                     |
-| `printer.info.lastUpdate`                                                                             | number         | Timestamp of the last successful query.                                                                   |
-| `printer.job.filename`, `.duration`, `.totalDuration`, `.message`, `.displayMessage`                  | string/number  | Current file, elapsed/total duration and printer messages.                                                |
-| `printer.job.slicer`, `.slicerVersion`, `.slicerEstimatedDuration`                                    | string/number  | Slicer metadata extracted by Moonraker from the G-code file.                                             |
-| `printer.job.remaining`, `.slicerRemaining`, `.estimatedEnd`, `.estimateAvailable`                    | number/boolean | Live ETA forecast in seconds and predicted completion timestamp.                                          |
-| `printer.job.layer.current`, `.total`, `.progress`                                                     | number         | Current and total layers plus calculated layer progress.                                                  |
-| `printer.job.filePosition`, `.fileProgress`, `.lastCompletedFile`                                      | number/string  | G-code byte position, file progress and last live-completed file.                                        |
-| `printer.motion.position.x`, `.y`, `.z`                                                               | number         | Current toolhead coordinates reported by Moonraker, in mm.                                                |
-| `printer.motion.maxVelocity`, `.maxAcceleration`, `.commandedSpeed`, `.speedFactor`, `.flowFactor`     | number         | Read-only motion limits, latest commanded speed, speed and flow factors.                                 |
-| `printer.tools.tool0` … `.tool3`                                                                      | number/string  | Includes read-only heater power, pressure advance and smooth-time telemetry when reported.                |
-| `printer.bed.power`                                                                                    | number         | Read-only bed heater output in percent.                                                                   |
-| `printer.fans.*` / `printer.sensors.*`                                                                 | number         | Dynamically discovered read-only fan/RPM and temperature telemetry.                                       |
-| `printer.control.home.all`, `.x`, `.y`, `.z`                                                          | boolean button | Write `true` to home all axes or the selected axis. Resets to `false`.                                    |
-| `printer.control.jog.step`                                                                            | number         | Jog distance in mm (0.1–25).                                                                              |
-| `printer.control.jog.speed`                                                                           | number         | Jog speed in mm/s (1–100).                                                                                |
-| `printer.control.jog.xPositive`, `.xNegative`, `.yPositive`, `.yNegative`, `.zPositive`, `.zNegative` | boolean button | Write `true` to move by the configured step and speed. Resets to `false`.                                 |
-| `printer.control.job.pause`, `.resume`, `.cancel`                                                     | boolean button | Write `true` to control the current print when its current state permits it. Resets to `false`.           |
-| `printer.control.safety.enabled`                                                                      | boolean        | `true` only when PAXX12 mode was explicitly selected.                                                     |
-| `printer.control.safety.homingAllowed`, `.joggingAllowed`, `.jobControlAllowed`                       | boolean        | Current availability hints from the last Moonraker status. Every request is checked again before sending. |
-| `printer.control.safety.reason`                                                                       | string         | Reason why control is unavailable or a reminder that individual requests are rechecked.                   |
-| `printer.control.lastCommand` / `printer.control.lastError`                                           | string         | Last accepted control state ID / latest rejected or failed request reason.                                |
-| `printer.control.toolhead.change.e0` … `.e3`                                                          | boolean button | Changes to and loads the selected AFC lane only when the matching `CHANGE_TOOL` capability is detected.   |
-| `printer.control.toolhead.unload.e0` … `.e3`                                                          | boolean button | Unloads the selected AFC lane only when the matching `LANE_UNLOAD` capability is detected.                |
-| `printer.control.tools.tool0.target` … `.tool3.target`                                                | number         | Requested target for one extruder; runtime Klipper limits are checked before sending.                     |
-| `printer.control.extrusion.distance` / `.speed`                                                       | number         | Manual extrusion amount (0.1–10 mm) / speed (0.1–10 mm/s).                                                |
-| `printer.control.extrusion.extrude` / `.retract`                                                      | boolean button | Manually extrudes or retracts the active hot tool after all live safety checks pass.                      |
-| `printer.control.toolhead.capabilities.*`                                                             | boolean/string | Detected macros and supported optional actions; verified parking remains `false` in v0.0.4.                |
-| `printer.control.toolhead.safety.*` / `.diagnostics.*`                                                | boolean/string | Current command availability, diagnostic reason, and latest failed/rejected toolhead request.             |
-
-## Development
-
-Requires Node.js 22.19.0 or newer and ioBroker Admin 7.6.20 or newer. CI covers Node.js 22, 24 and 26.
+Erfordert Node.js 22.19.0 oder neuer und ioBroker Admin 7.6.20 oder neuer.
 
 ```bash
 npm ci
@@ -132,65 +81,39 @@ npm run lint
 npm run build
 ```
 
-The repository was generated with the official [`@iobroker/create-adapter`](https://github.com/ioBroker/create-adapter) tooling and uses TypeScript, JSON Config, adapter tests, and GitHub Actions.
-
 ## Releases
 
-A version tag is accepted only when it matches the version in `package.json` and points to a commit on `main`. After all CI checks pass:
-
-- a stable tag such as `v0.0.4` is published to npm as `latest`, then a normal GitHub release is created;
-- a pre-release tag such as `v0.0.5-beta.1` is published to npm as `next`, then a GitHub pre-release is created.
-
-This keeps the GitHub **Latest** release and npm's `latest` tag aligned. Existing versions published before this automation are not changed retroactively.
+Ein veröffentlichter GitHub-Release ist nur gültig, wenn sein Tag zur Version in `package.json` passt und auf `main` zeigt. Nach erfolgreichen Prüfungen veröffentlicht GitHub Actions stabile Releases als npm-Tag `latest`, Pre-Releases als `next`. Bereits veröffentlichte Versionen werden nicht nachträglich verändert.
 
 ## Roadmap
 
-1. Validate v0.0.4 tool change, lane unload, temperature, and manual extrusion paths on a physical PAXX12 U1, then document the tested firmware/macro combination.
-2. Add a parking control only after a U1/PAXX12 parking macro and its safe preconditions are documented and physically validated.
-3. Validate Moonraker payloads and capabilities on a physical U1 running original firmware before enabling any control for it.
-4. Extend automated tests for print, material and media data.
-5. Validate shutdown and restart in compact mode.
-6. Add direct Spoolman inventory access if required.
+1. Toolwechsel, Lane-Unload, Temperatur und manuelle Extrusion an einem physischen PAXX12-U1 validieren.
+2. Parksteuerung erst nach dokumentiertem und physisch validiertem Parkmakro ergänzen.
+3. Moonraker-Payloads an einem U1 mit Original-Firmware prüfen, bevor dafür Steuerungen aktiviert werden.
+4. Automatisierte Tests für Druck-, Material- und Mediendaten ausbauen.
 
-## Disclaimer
+## Haftungsausschluss
 
-Snapmaker and U1 are trademarks of their respective owners. This is an independent community project and is not affiliated with or endorsed by Snapmaker.
+Snapmaker und U1 sind Marken ihrer jeweiligen Inhaber. Dies ist ein unabhängiges Community-Projekt und weder mit Snapmaker verbunden noch von Snapmaker unterstützt.
 
-## Changelog
+## Änderungsprotokoll
 
-Full release notes: [CHANGELOG.md](CHANGELOG.md).
+### 0.0.8 (2026-11-15)
+
+- (Negalein) Deutsche README für GitHub und npm.
 
 ### 0.0.7 (2026-11-15)
 
-- (Negalein) Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.
+- (Negalein) Vollständiges kompiliertes Adapterpaket für ETA- und Diagnose-Telemetrie veröffentlicht.
 
 ### 0.0.6 (2026-11-15)
 
-- (Negalein) Add print ETA, completion timestamp, layers, messages, diagnostic telemetry, and dynamic read-only fan/sensor discovery.
+- (Negalein) Druck-ETA, Fertigstellungszeit, Schichten, Meldungen und Diagnose-Telemetrie ergänzt.
 
-### 0.0.5 (2026-11-11)
+Vollständige Release-Hinweise: [CHANGELOG.md](CHANGELOG.md).
 
-- (Negalein) Improve ioBroker metadata, configuration safety, camera object IDs, translations, and development documentation.
-
-### 0.0.4 (2026-11-11)
-
-- (Negalein) Add capability-gated PAXX12 E0–E3 tool change/unload, temperature and manual extrusion controls.
-- (Negalein) Keep parking unavailable without a verified U1/PAXX12 macro and add toolhead/AFC safety diagnostics.
-
-### 0.0.3 (2026-11-10)
-
-- (Negalein) Add guarded PAXX12 Home, jog, position and print-control data points.
-
-### 0.0.2 (2026-11-02)
-
-- (Negalein) Enable trusted publishing through GitHub Actions after successful checks.
-
-### 0.0.1 (2026-11-01)
-
-- (Negalein) Created the initial adapter scaffold.
-
-## License
+## Lizenz
 
 Copyright (c) 2026 Negalein <negalein@gmail.com>
 
-Licensed under the [MIT License](LICENSE).
+Lizenziert unter der [MIT-Lizenz](LICENSE).
