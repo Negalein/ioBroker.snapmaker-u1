@@ -162,6 +162,10 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 Full release notes: [CHANGELOG.md](CHANGELOG.md).
 
+### 0.0.12 (2026-11-15)
+
+- (Negalein) Use the official ioBroker release workflow and keep the seven newest published release notes.
+
 ### 0.0.11 (2026-11-15)
 
 - (Negalein) Fix the invalid acceleration state role and migrate existing installations.

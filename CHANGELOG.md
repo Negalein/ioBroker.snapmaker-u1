@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 0.0.12 — 2026-11-15
+
+### Fixed
+
+- Use ioBroker's official trusted-publishing release workflow and retain the seven newest published release notes.
+
 ## 0.0.11 — 2026-11-15
 
 ### Fixed

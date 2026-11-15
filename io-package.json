@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.11",
+		"version": "0.0.12",
 		"news": {
+			"0.0.12": {
+				"en": "Use the official ioBroker release workflow and retain the seven newest published release notes.",
+				"de": "Nutzt den offiziellen ioBroker-Release-Workflow und behält die sieben neuesten veröffentlichten Release-Hinweise.",
+				"ru": "Используется официальный процесс выпуска ioBroker; сохранены семь последних опубликованных заметок о выпусках.",
+				"pt": "Usa o fluxo de lançamento oficial do ioBroker e mantém as sete notas de versão publicadas mais recentes.",
+				"nl": "Gebruikt de officiële ioBroker-releaseworkflow en behoudt de zeven nieuwste gepubliceerde releaseopmerkingen.",
+				"fr": "Utilise le flux de publication officiel d’ioBroker et conserve les sept notes de version publiées les plus récentes.",
+				"it": "Utilizza il flusso di rilascio ufficiale di ioBroker e conserva le sette note di rilascio pubblicate più recenti.",
+				"es": "Usa el flujo de lanzamiento oficial de ioBroker y conserva las siete notas de versión publicadas más recientes.",
+				"pl": "Używa oficjalnego procesu wydawniczego ioBroker i zachowuje siedem najnowszych opublikowanych informacji o wydaniu.",
+				"uk": "Використовує офіційний процес випуску ioBroker і зберігає сім найновіших опублікованих приміток до випуску.",
+				"zh-cn": "使用官方 ioBroker 发布工作流，并保留最近七个已发布版本的发行说明。"
+			},
 			"0.0.11": {
 				"en": "Fix the invalid acceleration state role and migrate existing installations.",
 				"de": "Korrigiert die ungültige Rolle des Beschleunigungsdatenpunkts und migriert bestehende Installationen.",
@@ -28,32 +41,6 @@
 				"pl": "Przywraca sprawdzony proces tag → npm → wydanie GitHub i publikuje poprawiony pakiet dokumentacji.",
 				"uk": "Відновлює перевірений процес тег → npm → реліз GitHub і публікує виправлений пакет документації.",
 				"zh-cn": "恢复经过验证的 标签 → npm → GitHub 发布流程，并发布修正后的文档包。"
-			},
-			"0.0.9": {
-				"en": "Restore the English main README and add a separate German README.",
-				"de": "Stellt die englische Haupt-README wieder her und ergänzt eine eigene deutsche README.",
-				"ru": "Восстановлен основной README на английском языке и добавлен отдельный README на немецком языке.",
-				"pt": "Restaura o README principal em inglês e adiciona um README separado em alemão.",
-				"nl": "Herstelt de Engelse hoofd-README en voegt een aparte Duitse README toe.",
-				"fr": "Restaure le README principal en anglais et ajoute un README allemand distinct.",
-				"it": "Ripristina il README principale in inglese e aggiunge un README tedesco separato.",
-				"es": "Restaura el README principal en inglés y añade un README alemán independiente.",
-				"pl": "Przywraca główny README po angielsku i dodaje osobny README po niemiecku.",
-				"uk": "Відновлює основний README англійською та додає окремий README німецькою.",
-				"zh-cn": "恢复英文主 README，并添加单独的德语 README。"
-			},
-			"0.0.8": {
-				"en": "Translate the README into German for GitHub and npm.",
-				"de": "Übersetzt die README für GitHub und npm ins Deutsche.",
-				"ru": "README для GitHub и npm переведён на немецкий язык.",
-				"pt": "Traduz o README para alemão no GitHub e npm.",
-				"nl": "Vertaalt de README voor GitHub en npm naar het Duits.",
-				"fr": "Traduit le README en allemand pour GitHub et npm.",
-				"it": "Traduce il README in tedesco per GitHub e npm.",
-				"es": "Traduce el README al alemán para GitHub y npm.",
-				"pl": "Tłumaczy README na język niemiecki dla GitHub i npm.",
-				"uk": "Перекладає README німецькою для GitHub і npm.",
-				"zh-cn": "将 GitHub 和 npm 的 README 翻译为德语。"
 			},
 			"0.0.7": {
 				"en": "Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.",
@@ -106,45 +93,6 @@
 				"pl": "Dodano sterowanie PAXX12 E0–E3, temperaturą i ręczną ekstruzją zależne od wykrytych możliwości.",
 				"uk": "Додано керування PAXX12 E0–E3, температурою та ручною екструзією лише для виявлених можливостей.",
 				"zh-cn": "新增受能力检测限制的 PAXX12 E0–E3 工具、温度和手动挤出控制。"
-			},
-			"0.0.3": {
-				"en": "Add guarded PAXX12 motion and print controls.",
-				"de": "Fügt abgesicherte PAXX12-Bewegungs- und Drucksteuerungen hinzu.",
-				"ru": "Добавлены защищенные элементы управления движением и печатью PAXX12.",
-				"pt": "Adicionados controles protegidos de movimento e impressão para PAXX12.",
-				"nl": "Beveiligde PAXX12-bewegings- en printbediening toegevoegd.",
-				"fr": "Ajout de commandes sécurisées de mouvement et d’impression PAXX12.",
-				"it": "Aggiunti controlli protetti per movimento e stampa PAXX12.",
-				"es": "Se añaden controles protegidos de movimiento e impresión PAXX12.",
-				"pl": "Dodano zabezpieczone sterowanie ruchem i drukiem PAXX12.",
-				"uk": "Додано захищене керування рухом і друком PAXX12.",
-				"zh-cn": "新增受保护的 PAXX12 运动和打印控制。"
-			},
-			"0.0.2": {
-				"en": "Enable trusted publishing through GitHub Actions.",
-				"de": "Trusted Publishing über GitHub Actions eingerichtet.",
-				"ru": "Настроена доверенная публикация через GitHub Actions.",
-				"pt": "Publicação confiável através do GitHub Actions.",
-				"nl": "Vertrouwd publiceren via GitHub Actions ingesteld.",
-				"fr": "Publication de confiance via GitHub Actions configurée.",
-				"it": "Pubblicazione attendibile tramite GitHub Actions configurata.",
-				"es": "Publicación de confianza mediante GitHub Actions configurada.",
-				"pl": "Skonfigurowano zaufane publikowanie przez GitHub Actions.",
-				"uk": "Налаштовано довірену публікацію через GitHub Actions.",
-				"zh-cn": "通过 GitHub Actions 配置可信发布。"
-			},
-			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "Начальная версия",
-				"pt": "lançamento inicial",
-				"nl": "Eerste uitgave",
-				"fr": "Première version",
-				"it": "Versione iniziale",
-				"es": "Versión inicial",
-				"pl": "Pierwsze wydanie",
-				"uk": "Початкова версія",
-				"zh-cn": "首次出版"
 			}
 		},
 		"titleLang": {
