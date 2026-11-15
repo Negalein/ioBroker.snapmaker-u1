@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 0.0.9 — 2026-11-15
+
+### Changed
+
+- Restore the English main README and add a separate German README.
+
 ## 0.0.8 — 2026-11-15
 
 ### Changed
