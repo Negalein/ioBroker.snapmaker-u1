@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 0.0.10 — 2026-11-15
+
+### Fixed
+
+- Restore the tested tag-to-npm-to-GitHub-release workflow and publish the corrected documentation package.
+
 ## 0.0.9 — 2026-11-15
 
 ### Changed

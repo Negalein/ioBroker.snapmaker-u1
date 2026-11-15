@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.9",
+		"version": "0.0.10",
 		"news": {
+			"0.0.10": {
+				"en": "Restore the tested tag-to-npm-to-GitHub-release workflow and publish the corrected documentation package.",
+				"de": "Stellt den getesteten Ablauf Tag zu npm zu GitHub-Release wieder her und veröffentlicht das korrigierte Dokumentationspaket.",
+				"ru": "Восстановлен проверенный процесс: тег → npm → GitHub Release, опубликован исправленный пакет документации.",
+				"pt": "Restaura o fluxo testado tag → npm → GitHub Release e publica o pacote de documentação corrigido.",
+				"nl": "Herstelt de geteste workflow tag → npm → GitHub-release en publiceert het gecorrigeerde documentatiepakket.",
+				"fr": "Restaure le flux testé tag → npm → version GitHub et publie le paquet de documentation corrigé.",
+				"it": "Ripristina il flusso testato tag → npm → release GitHub e pubblica il pacchetto di documentazione corretto.",
+				"es": "Restaura el flujo probado etiqueta → npm → versión de GitHub y publica el paquete de documentación corregido.",
+				"pl": "Przywraca sprawdzony proces tag → npm → wydanie GitHub i publikuje poprawiony pakiet dokumentacji.",
+				"uk": "Відновлює перевірений процес тег → npm → реліз GitHub і публікує виправлений пакет документації.",
+				"zh-cn": "恢复经过验证的 标签 → npm → GitHub 发布流程，并发布修正后的文档包。"
+			},
 			"0.0.9": {
 				"en": "Restore the English main README and add a separate German README.",
 				"de": "Stellt die englische Haupt-README wieder her und ergänzt eine eigene deutsche README.",

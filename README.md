@@ -162,6 +162,10 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 Full release notes: [CHANGELOG.md](CHANGELOG.md).
 
+### 0.0.10 (2026-11-15)
+
+- (Negalein) Restore the tested tag-to-npm-to-GitHub-release workflow and publish the corrected documentation package.
+
 ### 0.0.9 (2026-11-15)
 
 - (Negalein) Restore the English main README and add a separate German README.
