@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { discoverTelemetryObjects, mapDiscoveredTelemetry, mapStatus } from "./status";
+import { discoverTelemetryObjects, mapDiscoveredTelemetry, mapStatus, statusFields } from "./status";
 
 describe("printer status mapping", () => {
 	it("publishes finite toolhead coordinates as X, Y and Z position states", () => {
@@ -57,6 +57,11 @@ describe("printer status mapping", () => {
 			"tools.tool0.smoothTime": 0.02,
 		});
 		expect(values["job.progress"]).to.be.closeTo(56, 0.000_001);
+	});
+
+	it("uses the catalogued generic value role for maximum acceleration", () => {
+		const maxAcceleration = statusFields.find(([, , id]) => id === "motion.maxAcceleration");
+		expect(maxAcceleration?.[4]).to.equal("value");
 	});
 
 	it("discovers and maps optional fans and temperature sources as read-only telemetry", () => {

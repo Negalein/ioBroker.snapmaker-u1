@@ -162,6 +162,10 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 Full release notes: [CHANGELOG.md](CHANGELOG.md).
 
+### 0.0.11 (2026-11-15)
+
+- (Negalein) Fix the invalid acceleration state role and migrate existing installations.
+
 ### 0.0.10 (2026-11-15)
 
 - (Negalein) Restore the tested tag-to-npm-to-GitHub-release workflow and publish the corrected documentation package.

@@ -14,7 +14,7 @@ export const statusFields: Array<[string, string, string, ioBroker.CommonType, s
 	["virtual_sdcard", "file_position", "job.filePosition", "number", "value", "B"],
 	["toolhead", "extruder", "tools.active", "string", "text"],
 	["toolhead", "max_velocity", "motion.maxVelocity", "number", "value.speed", "mm/s"],
-	["toolhead", "max_accel", "motion.maxAcceleration", "number", "value.acceleration", "mm/s²"],
+	["toolhead", "max_accel", "motion.maxAcceleration", "number", "value", "mm/s²"],
 	["toolhead", "print_time", "motion.printTime", "number", "value", "s"],
 	["gcode_move", "speed", "motion.commandedSpeed", "number", "value.speed", "mm/s"],
 	["gcode_move", "speed_factor", "motion.speedFactor", "number", "value", "%"],
