@@ -666,6 +666,10 @@ class SnapmakerU1 extends utils.Adapter {
                 native: {},
             });
         }
+        // Versions through 0.0.10 used the non-existent role "value.acceleration".
+        // setObjectNotExistsAsync preserves existing object metadata, so update the
+        // affected state explicitly when an installation is upgraded.
+        await this.extendObjectAsync("printer.motion.maxAcceleration", { common: { role: "value" } });
         for (const [id, type, role, unit] of status_1.derivedStatusFields) {
             await this.setObjectNotExistsAsync(`printer.${id}`, {
                 type: "state",

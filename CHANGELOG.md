@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 0.0.11 — 2026-11-15
+
+### Fixed
+
+- Replace the invalid `value.acceleration` role with `value` and migrate existing installations.
+
 ## 0.0.10 — 2026-11-15
 
 ### Fixed

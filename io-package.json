@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.10",
+		"version": "0.0.11",
 		"news": {
+			"0.0.11": {
+				"en": "Fix the invalid acceleration state role and migrate existing installations.",
+				"de": "Korrigiert die ungültige Rolle des Beschleunigungsdatenpunkts und migriert bestehende Installationen.",
+				"ru": "Исправлена недопустимая роль состояния ускорения и добавлена миграция для существующих установок.",
+				"pt": "Corrige a função inválida do estado de aceleração e migra instalações existentes.",
+				"nl": "Corrigeert de ongeldige rol van de versnellingsstatus en migreert bestaande installaties.",
+				"fr": "Corrige le rôle non valide de l’état d’accélération et migre les installations existantes.",
+				"it": "Corregge il ruolo non valido dello stato di accelerazione e migra le installazioni esistenti.",
+				"es": "Corrige el rol no válido del estado de aceleración y migra las instalaciones existentes.",
+				"pl": "Naprawia nieprawidłową rolę stanu przyspieszenia i migruje istniejące instalacje.",
+				"uk": "Виправляє недійсну роль стану прискорення та мігрує наявні інсталяції.",
+				"zh-cn": "修复加速度状态的无效角色，并迁移现有安装。"
+			},
 			"0.0.10": {
 				"en": "Restore the tested tag-to-npm-to-GitHub-release workflow and publish the corrected documentation package.",
 				"de": "Stellt den getesteten Ablauf Tag zu npm zu GitHub-Release wieder her und veröffentlicht das korrigierte Dokumentationspaket.",
