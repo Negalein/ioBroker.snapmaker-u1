@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.7",
+		"version": "0.0.8",
 		"news": {
+			"0.0.8": {
+				"en": "Translate the README into German for GitHub and npm.",
+				"de": "Übersetzt die README für GitHub und npm ins Deutsche.",
+				"ru": "README для GitHub и npm переведён на немецкий язык.",
+				"pt": "Traduz o README para alemão no GitHub e npm.",
+				"nl": "Vertaalt de README voor GitHub en npm naar het Duits.",
+				"fr": "Traduit le README en allemand pour GitHub et npm.",
+				"it": "Traduce il README in tedesco per GitHub e npm.",
+				"es": "Traduce el README al alemán para GitHub y npm.",
+				"pl": "Tłumaczy README na język niemiecki dla GitHub i npm.",
+				"uk": "Перекладає README німецькою для GitHub і npm.",
+				"zh-cn": "将 GitHub 和 npm 的 README 翻译为德语。"
+			},
 			"0.0.7": {
 				"en": "Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.",
 				"de": "Veröffentlicht das vollständige kompilierte Adapterpaket für die ETA- und Diagnose-Telemetrie-Erweiterung.",
