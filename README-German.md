@@ -100,6 +100,10 @@ Snapmaker und U1 sind Marken ihrer jeweiligen Inhaber. Dies ist ein unabhängige
 
 ## Änderungsprotokoll
 
+### 0.0.10 (2026-11-15)
+
+- (Negalein) Getesteten Ablauf Tag zu npm zu GitHub-Release wiederhergestellt und korrigiertes Dokumentationspaket veröffentlicht.
+
 ### 0.0.9 (2026-11-15)
 
 - (Negalein) Englische Haupt-README wiederhergestellt und eigene deutsche README ergänzt.
