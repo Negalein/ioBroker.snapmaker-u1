@@ -108,7 +108,6 @@ describe("printer status mapping", () => {
 			},
 		]);
 	});
-
 	it("keeps dynamically discovered telemetry distinct when labels normalize to the same ID", () => {
 		const telemetry = mapDiscoveredTelemetry(
 			{
@@ -124,4 +123,3 @@ describe("printer status mapping", () => {
 		expect(new Set(ids).size).to.equal(ids.length);
 	});
 });
-
