@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { createMoonrakerBaseUrl } from "./moonraker";
 
 export const statusFields: Array<[string, string, string, ioBroker.CommonType, string, string?]> = [
@@ -200,12 +201,13 @@ export function mapDiscoveredTelemetry(
 	objects: readonly string[],
 ): DiscoveredTelemetry[] {
 	const telemetry: DiscoveredTelemetry[] = [];
+	const usedObjectIds = new Set<string>();
 	for (const object of objects) {
 		const values = getRecord(status[object]);
 		if (!values) {
 			continue;
 		}
-		const objectId = safeObjectId(object);
+		const objectId = safeObjectId(object, usedObjectIds);
 		const speed = getFiniteNumber(values.speed);
 		if (speed !== undefined) {
 			telemetry.push({
@@ -267,12 +269,21 @@ function isTelemetryObject(object: string): boolean {
 	);
 }
 
-function safeObjectId(object: string): string {
-	return object
+function safeObjectId(object: string, usedObjectIds: Set<string>): string {
+	const normalized = object
 		.trim()
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "_")
 		.replace(/^_+|_+$/g, "");
+	if (!usedObjectIds.has(normalized)) {
+		usedObjectIds.add(normalized);
+		return normalized;
+	}
+
+	const digest = createHash("sha256").update(object).digest("hex").slice(0, 12);
+	const identifier = `${normalized}-${digest}`;
+	usedObjectIds.add(identifier);
+	return identifier;
 }
 
 function getRecord(value: unknown): Record<string, unknown> | undefined {

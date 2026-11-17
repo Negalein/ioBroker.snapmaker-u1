@@ -108,4 +108,18 @@ describe("printer status mapping", () => {
 			},
 		]);
 	});
+	it("keeps dynamically discovered telemetry distinct when labels normalize to the same ID", () => {
+		const telemetry = mapDiscoveredTelemetry(
+			{
+				"fan_generic Front Fan": { speed: 0.5 },
+				"fan_generic front_fan": { speed: 1 },
+			},
+			["fan_generic Front Fan", "fan_generic front_fan"],
+		);
+
+		const ids = telemetry.map(entry => entry.id);
+		expect(ids).to.include("fans.fan_generic_front_fan.speed");
+		expect(ids).to.have.length(2);
+		expect(new Set(ids).size).to.equal(ids.length);
+	});
 });
