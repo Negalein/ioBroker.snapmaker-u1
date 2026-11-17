@@ -5,6 +5,7 @@ exports.readStatus = readStatus;
 exports.mapStatus = mapStatus;
 exports.discoverTelemetryObjects = discoverTelemetryObjects;
 exports.mapDiscoveredTelemetry = mapDiscoveredTelemetry;
+const node_crypto_1 = require("node:crypto");
 const moonraker_1 = require("./moonraker");
 exports.statusFields = [
     ["print_stats", "state", "job.state", "string", "text"],
@@ -19,10 +20,10 @@ exports.statusFields = [
     ["virtual_sdcard", "progress", "job.fileProgress", "number", "value", "%"],
     ["virtual_sdcard", "file_position", "job.filePosition", "number", "value", "B"],
     ["toolhead", "extruder", "tools.active", "string", "text"],
-    ["toolhead", "max_velocity", "motion.maxVelocity", "number", "value.speed", "mm/s"],
+    ["toolhead", "max_velocity", "motion.maxVelocity", "number", "value", "mm/s"],
     ["toolhead", "max_accel", "motion.maxAcceleration", "number", "value", "mm/s²"],
     ["toolhead", "print_time", "motion.printTime", "number", "value", "s"],
-    ["gcode_move", "speed", "motion.commandedSpeed", "number", "value.speed", "mm/s"],
+    ["gcode_move", "speed", "motion.commandedSpeed", "number", "value", "mm/s"],
     ["gcode_move", "speed_factor", "motion.speedFactor", "number", "value", "%"],
     ["gcode_move", "extrude_factor", "motion.flowFactor", "number", "value", "%"],
     ["heater_bed", "temperature", "bed.temperature", "number", "value.temperature", "°C"],
@@ -34,7 +35,7 @@ exports.statusFields = [
     ["fan_generic exhaust_fan", "speed", "cover.exhaust.speed", "number", "value", "%"],
     ["fan_generic exhaust_fan", "rpm", "cover.exhaust.rpm", "number", "value", "rpm"],
 ];
-exports.statusFields.push(["AFC", "current_lane", "afc.currentLane", "string", "text"], ["AFC", "error_state", "afc.error", "boolean", "indicator.error"], ["AFC", "spoolman", "afc.spoolmanEnabled", "boolean", "indicator"], ["spoolman", "spoolman_connected", "spoolman.connected", "boolean", "indicator.connected"], ["spoolman", "spool_id", "spoolman.activeSpoolId", "number", "value"]);
+exports.statusFields.push(["AFC", "current_lane", "afc.currentLane", "string", "text"], ["AFC", "error_state", "afc.error", "boolean", "indicator.error"], ["AFC", "spoolman", "afc.spoolmanEnabled", "boolean", "indicator"], ["spoolman", "spoolman_connected", "spoolman.connected", "boolean", "indicator.reachable"], ["spoolman", "spool_id", "spoolman.activeSpoolId", "number", "value"]);
 for (let lane = 0; lane < 4; lane++) {
     for (const [key, type] of [
         ["material", "string"],
@@ -71,7 +72,7 @@ exports.derivedStatusFields = [
     ["job.estimateAvailable", "boolean", "indicator"],
     ["job.lastCompletedFile", "string", "text"],
     ["info.klippyState", "string", "text"],
-    ["info.ready", "boolean", "indicator.connected"],
+    ["info.ready", "boolean", "indicator.reachable"],
     ["info.lastError", "string", "text"],
 ];
 /**
@@ -159,12 +160,13 @@ function discoverTelemetryObjects(objects) {
 /** Maps dynamically discovered fans and temperature sources into read-only ioBroker telemetry. */
 function mapDiscoveredTelemetry(status, objects) {
     const telemetry = [];
+    const usedObjectIds = new Set();
     for (const object of objects) {
         const values = getRecord(status[object]);
         if (!values) {
             continue;
         }
-        const objectId = safeObjectId(object);
+        const objectId = safeObjectId(object, usedObjectIds);
         const speed = getFiniteNumber(values.speed);
         if (speed !== undefined) {
             telemetry.push({
@@ -182,7 +184,7 @@ function mapDiscoveredTelemetry(status, objects) {
                 id: `fans.${objectId}.rpm`,
                 name: `${object} RPM`,
                 type: "number",
-                role: "value.speed",
+                role: "value",
                 unit: "rpm",
                 value: rpm,
             });
@@ -219,12 +221,20 @@ function isTelemetryObject(object) {
         object.startsWith("temperature_sensor ") ||
         object.startsWith("heater_generic "));
 }
-function safeObjectId(object) {
-    return object
+function safeObjectId(object, usedObjectIds) {
+    const normalized = object
         .trim()
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "_")
         .replace(/^_+|_+$/g, "");
+    if (!usedObjectIds.has(normalized)) {
+        usedObjectIds.add(normalized);
+        return normalized;
+    }
+    const digest = (0, node_crypto_1.createHash)("sha256").update(object).digest("hex").slice(0, 12);
+    const identifier = `${normalized}-${digest}`;
+    usedObjectIds.add(identifier);
+    return identifier;
 }
 function getRecord(value) {
     return typeof value === "object" && value !== null && !Array.isArray(value)

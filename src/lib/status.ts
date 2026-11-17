@@ -14,10 +14,10 @@ export const statusFields: Array<[string, string, string, ioBroker.CommonType, s
 	["virtual_sdcard", "progress", "job.fileProgress", "number", "value", "%"],
 	["virtual_sdcard", "file_position", "job.filePosition", "number", "value", "B"],
 	["toolhead", "extruder", "tools.active", "string", "text"],
-	["toolhead", "max_velocity", "motion.maxVelocity", "number", "value.speed", "mm/s"],
+	["toolhead", "max_velocity", "motion.maxVelocity", "number", "value", "mm/s"],
 	["toolhead", "max_accel", "motion.maxAcceleration", "number", "value", "mm/s²"],
 	["toolhead", "print_time", "motion.printTime", "number", "value", "s"],
-	["gcode_move", "speed", "motion.commandedSpeed", "number", "value.speed", "mm/s"],
+	["gcode_move", "speed", "motion.commandedSpeed", "number", "value", "mm/s"],
 	["gcode_move", "speed_factor", "motion.speedFactor", "number", "value", "%"],
 	["gcode_move", "extrude_factor", "motion.flowFactor", "number", "value", "%"],
 	["heater_bed", "temperature", "bed.temperature", "number", "value.temperature", "°C"],
@@ -33,7 +33,7 @@ statusFields.push(
 	["AFC", "current_lane", "afc.currentLane", "string", "text"],
 	["AFC", "error_state", "afc.error", "boolean", "indicator.error"],
 	["AFC", "spoolman", "afc.spoolmanEnabled", "boolean", "indicator"],
-	["spoolman", "spoolman_connected", "spoolman.connected", "boolean", "indicator.connected"],
+	["spoolman", "spoolman_connected", "spoolman.connected", "boolean", "indicator.reachable"],
 	["spoolman", "spool_id", "spoolman.activeSpoolId", "number", "value"],
 );
 for (let lane = 0; lane < 4; lane++) {
@@ -80,7 +80,7 @@ export const derivedStatusFields: Array<[string, ioBroker.CommonType, string, st
 	["job.estimateAvailable", "boolean", "indicator"],
 	["job.lastCompletedFile", "string", "text"],
 	["info.klippyState", "string", "text"],
-	["info.ready", "boolean", "indicator.connected"],
+	["info.ready", "boolean", "indicator.reachable"],
 	["info.lastError", "string", "text"],
 ];
 
@@ -225,7 +225,7 @@ export function mapDiscoveredTelemetry(
 				id: `fans.${objectId}.rpm`,
 				name: `${object} RPM`,
 				type: "number",
-				role: "value.speed",
+				role: "value",
 				unit: "rpm",
 				value: rpm,
 			});
