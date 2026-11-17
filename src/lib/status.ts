@@ -295,4 +295,3 @@ function getRecord(value: unknown): Record<string, unknown> | undefined {
 function getFiniteNumber(value: unknown): number | undefined {
 	return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
-
