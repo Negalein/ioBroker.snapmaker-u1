@@ -212,4 +212,3 @@ Full release notes: [CHANGELOG.md](CHANGELOG.md).
 Copyright (c) 2026 Negalein <negalein@gmail.com>
 
 Licensed under the [MIT License](LICENSE).
-
