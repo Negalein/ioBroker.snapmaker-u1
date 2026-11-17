@@ -1,6 +1,12 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { discoverTelemetryObjects, mapDiscoveredTelemetry, mapStatus, statusFields } from "./status";
+import {
+	derivedStatusFields,
+	discoverTelemetryObjects,
+	mapDiscoveredTelemetry,
+	mapStatus,
+	statusFields,
+} from "./status";
 
 describe("printer status mapping", () => {
 	it("publishes finite toolhead coordinates as X, Y and Z position states", () => {
@@ -59,9 +65,17 @@ describe("printer status mapping", () => {
 		expect(values["job.progress"]).to.be.closeTo(56, 0.000_001);
 	});
 
-	it("uses the catalogued generic value role for maximum acceleration", () => {
+	it("uses generic roles for printer telemetry without a dedicated ioBroker role", () => {
+		for (const id of ["motion.maxVelocity", "motion.commandedSpeed"]) {
+			const field = statusFields.find(([, , fieldId]) => fieldId === id);
+			expect(field?.[4]).to.equal("value");
+		}
 		const maxAcceleration = statusFields.find(([, , id]) => id === "motion.maxAcceleration");
 		expect(maxAcceleration?.[4]).to.equal("value");
+		const spoolmanConnected = statusFields.find(([, , id]) => id === "spoolman.connected");
+		expect(spoolmanConnected?.[4]).to.equal("indicator.reachable");
+		const ready = derivedStatusFields.find(([id]) => id === "info.ready");
+		expect(ready?.[2]).to.equal("indicator.reachable");
 	});
 
 	it("discovers and maps optional fans and temperature sources as read-only telemetry", () => {
@@ -94,7 +108,7 @@ describe("printer status mapping", () => {
 				id: "fans.fan_generic_e1_fan.rpm",
 				name: "fan_generic e1_fan RPM",
 				type: "number",
-				role: "value.speed",
+				role: "value",
 				unit: "rpm",
 				value: 4_200,
 			},

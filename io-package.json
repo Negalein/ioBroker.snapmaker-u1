@@ -135,7 +135,7 @@
 		"loglevel": "info",
 		"tier": 3,
 		"mode": "daemon",
-		"type": "infrastructure",
+		"type": "hardware",
 		"connectionType": "local",
 		"dataSource": "poll",
 		"compact": true,
