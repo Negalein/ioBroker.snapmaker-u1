@@ -160,8 +160,6 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 ## Changelog
 
-Full release notes: [CHANGELOG.md](CHANGELOG.md).
-
 ### 0.0.12 (2026-11-15)
 
 - (Negalein) Use the official ioBroker release workflow and keep the seven newest published release notes.
@@ -177,6 +175,10 @@ Full release notes: [CHANGELOG.md](CHANGELOG.md).
 ### 0.0.9 (2026-11-15)
 
 - (Negalein) Restore the English main README and add a separate German README.
+
+### 0.0.8 (2026-11-15)
+
+- (Negalein) Add the separate German README for GitHub and npm.
 
 ### 0.0.7 (2026-11-15)
 
