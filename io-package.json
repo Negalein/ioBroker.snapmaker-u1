@@ -138,6 +138,9 @@
 		"type": "hardware",
 		"connectionType": "local",
 		"dataSource": "poll",
+		"supportedMessages": {
+			"help": true
+		},
 		"compact": true,
 		"messagebox": true,
 		"adminUI": {

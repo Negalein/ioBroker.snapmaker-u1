@@ -40,6 +40,7 @@ const utils = __importStar(require("@iobroker/adapter-core"));
 const control_1 = require("./lib/control");
 const config_1 = require("./lib/config");
 const media_1 = require("./lib/media");
+const help_1 = require("./lib/help");
 const fans_1 = require("./lib/fans");
 const moonraker_1 = require("./lib/moonraker");
 const print_estimate_1 = require("./lib/print-estimate");
@@ -549,7 +550,14 @@ class SnapmakerU1 extends utils.Adapter {
         });
         this.on("ready", this.onReady.bind(this));
         this.on("message", async (obj) => {
-            if (obj.command !== "discoverCameras" || !obj.callback) {
+            if (!obj.callback) {
+                return;
+            }
+            if (obj.command === "help") {
+                this.sendTo(obj.from, obj.command, (0, help_1.getHelpResponse)(), obj.callback);
+                return;
+            }
+            if (obj.command !== "discoverCameras") {
                 return;
             }
             try {

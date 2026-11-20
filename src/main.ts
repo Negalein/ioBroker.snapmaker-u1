@@ -29,6 +29,7 @@ import {
 	previewUrlFromMetadata,
 	type GcodeFileMetadata,
 } from "./lib/media";
+import { getHelpResponse } from "./lib/help";
 import { fanNames, setFanSpeed } from "./lib/fans";
 import { executeGcodeScript, getPrinterConfiguration, getPrinterInfo, getPrinterObjects } from "./lib/moonraker";
 import { calculatePrintEstimate } from "./lib/print-estimate";
@@ -578,7 +579,14 @@ class SnapmakerU1 extends utils.Adapter {
 		});
 		this.on("ready", this.onReady.bind(this));
 		this.on("message", async obj => {
-			if (obj.command !== "discoverCameras" || !obj.callback) {
+			if (!obj.callback) {
+				return;
+			}
+			if (obj.command === "help") {
+				this.sendTo(obj.from, obj.command, getHelpResponse(), obj.callback);
+				return;
+			}
+			if (obj.command !== "discoverCameras") {
 				return;
 			}
 			try {
