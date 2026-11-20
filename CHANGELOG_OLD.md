@@ -2,6 +2,10 @@
 
 For the current release history, see the [README](README.md#changelog).
 
+### 0.0.6 (2026-11-15)
+
+- (Negalein) Add print ETA, completion timestamp, layers, messages, diagnostic telemetry, and dynamic read-only fan/sensor discovery.
+
 ### 0.0.5 (2026-11-11)
 
 - (Negalein) Improve ioBroker metadata, configuration safety, camera object IDs, translations, and development documentation.

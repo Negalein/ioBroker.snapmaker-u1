@@ -160,6 +160,10 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 ## Changelog
 
+### 0.0.13 (2026-11-20)
+
+- (Negalein) Align state roles with the ioBroker role model and add an optional help message for AI agents and script authors.
+
 ### 0.0.12 (2026-11-15)
 
 - (Negalein) Use the official ioBroker release workflow and keep the seven newest published release notes.
@@ -183,10 +187,6 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 ### 0.0.7 (2026-11-15)
 
 - (Negalein) Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.
-
-### 0.0.6 (2026-11-15)
-
-- (Negalein) Add print ETA, completion timestamp, layers, messages, diagnostic telemetry, and dynamic read-only fan/sensor discovery.
 
 Older entries are available in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
 

@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.12",
+		"version": "0.0.13",
 		"news": {
+			"0.0.13": {
+				"en": "Align state roles with the ioBroker role model and add an optional help message for AI agents and script authors.",
+				"de": "Gleicht die State-Rollen an das ioBroker-Rollenmodell an und ergänzt eine optionale Help-Nachricht für KI-Agenten und Skriptautoren.",
+				"ru": "Приводит роли состояний в соответствие с моделью ролей ioBroker и добавляет необязательное сообщение help для ИИ-агентов и авторов скриптов.",
+				"pt": "Alinha as funções dos estados ao modelo de funções do ioBroker e adiciona uma mensagem de ajuda opcional para agentes de IA e autores de scripts.",
+				"nl": "Brengt statusrollen in lijn met het rollenmodel van ioBroker en voegt een optioneel helpbericht toe voor AI-agenten en scriptauteurs.",
+				"fr": "Aligne les rôles des états sur le modèle de rôles ioBroker et ajoute un message d’aide facultatif pour les agents d’IA et les auteurs de scripts.",
+				"it": "Allinea i ruoli degli stati al modello di ruoli di ioBroker e aggiunge un messaggio di aiuto facoltativo per agenti IA e autori di script.",
+				"es": "Alinea los roles de los estados con el modelo de roles de ioBroker y añade un mensaje de ayuda opcional para agentes de IA y autores de scripts.",
+				"pl": "Dostosowuje role stanów do modelu ról ioBroker i dodaje opcjonalną wiadomość pomocy dla agentów AI oraz autorów skryptów.",
+				"uk": "Узгоджує ролі станів із моделлю ролей ioBroker і додає необов’язкове повідомлення довідки для ШІ-агентів та авторів скриптів.",
+				"zh-cn": "使状态角色与 ioBroker 角色模型保持一致，并为 AI 代理和脚本作者添加可选的帮助消息。"
+			},
 			"0.0.12": {
 				"en": "Use the official ioBroker release workflow and retain the seven newest published release notes.",
 				"de": "Nutzt den offiziellen ioBroker-Release-Workflow und behält die sieben neuesten veröffentlichten Release-Hinweise.",
