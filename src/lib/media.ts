@@ -22,6 +22,20 @@ export interface GcodeFileMetadata {
 	thumbnails: Array<{ width: number; height: number; relativePath: string }>;
 }
 
+/** Returns a readable label without changing the persistent camera identifier. */
+export function cameraLabel(camera: Pick<Camera, "name">, index: number): string {
+	return camera.name.trim() || `Camera ${index + 1}`;
+}
+
+/** Keeps selected, disabled cameras in the list so Admin can resolve their labels. */
+export function cameraOptions(cameras: Camera[], selected: readonly string[]): Array<{ label: string; value: string }> {
+	return cameras.flatMap((camera, index) =>
+		camera.enabled || selected.includes(camera.uid)
+			? [{ label: cameraLabel(camera, index), value: camera.uid }]
+			: [],
+	);
+}
+
 export async function mediaRequest(
 	host: string,
 	port: number,

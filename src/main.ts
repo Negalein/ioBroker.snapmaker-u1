@@ -24,6 +24,8 @@ import {
 import { pollIntervalMs, requestTimeoutMs } from "./lib/config";
 import {
 	cameraObjectId,
+	cameraLabel,
+	cameraOptions,
 	cameraUrl,
 	discoverCameras,
 	getGcodeFileMetadata,
@@ -321,7 +323,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "°C",
+		unit: "�C",
 	},
 	{
 		id: "printer.control.tools.tool1.target",
@@ -331,7 +333,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "°C",
+		unit: "�C",
 	},
 	{
 		id: "printer.control.tools.tool2.target",
@@ -341,7 +343,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "°C",
+		unit: "�C",
 	},
 	{
 		id: "printer.control.tools.tool3.target",
@@ -351,7 +353,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "°C",
+		unit: "�C",
 	},
 	{
 		id: "printer.control.toolhead.change.e0",
@@ -596,12 +598,26 @@ class SnapmakerU1 extends utils.Adapter {
 				this.sendTo(
 					obj.from,
 					obj.command,
-					cameras.filter(c => c.enabled).map(c => ({ label: c.name, value: c.uid })),
+					cameraOptions(cameras, this.config.selectedCameras ?? []),
 					obj.callback,
 				);
 			} catch (error) {
 				this.log.warn(`Camera discovery failed: ${String(error)}`);
-				this.sendTo(obj.from, obj.command, [], obj.callback);
+				// Stored names keep selected cameras readable while Moonraker is unavailable.
+				const options: Array<{ label: string; value: string }> = [];
+				for (const uid of this.config.selectedCameras ?? []) {
+					try {
+						const name = (await this.getStateAsync(`cameras.${cameraObjectId(uid)}.name`))?.val;
+						options.push({
+							label:
+								typeof name === "string" && name.trim() ? name.trim() : `Camera ${options.length + 1}`,
+							value: uid,
+						});
+					} catch {
+						options.push({ label: `Camera ${options.length + 1}`, value: uid });
+					}
+				}
+				this.sendTo(obj.from, obj.command, options, obj.callback);
 			}
 		});
 		this.on("stateChange", (id, state) => {
@@ -872,10 +888,14 @@ class SnapmakerU1 extends utils.Adapter {
 		});
 		if (this.config.selectedCameras?.length) {
 			const cameras = await discoverCameras(this.config.host, this.config.port, this.getRequestTimeoutMs());
-			for (const camera of cameras.filter(c => this.config.selectedCameras.includes(c.uid))) {
+			for (const [index, camera] of cameras.entries()) {
+				if (!this.config.selectedCameras.includes(camera.uid)) {
+					continue;
+				}
 				const id = `cameras.${cameraObjectId(camera.uid)}`;
-				await this.setObjectNotExistsAsync(id, { type: "channel", common: { name: "Camera" }, native: {} });
-				await this.extendObjectAsync(id, { common: { name: "Camera" } });
+				const name = cameraLabel(camera, index);
+				await this.setObjectNotExistsAsync(id, { type: "channel", common: { name }, native: {} });
+				await this.extendObjectAsync(id, { common: { name } });
 				for (const [key, value] of Object.entries({
 					name: camera.name,
 					enabled: camera.enabled,
