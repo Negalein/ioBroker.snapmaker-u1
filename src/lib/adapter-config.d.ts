@@ -12,6 +12,19 @@ declare global {
 			requestTimeout: number;
 			pollInterval: number;
 			spoolmanEnabled: boolean;
+			spoolmanUrl: string;
+			spoolmanInterval: number;
+			spoolmanWarnLimit: number;
+			spoolmanEmptyLimit: number;
+			spoolmanWeekdayStart: number;
+			spoolmanWeekdayEnd: number;
+			spoolmanWeekendStart: number;
+			spoolmanWeekendEnd: number;
+			spoolmanAlarmInWindow: boolean;
+			spoolmanTelegramEnabled: boolean;
+			spoolmanTelegramInstance: string;
+			spoolmanTelegramUser: string;
+			spoolmanLegacyMirror: boolean;
 		}
 	}
 }

@@ -37,6 +37,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils = __importStar(require("@iobroker/adapter-core"));
+const spoolman_1 = require("./lib/spoolman");
 const control_1 = require("./lib/control");
 const config_1 = require("./lib/config");
 const media_1 = require("./lib/media");
@@ -531,6 +532,7 @@ const controlStateDefinitions = [
     },
 ];
 class SnapmakerU1 extends utils.Adapter {
+    spoolmanService;
     pollTimer;
     stopping = false;
     connectionFailed = false;
@@ -619,6 +621,14 @@ class SnapmakerU1 extends utils.Adapter {
     }
     /** Initializes the adapter after ioBroker has loaded the instance configuration. */
     async onReady() {
+        if (this.config.spoolmanEnabled) {
+            try {
+                this.spoolmanService = new spoolman_1.SpoolmanService(this);
+            }
+            catch (error) {
+                this.log.error(`Spoolman configuration: ${String(error)}`);
+            }
+        }
         await this.setStateAsync("info.connection", false, true);
         for (const channel of [
             "afc",
@@ -1139,6 +1149,7 @@ class SnapmakerU1 extends utils.Adapter {
     }
     /** Maps polling or post-command Moonraker state into ioBroker states. */
     async updateStatusStates(status) {
+        this.spoolmanService?.request(status);
         const values = (0, status_1.mapStatus)(status);
         for (const [id, value] of Object.entries(values)) {
             await this.setStateChangedAsync(`printer.${id}`, value, true);
@@ -1168,7 +1179,7 @@ class SnapmakerU1 extends utils.Adapter {
             catch (error) {
                 this.log.debug(`Fan and sensor discovery failed: ${String(error)}`);
             }
-            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), this.config.spoolmanEnabled, (0, control_1.supportsControl)(this.config.firmware), this.discoveredTelemetryObjects);
+            const status = await (0, status_1.readStatus)(this.config.host, this.config.port, this.getRequestTimeoutMs(), this.config.spoolmanEnabled, this.config.spoolmanEnabled || (0, control_1.supportsControl)(this.config.firmware), this.discoveredTelemetryObjects);
             if (this.stopping) {
                 return;
             }
@@ -1241,6 +1252,7 @@ class SnapmakerU1 extends utils.Adapter {
      */
     onUnload(callback) {
         this.stopping = true;
+        this.spoolmanService?.stop();
         try {
             if (this.pollTimer) {
                 this.clearTimeout(this.pollTimer);

@@ -20,7 +20,7 @@ Deutscher ioBroker-Adapter zur lokalen Überwachung eines [Snapmaker U1](https:/
 - Tool-, Bett- und Kammertemperaturen, Sollwerte, Heizleistungen, Pressure Advance, Smooth Time sowie Bewegungs- und Flow-Diagnosen.
 - Kameraerkennung und Druckvorschau-URL. Die ETA bleibt auch bei deaktivierter Vorschau verfügbar.
 - Automatisch erkannte, schreibgeschützte Lüfter-/RPM- und Temperatursensorwerte unter `printer.fans.*` und `printer.sensors.*`.
-- AFC-/Spoolman-Status und Lane-Metadaten über Moonraker; keine direkte Spoolman-Verbindung und keine Schreibvorgänge.
+- AFC-/Spoolman-Status und Lane-Metadaten via Moonraker; native Spoolman-API für Restgewichte, Warnungen und VIS-Kompatibilität.
 - Abgesicherte Home-, Jog-, Druck-, Toolhead- und Extrusionssteuerung für PAXX12.
 
 ## Kameras, Vorschau und Lüfter
@@ -136,3 +136,11 @@ Copyright (c) 2026 Negalein <negalein@gmail.com>
 
 Lizenziert unter der [MIT-Lizenz](LICENSE).
 
+
+## Native Spoolman-Integration
+
+Die Spoolman-Basis-URL (z. B. http://spoolman:7912/) in Admin konfigurieren. Die vier Slots unter `spoolman.aktiv.1` bis `spoolman.aktiv.4` entsprechen T0/E0 bis T3/E3. Standardgrenzen: unter 300 g Warnung, unter 100 g Leeralarm. Telegram und Spiegelung nach `0_userdata.0.3DDrucker.Spoolman` sind separat einschaltbar und standardmäßig aus.
+
+Das bisherige Skript bleibt beim Vergleichstest aktiv. Erst nach erfolgreichem Funktionstest das Skript manuell deaktivieren und danach die VIS-Spiegelung aktivieren. Niemals beide gleichzeitig auf die alten Datenpunkte schreiben lassen. Druckersteuerung und Verbrauchsbuchung bleiben in den bisherigen Komponenten.
+
+[Alle Einstellungen, Datenpunkte und Testschritte (Englisch)](docs/spoolman.md).

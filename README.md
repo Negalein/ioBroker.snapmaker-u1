@@ -23,7 +23,7 @@ Selected cameras are published below `cameras.<namespace-safe ID derived from th
 
 Top-cover fan control: write a numeric percentage (0–100, `ack=false`) to `printer.cover.circulation.speed` or `printer.cover.exhaust.speed`. Commands are serialized and acknowledged from a subsequent printer status query. Both fans were live-tested with a five-percentage-point change and restored. Firmware automation may subsequently change fan speeds. Invalid values are rejected.
 
-Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. These values are read through Moonraker; no direct Spoolman connection is configured. No spool assignments or consumption reports are written by this adapter.
+Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. AFC metadata and bridge status are read through Moonraker. Configure the optional direct Spoolman API service for weights, notifications and legacy VIS compatibility; see [setup and migration](docs/spoolman.md). No spool assignments or consumption reports are written by this adapter.
 
 Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
 
@@ -152,13 +152,17 @@ This keeps the GitHub **Latest** release and npm's `latest` tag aligned. Existin
 3. Validate Moonraker payloads and capabilities on a physical U1 running original firmware before enabling any control for it.
 4. Extend automated tests for print, material and media data.
 5. Validate shutdown and restart in compact mode.
-6. Add direct Spoolman inventory access if required.
+6. Complete hardware acceptance for the native Spoolman service before legacy script cutover.
 
 ## Disclaimer
 
 Snapmaker and U1 are trademarks of their respective owners. This is an independent community project and is not affiliated with or endorsed by Snapmaker.
 
 ## Changelog
+
+### Unreleased
+
+- (Negalein) Add native four-lane Spoolman API monitoring, configurable Telegram warnings and opt-in legacy VIS compatibility.
 
 ### 0.0.13 (2026-11-20)
 
@@ -189,6 +193,10 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 - (Negalein) Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.
 
 Older entries are available in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
+
+### Native Spoolman integration
+
+See [Spoolman setup, states and safe VIS migration](docs/spoolman.md). The legacy script remains active until successful hardware acceptance; native Telegram and legacy VIS writes are off by default.
 
 ## License
 

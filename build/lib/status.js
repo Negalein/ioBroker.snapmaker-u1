@@ -95,14 +95,19 @@ async function readStatus(host, port, timeoutMs, spoolmanEnabled = false, includ
         throw new Error("Invalid printer status response");
     }
     if (spoolmanEnabled) {
-        const spoolResponse = await fetch(new URL("/server/spoolman/status", url), {
-            signal: AbortSignal.timeout(timeoutMs),
-        });
-        if (spoolResponse.ok) {
-            const spoolBody = (await spoolResponse.json());
-            if (spoolBody.result) {
-                body.result.status.spoolman = spoolBody.result;
+        try {
+            const spoolResponse = await fetch(new URL("/server/spoolman/status", url), {
+                signal: AbortSignal.timeout(timeoutMs),
+            });
+            if (spoolResponse.ok) {
+                const spoolBody = (await spoolResponse.json());
+                if (spoolBody.result) {
+                    body.result.status.spoolman = spoolBody.result;
+                }
             }
+        }
+        catch {
+            body.result.status.spoolman = { spoolman_connected: false };
         }
     }
     return body.result.status;

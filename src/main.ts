@@ -3,6 +3,7 @@
  */
 
 import * as utils from "@iobroker/adapter-core";
+import { SpoolmanService } from "./lib/spoolman";
 import {
 	checkControlSafety,
 	controlActions,
@@ -559,6 +560,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 ];
 
 class SnapmakerU1 extends utils.Adapter {
+	private spoolmanService?: SpoolmanService;
 	private pollTimer?: ioBroker.Timeout;
 	private stopping = false;
 	private connectionFailed = false;
@@ -658,6 +660,13 @@ class SnapmakerU1 extends utils.Adapter {
 
 	/** Initializes the adapter after ioBroker has loaded the instance configuration. */
 	private async onReady(): Promise<void> {
+		if (this.config.spoolmanEnabled) {
+			try {
+				this.spoolmanService = new SpoolmanService(this);
+			} catch (error) {
+				this.log.error(`Spoolman configuration: ${String(error)}`);
+			}
+		}
 		await this.setStateAsync("info.connection", false, true);
 		for (const channel of [
 			"afc",
@@ -1286,6 +1295,7 @@ class SnapmakerU1 extends utils.Adapter {
 
 	/** Maps polling or post-command Moonraker state into ioBroker states. */
 	private async updateStatusStates(status: Record<string, unknown>): Promise<void> {
+		this.spoolmanService?.request(status);
 		const values = mapStatus(status);
 		for (const [id, value] of Object.entries(values)) {
 			await this.setStateChangedAsync(`printer.${id}`, value, true);
@@ -1321,7 +1331,7 @@ class SnapmakerU1 extends utils.Adapter {
 				this.config.port,
 				this.getRequestTimeoutMs(),
 				this.config.spoolmanEnabled,
-				supportsControl(this.config.firmware),
+				this.config.spoolmanEnabled || supportsControl(this.config.firmware),
 				this.discoveredTelemetryObjects,
 			);
 			if (this.stopping) {
@@ -1398,6 +1408,7 @@ class SnapmakerU1 extends utils.Adapter {
 	 */
 	private onUnload(callback: () => void): void {
 		this.stopping = true;
+		this.spoolmanService?.stop();
 		try {
 			if (this.pollTimer) {
 				this.clearTimeout(this.pollTimer);

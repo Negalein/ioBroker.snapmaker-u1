@@ -179,7 +179,20 @@
 		"firmware": "auto",
 		"requestTimeout": 10,
 		"pollInterval": 30,
-		"spoolmanEnabled": false
+		"spoolmanEnabled": false,
+		"spoolmanUrl": "",
+		"spoolmanInterval": 300,
+		"spoolmanWarnLimit": 300,
+		"spoolmanEmptyLimit": 100,
+		"spoolmanWeekdayStart": 7,
+		"spoolmanWeekdayEnd": 22,
+		"spoolmanWeekendStart": 10,
+		"spoolmanWeekendEnd": 20,
+		"spoolmanAlarmInWindow": false,
+		"spoolmanTelegramEnabled": false,
+		"spoolmanTelegramInstance": "telegram.0",
+		"spoolmanTelegramUser": "",
+		"spoolmanLegacyMirror": false
 	},
 	"objects": [],
 	"instanceObjects": [
