@@ -134,8 +134,16 @@
 			"uk": "Інтегрує 3D-принтери Snapmaker U1 через Moonraker.",
 			"zh-cn": "通过 Moonraker 集成 Snapmaker U1 3D 打印机。"
 		},
-		"authors": ["Negalein <negalein@gmail.com>"],
-		"keywords": ["snapmaker", "u1", "3d-printer", "moonraker", "klipper"],
+		"authors": [
+			"Negalein <negalein@gmail.com>"
+		],
+		"keywords": [
+			"snapmaker",
+			"u1",
+			"3d-printer",
+			"moonraker",
+			"klipper"
+		],
 		"licenseInformation": {
 			"type": "free",
 			"license": "MIT"
@@ -191,8 +199,7 @@
 		"spoolmanAlarmInWindow": false,
 		"spoolmanTelegramEnabled": false,
 		"spoolmanTelegramInstance": "telegram.0",
-		"spoolmanTelegramUser": "",
-		"spoolmanLegacyMirror": false
+		"spoolmanTelegramUser": ""
 	},
 	"objects": [],
 	"instanceObjects": [

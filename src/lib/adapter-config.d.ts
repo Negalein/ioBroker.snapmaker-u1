@@ -24,7 +24,6 @@ declare global {
 			spoolmanTelegramEnabled: boolean;
 			spoolmanTelegramInstance: string;
 			spoolmanTelegramUser: string;
-			spoolmanLegacyMirror: boolean;
 		}
 	}
 }

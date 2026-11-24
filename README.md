@@ -23,7 +23,7 @@ Selected cameras are published below `cameras.<namespace-safe ID derived from th
 
 Top-cover fan control: write a numeric percentage (0–100, `ack=false`) to `printer.cover.circulation.speed` or `printer.cover.exhaust.speed`. Commands are serialized and acknowledged from a subsequent printer status query. Both fans were live-tested with a five-percentage-point change and restored. Firmware automation may subsequently change fan speeds. Invalid values are rejected.
 
-Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. AFC metadata and bridge status are read through Moonraker. Configure the optional direct Spoolman API service for weights, notifications and legacy VIS compatibility; see [setup and migration](docs/spoolman.md). No spool assignments or consumption reports are written by this adapter.
+Enable **Spoolman integration** to read AFC lane material, filament name, color, spool ID, loaded flag and raw status for lanes 0–3, plus the current AFC lane and error flag. Moonraker's Spoolman connection status and active spool ID are exposed under `printer.spoolman`. AFC metadata and bridge status are read through Moonraker. Configure the optional direct Spoolman API service for weights and notifications under `snapmaker-u1.N.spoolman`; see [setup and migration](docs/spoolman.md). No spool assignments or consumption reports are written by this adapter.
 
 Read-only status polling has been verified on PAXX12 `2.0.0-paxx12-24`:
 

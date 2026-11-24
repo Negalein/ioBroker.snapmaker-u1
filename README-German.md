@@ -20,7 +20,7 @@ Deutscher ioBroker-Adapter zur lokalen Überwachung eines [Snapmaker U1](https:/
 - Tool-, Bett- und Kammertemperaturen, Sollwerte, Heizleistungen, Pressure Advance, Smooth Time sowie Bewegungs- und Flow-Diagnosen.
 - Kameraerkennung und Druckvorschau-URL. Die ETA bleibt auch bei deaktivierter Vorschau verfügbar.
 - Automatisch erkannte, schreibgeschützte Lüfter-/RPM- und Temperatursensorwerte unter `printer.fans.*` und `printer.sensors.*`.
-- AFC-/Spoolman-Status und Lane-Metadaten via Moonraker; native Spoolman-API für Restgewichte, Warnungen und VIS-Kompatibilität.
+- AFC-/Spoolman-Status und Lane-Metadaten via Moonraker; native Spoolman-API für Restgewichte und Warnungen unter `snapmaker-u1.N.spoolman`.
 - Abgesicherte Home-, Jog-, Druck-, Toolhead- und Extrusionssteuerung für PAXX12.
 
 ## Kameras, Vorschau und Lüfter

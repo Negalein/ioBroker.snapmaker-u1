@@ -6,7 +6,11 @@
       "type": "selectSendTo",
       "label": "Discover and select cameras",
       "command": "discoverCameras",
-      "alsoDependsOn": ["host", "port", "selectedCameras"],
+      "alsoDependsOn": [
+        "host",
+        "port",
+        "selectedCameras"
+      ],
       "multiple": true,
       "manual": false,
       "noTranslation": true,
@@ -212,15 +216,6 @@
     "spoolmanTelegramUser": {
       "type": "text",
       "label": "Telegram recipient (empty means configured recipients)",
-      "newLine": true,
-      "xs": 12,
-      "sm": 12,
-      "md": 6,
-      "hidden": "!data.spoolmanEnabled"
-    },
-    "spoolmanLegacyMirror": {
-      "type": "checkbox",
-      "label": "Write legacy VIS states (disable old script first)",
       "newLine": true,
       "xs": 12,
       "sm": 12,

@@ -52,7 +52,6 @@ const config = {
 	spoolmanTelegramEnabled: true,
 	spoolmanTelegramInstance: "telegram.0",
 	spoolmanTelegramUser: "tester",
-	spoolmanLegacyMirror: false,
 };
 function harness(): {
 	states: Map<string, unknown>;
@@ -123,11 +122,9 @@ describe("Spoolman service integration", () => {
 		h.service.request(snapshot());
 		await settle();
 		expect(h.states.get("spoolman.apiConnected")).to.equal(true);
-		h.adapter.config.spoolmanLegacyMirror = true;
 		await h.service.stop();
 		expect(h.states.get("spoolman.apiConnected")).to.equal(false);
 		expect(h.states.get("spoolman.druck_laeuft")).to.equal(false);
-		expect(h.states.get("0_userdata.0.3DDrucker.Spoolman.druck_laeuft")).to.equal(false);
 		expect(h.states.get("spoolman.aktiv.1.remaining_weight")).to.equal(500);
 	});
 
@@ -232,16 +229,13 @@ describe("Spoolman service integration", () => {
 		expect(h.states.get("spoolman.aktiv.1.alarm")).to.equal(true);
 		await h.service.stop();
 	});
-	it("does not mirror by default and mirrors exact legacy paths when selected", async () => {
+	it("publishes native Spoolman states without writing outside the instance", async () => {
 		mockApi(500);
 		const h = harness();
 		h.service.request(snapshot());
 		await settle();
 		expect([...h.states.keys()].some(id => id.startsWith("0_userdata"))).to.equal(false);
-		h.adapter.config.spoolmanLegacyMirror = true;
-		h.service.request(snapshot());
-		await settle();
-		expect(h.states.get("0_userdata.0.3DDrucker.Spoolman.aktiv.1.remaining_weight")).to.equal(500);
+		expect(h.states.get("spoolman.aktiv.1.remaining_weight")).to.equal(500);
 		await h.service.stop();
 	});
 	it("drops outdated responses and stops without publishing late HTTP results", async () => {

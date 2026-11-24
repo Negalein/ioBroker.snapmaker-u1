@@ -23,6 +23,5 @@
   "Restrict empty alarms to warning window": "Restrict empty alarms to warning window",
   "Enable Spoolman Telegram notifications": "Enable Spoolman Telegram notifications",
   "Telegram instance": "Telegram instance",
-  "Telegram recipient (empty means configured recipients)": "Telegram recipient (empty means configured recipients)",
-  "Write legacy VIS states (disable old script first)": "Write legacy VIS states (disable old script first)"
+  "Telegram recipient (empty means configured recipients)": "Telegram recipient (empty means configured recipients)"
 }

@@ -16,7 +16,6 @@ Enable the optional integration and configure the Spoolman base URL, e.g. `http:
 | Telegram enabled | off | Send only while print_stats.state is printing |
 | Telegram instance | telegram.0 | Installed Telegram adapter instance |
 | Telegram recipient | empty | Telegram user, or configured recipients when empty |
-| Legacy VIS mirror | off | Write existing VIS paths only after old script is stopped |
 
 Window hours use the ioBroker host timezone (e.g. Europe/Vienna), range 0–24, inclusive start and exclusive end. Overnight windows are supported; equal bounds mean all day. Printer polling determines detection latency; API refresh is evaluated at the next printer poll after the interval expires.
 
@@ -46,18 +45,18 @@ Missing/archived spools, unknown weights, incomplete AFC telemetry and API failu
 
 ## VIS 1 migration and acceptance
 
-The supplied `Spoolman_JS(1).js` identifies itself internally as v1.0.0, although the requested replacement was named V1.0.1. Its actual field names and behavior are the compatibility contract. No existing script is disabled automatically.
+The adapter publishes Spoolman data exclusively under `snapmaker-u1.N.spoolman`. Bind the three VIS HTML widgets directly to these native states. The former script paths under `0_userdata.0.3DDrucker.Spoolman` are not created or updated by the adapter. Existing user data is not deleted.
 
-1. Keep the existing script active. Enable native Spoolman with Telegram **off** and legacy mirror **off**. VIS continues using the script.
-2. Compare four native slots against Spoolman and `0_userdata.0.3DDrucker.Spoolman.aktiv.N`. Test IDs, mapping, weights, material, spool replacement and unload using the existing AFC UI. Test API disconnect/recovery without false alarms.
-3. Test native Telegram with a dedicated recipient and isolate old script notifications to avoid duplicates. Exercise WARN, LEER, idle/printing, time windows, repeated polling, replacement, refill and adapter restart. Thresholds can be temporarily adjusted to test safely.
-4. **Only after successful functional testing**, disable the old script manually, enable legacy mirror and desired native notifications, then verify all three VIS HTML widgets. Do not run both writers simultaneously.
-5. Rollback: disable native Telegram and legacy mirror, restart adapter, then re-enable old script.
+1. Keep the existing script active during comparison; leave native Telegram disabled.
+2. Compare all four native slots with Spoolman. Test assignments, weights, material, replacement, unassignment, API failure/recovery and adapter restart.
+3. Migrate the VIS widgets to native adapter states and verify all three widgets.
+4. Test native Telegram on the active server while old script notifications are disabled: WARN, LEER, idle/printing, time windows, repeated polling and restart.
+5. After successful acceptance, disable the old script manually. Rollback: disable native Telegram, restore the previous widget bindings and re-enable the script.
 
-Mirror mode copies `warnzeit_aktiv`, `druck_laeuft` and every `aktiv.1…4` field to **0_userdata.0.3DDrucker.Spoolman**, preserving existing object definitions and VIS bindings. Enable on only one adapter instance. No SSH, SQLite executable or klipper-moonraker adapter is required for the native service.
+No SSH, SQLite executable or klipper-moonraker adapter is required for native monitoring.
 
 ## Development
 
 Run npm ci, npm run check, npm run build, npm test and npm run lint. Tests use mocked HTTP and ioBroker state APIs and never send real notifications. Hardware acceptance remains outstanding until the above checklist is completed.
 
-Reviewed against [ioBroker requirements](https://github.com/ioBroker/ioBroker.repositories) and [best practices](https://www.iobroker.com/docs/dev/bestpractices.md): adapter-core APIs, typed objects, roles and units, acknowledged changed-only writes, structured hierarchy, bounded HTTP, unload cleanup, optional compatibility writes, no direct database access. See [Spoolman API source](https://github.com/Donkie/Spoolman/blob/master/spoolman/api/v1/spool.py) and your server's /docs for API details.
+Reviewed against [ioBroker requirements](https://github.com/ioBroker/ioBroker.repositories) and [best practices](https://www.iobroker.com/docs/dev/bestpractices.md): adapter-core APIs, typed objects, roles and units, acknowledged changed-only writes, structured hierarchy, bounded HTTP, unload cleanup, no direct database access. See [Spoolman API source](https://github.com/Donkie/Spoolman/blob/master/spoolman/api/v1/spool.py) and your server's /docs for API details.

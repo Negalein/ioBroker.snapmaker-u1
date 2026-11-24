@@ -23,6 +23,5 @@
   "Restrict empty alarms to warning window": "Leeralarme auf Warnzeitfenster beschränken",
   "Enable Spoolman Telegram notifications": "Telegram-Benachrichtigungen für Spoolman aktivieren",
   "Telegram instance": "Telegram-Instanz",
-  "Telegram recipient (empty means configured recipients)": "Telegram-Empfänger (leer: konfigurierte Empfänger)",
-  "Write legacy VIS states (disable old script first)": "Alte VIS-Datenpunkte schreiben (vorher altes Skript deaktivieren)"
+  "Telegram recipient (empty means configured recipients)": "Telegram-Empfänger (leer: konfigurierte Empfänger)"
 }

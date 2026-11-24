@@ -99,7 +99,6 @@ const blank: Slot = {
 	warnung: false,
 	alarm: false,
 };
-const legacy = "0_userdata.0.3DDrucker.Spoolman";
 
 /** Read-only Spoolman service. Never sends printer commands or accounts consumption. */
 export class SpoolmanService {
@@ -120,7 +119,7 @@ export class SpoolmanService {
 	/** Resets persisted health before accepting the first live printer snapshot. */
 	public async initialize(): Promise<void> {
 		await this.write("apiConnected", false);
-		await this.write("druck_laeuft", false, true);
+		await this.write("druck_laeuft", false);
 	}
 	/** Invalidates queued/in-flight snapshots when the printer becomes unavailable. */
 	public async disconnect(reason: string): Promise<void> {
@@ -134,7 +133,7 @@ export class SpoolmanService {
 		this.lastFetch = 0;
 		this.cache.clear();
 		await this.write("apiConnected", false);
-		await this.write("druck_laeuft", false, true);
+		await this.write("druck_laeuft", false);
 		await this.write("lastError", reason);
 	}
 	/** Cancels outstanding work and persists offline health before unload completes. */
@@ -145,9 +144,6 @@ export class SpoolmanService {
 		this.abort?.abort();
 		await this.adapter.setStateChangedAsync("spoolman.apiConnected", false, true);
 		await this.adapter.setStateChangedAsync("spoolman.druck_laeuft", false, true);
-		if (this.adapter.config.spoolmanLegacyMirror) {
-			await this.adapter.setForeignStateChangedAsync(`${legacy}.druck_laeuft`, false, true);
-		}
 	}
 	/** Queues the latest complete printer snapshot. */
 	public request(status: Record<string, unknown>): void {
@@ -171,11 +167,10 @@ export class SpoolmanService {
 				} catch (e) {
 					if (!this.stopped && generation === this.generation) {
 						this.lastIds = "";
-						await this.write("apiConnected", false, false, generation);
+						await this.write("apiConnected", false, generation);
 						await this.write(
 							"lastError",
 							e instanceof Error ? e.message : "Spoolman request failed",
-							false,
 							generation,
 						);
 						this.adapter.log.debug(`Spoolman update failed: ${String(e)}`);
@@ -186,12 +181,7 @@ export class SpoolmanService {
 			this.running = false;
 		}
 	}
-	private async write(
-		id: string,
-		value: string | number | boolean,
-		mirror = false,
-		generation = this.generation,
-	): Promise<void> {
+	private async write(id: string, value: string | number | boolean, generation = this.generation): Promise<void> {
 		if (this.stopped || generation !== this.generation) {
 			return;
 		}
@@ -223,39 +213,10 @@ export class SpoolmanService {
 			return;
 		}
 		await this.adapter.setStateChangedAsync(own, value, true);
-		if (mirror && this.adapter.config.spoolmanLegacyMirror && generation === this.generation && !this.stopped) {
-			const target = `${legacy}.${id}`;
-			if (!this.objects.has(target)) {
-				const parts = target.split(".");
-				for (let i = 3; i < parts.length; i++) {
-					await this.adapter.setForeignObjectNotExistsAsync(parts.slice(0, i).join("."), {
-						type: "folder",
-						common: { name: parts[i - 1] },
-						native: {},
-					});
-				}
-				await this.adapter.setForeignObjectNotExistsAsync(target, {
-					type: "state",
-					common: {
-						name: id,
-						type: typeof value as "string" | "number" | "boolean",
-						role: typeof value === "boolean" ? "indicator" : typeof value === "number" ? "value" : "text",
-						read: true,
-						write: false,
-						...(id.endsWith("weight") ? { unit: "g" } : {}),
-					},
-					native: {},
-				});
-				this.objects.add(target);
-			}
-			if (!this.stopped && generation === this.generation) {
-				await this.adapter.setForeignStateChangedAsync(target, value, true);
-			}
-		}
 	}
 	private async update(status: Record<string, unknown>, generation: number): Promise<void> {
-		const write = (id: string, value: string | number | boolean, mirror = false): Promise<void> =>
-			this.write(id, value, mirror, generation);
+		const write = (id: string, value: string | number | boolean): Promise<void> =>
+			this.write(id, value, generation);
 		const c = this.adapter.config;
 		const now = new Date();
 		const weekend = [0, 6].includes(now.getDay());
@@ -265,8 +226,8 @@ export class SpoolmanService {
 			weekend ? c.spoolmanWeekendEnd : c.spoolmanWeekdayEnd,
 		);
 		const printing = (status.print_stats as { state?: string })?.state === "printing";
-		await write("warnzeit_aktiv", window, true);
-		await write("druck_laeuft", printing, true);
+		await write("warnzeit_aktiv", window);
+		await write("druck_laeuft", printing);
 		// Missing AFC telemetry is unknown, not an unloaded lane.
 		const ids = Array.from({ length: 4 }, (_, i) => (status[`AFC_lane E${i}`] as { spool_id?: unknown })?.spool_id);
 		if (ids.some(id => id === undefined)) {
@@ -361,7 +322,7 @@ export class SpoolmanService {
 			slot.warnung = Boolean(warned);
 			slot.alarm = Boolean(alarmed);
 			for (const [key, value] of Object.entries(slot)) {
-				await write(`${prefix}.${key}`, value, true);
+				await write(`${prefix}.${key}`, value);
 			}
 		}
 		if (this.stopped || generation !== this.generation) {
