@@ -11,5 +11,17 @@
   "Polling interval (seconds)": "Aktualisierungsintervall (Sekunden)",
   "Enable Spoolman integration": "Spoolman-Integration aktivieren",
   "Discover and select cameras": "Kameras suchen und auswählen",
-  "Enable print preview": "Druckvorschau aktivieren"
+  "Enable print preview": "Druckvorschau aktivieren",
+  "Spoolman base URL": "Spoolman-Basis-URL",
+  "Spoolman update interval (seconds)": "Spoolman-Aktualisierungsintervall (Sekunden)",
+  "Warning threshold (g)": "Warnschwelle (g)",
+  "Empty threshold (g)": "Leerschwelle (g)",
+  "Weekday warning start hour": "Warnbeginn werktags (Stunde)",
+  "Weekday warning end hour": "Warnende werktags (Stunde)",
+  "Weekend warning start hour": "Warnbeginn am Wochenende (Stunde)",
+  "Weekend warning end hour": "Warnende am Wochenende (Stunde)",
+  "Restrict empty alarms to warning window": "Leeralarme auf Warnzeitfenster beschränken",
+  "Enable Spoolman Telegram notifications": "Telegram-Benachrichtigungen für Spoolman aktivieren",
+  "Telegram instance": "Telegram-Instanz",
+  "Telegram recipient (empty means configured recipients)": "Telegram-Empfänger (leer: konfigurierte Empfänger)"
 }

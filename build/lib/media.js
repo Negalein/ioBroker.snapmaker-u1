@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.cameraLabel = cameraLabel;
+exports.cameraOptions = cameraOptions;
 exports.mediaRequest = mediaRequest;
 exports.discoverCameras = discoverCameras;
 exports.cameraObjectId = cameraObjectId;
@@ -10,6 +12,16 @@ exports.previewUrl = previewUrl;
 const node_crypto_1 = require("node:crypto");
 const moonraker_1 = require("./moonraker");
 const DEFAULT_MEDIA_TIMEOUT_MS = 10_000;
+/** Returns a readable label without changing the persistent camera identifier. */
+function cameraLabel(camera, index) {
+    return camera.name.trim() || `Camera ${index + 1}`;
+}
+/** Keeps selected, disabled cameras in the list so Admin can resolve their labels. */
+function cameraOptions(cameras, selected) {
+    return cameras.flatMap((camera, index) => camera.enabled || selected.includes(camera.uid)
+        ? [{ label: cameraLabel(camera, index), value: camera.uid }]
+        : []);
+}
 async function mediaRequest(host, port, path, timeoutMs = DEFAULT_MEDIA_TIMEOUT_MS) {
     const response = await fetch(new URL(path, (0, moonraker_1.createMoonrakerBaseUrl)(host, port)), {
         signal: AbortSignal.timeout(timeoutMs),

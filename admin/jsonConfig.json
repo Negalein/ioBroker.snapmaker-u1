@@ -6,6 +6,11 @@
       "type": "selectSendTo",
       "label": "Discover and select cameras",
       "command": "discoverCameras",
+      "alsoDependsOn": [
+        "host",
+        "port",
+        "selectedCameras"
+      ],
       "multiple": true,
       "manual": false,
       "noTranslation": true,
@@ -106,6 +111,116 @@
       "md": 6,
       "lg": 4,
       "xl": 4
+    },
+    "spoolmanUrl": {
+      "type": "text",
+      "label": "Spoolman base URL",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanInterval": {
+      "type": "number",
+      "min": 5,
+      "max": 3600,
+      "label": "Spoolman update interval (seconds)",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanWarnLimit": {
+      "type": "number",
+      "label": "Warning threshold (g)",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanEmptyLimit": {
+      "type": "number",
+      "label": "Empty threshold (g)",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanWeekdayStart": {
+      "type": "number",
+      "label": "Weekday warning start hour",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanWeekdayEnd": {
+      "type": "number",
+      "label": "Weekday warning end hour",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanWeekendStart": {
+      "type": "number",
+      "label": "Weekend warning start hour",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanWeekendEnd": {
+      "type": "number",
+      "label": "Weekend warning end hour",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanAlarmInWindow": {
+      "type": "checkbox",
+      "label": "Restrict empty alarms to warning window",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanTelegramEnabled": {
+      "type": "checkbox",
+      "label": "Enable Spoolman Telegram notifications",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanTelegramInstance": {
+      "type": "text",
+      "label": "Telegram instance",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
+    },
+    "spoolmanTelegramUser": {
+      "type": "text",
+      "label": "Telegram recipient (empty means configured recipients)",
+      "newLine": true,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "hidden": "!data.spoolmanEnabled"
     }
   }
 }

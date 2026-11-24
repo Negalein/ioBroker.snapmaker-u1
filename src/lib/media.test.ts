@@ -1,8 +1,28 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { cameraObjectId, cameraUrl, previewUrlFromMetadata } from "./media";
+import { cameraLabel, cameraObjectId, cameraOptions, cameraUrl, previewUrlFromMetadata, type Camera } from "./media";
 
 describe("camera helpers", () => {
+	it("retains readable labels for selected cameras even when disabled", () => {
+		const cameras = [
+			{ uid: "main", name: " Main camera ", enabled: true },
+			{ uid: "side", name: "Side camera", enabled: false },
+			{ uid: "unused", name: "Unused", enabled: false },
+		] as Camera[];
+		expect(cameraOptions(cameras, ["side"])).to.deep.equal([
+			{ label: "Main camera", value: "main" },
+			{ label: "Side camera", value: "side" },
+		]);
+	});
+
+	it("uses a readable fallback for blank names while retaining UUID values", () => {
+		expect(cameraLabel({ name: "  " }, 2)).to.equal("Camera 3");
+		const uid = "b5794100-5505-4541-8ceb-f3b6f84dca5e";
+		expect(cameraOptions([{ uid, name: "", enabled: true } as Camera], [uid])).to.deep.equal([
+			{ label: "Camera 1", value: uid },
+		]);
+	});
+
 	it("keeps conventional lower-case UUIDs readable", () => {
 		const uid = "b5794100-5505-4541-8ceb-f3b6f84dca5e";
 		expect(cameraObjectId(uid)).to.equal(uid);

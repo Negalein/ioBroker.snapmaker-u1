@@ -1,5 +1,10 @@
 # Older changelog entries
 
+### 0.0.7 (2026-11-15)
+
+- (Negalein) Publish the complete compiled adapter bundle for the ETA and diagnostic telemetry update.
+
+
 For the current release history, see the [README](README.md#changelog).
 
 ### 0.0.6 (2026-11-15)

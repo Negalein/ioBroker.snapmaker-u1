@@ -20,7 +20,7 @@ Deutscher ioBroker-Adapter zur lokalen Überwachung eines [Snapmaker U1](https:/
 - Tool-, Bett- und Kammertemperaturen, Sollwerte, Heizleistungen, Pressure Advance, Smooth Time sowie Bewegungs- und Flow-Diagnosen.
 - Kameraerkennung und Druckvorschau-URL. Die ETA bleibt auch bei deaktivierter Vorschau verfügbar.
 - Automatisch erkannte, schreibgeschützte Lüfter-/RPM- und Temperatursensorwerte unter `printer.fans.*` und `printer.sensors.*`.
-- AFC-/Spoolman-Status und Lane-Metadaten über Moonraker; keine direkte Spoolman-Verbindung und keine Schreibvorgänge.
+- AFC-/Spoolman-Status und Lane-Metadaten via Moonraker; native Spoolman-API für Restgewichte und Warnungen unter `snapmaker-u1.N.spoolman`.
 - Abgesicherte Home-, Jog-, Druck-, Toolhead- und Extrusionssteuerung für PAXX12.
 
 ## Kameras, Vorschau und Lüfter
@@ -100,6 +100,16 @@ Snapmaker und U1 sind Marken ihrer jeweiligen Inhaber. Dies ist ein unabhängige
 
 ## Änderungsprotokoll
 
+### 0.0.14 (2026-11-24)
+
+- (Negalein) Native Spoolman-API für vier Slots, Restgewichte und konfigurierbare Telegram-Warnungen ergänzt.
+- (Negalein) Kameranamen und Verbindungsstatus korrigiert; Standardintervall für Restgewichte auf 30 Sekunden gesetzt.
+- VIS-Widgets verwenden direkt `snapmaker-u1.N.spoolman.*`; die VIS-Spiegelung entfällt. Telegram und die drei VIS-Widgets müssen auf dem aktiven Server noch getestet werden.
+
+### 0.0.13 (2026-11-20)
+
+- (Negalein) State-Rollen angepasst und optionale Help-Nachricht ergänzt.
+
 ### 0.0.12 (2026-11-15)
 
 - (Negalein) Offiziellen ioBroker-Release-Workflow verwendet und die sieben neuesten veröffentlichten Release-Hinweise beibehalten.
@@ -128,7 +138,7 @@ Snapmaker und U1 sind Marken ihrer jeweiligen Inhaber. Dies ist ein unabhängige
 
 - (Negalein) Druck-ETA, Fertigstellungszeit, Schichten, Meldungen und Diagnose-Telemetrie ergänzt.
 
-Vollständige Release-Hinweise: [CHANGELOG.md](CHANGELOG.md).
+Vollständige Release-Hinweise: [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
 
 ## Lizenz
 
@@ -136,3 +146,11 @@ Copyright (c) 2026 Negalein <negalein@gmail.com>
 
 Lizenziert unter der [MIT-Lizenz](LICENSE).
 
+
+## Native Spoolman-Integration
+
+Die Spoolman-Basis-URL (z. B. http://spoolman:7912/) in Admin konfigurieren. Die vier Slots unter `spoolman.aktiv.1` bis `spoolman.aktiv.4` entsprechen T0/E0 bis T3/E3. Standardgrenzen: unter 300 g Warnung, unter 100 g Leeralarm. Telegram ist standardmäßig ausgeschaltet. Alle Spoolman-Daten werden ausschließlich unter `snapmaker-u1.N.spoolman` bereitgestellt.
+
+VIS-Widgets auf die nativen Adapter-Datenpunkte umstellen. Das bisherige Skript erst nach erfolgreichem Vergleich und Funktionstest manuell deaktivieren. Der Adapter erstellt und aktualisiert keine Spoolman-Datenpunkte unter `0_userdata`.
+
+[Alle Einstellungen, Datenpunkte und Testschritte (Englisch)](docs/spoolman.md).

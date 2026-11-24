@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "snapmaker-u1",
-		"version": "0.0.13",
+		"version": "0.0.14",
 		"news": {
+			"0.0.14": {
+				"en": "Add native four-lane Spoolman monitoring and configurable Telegram warnings, fix camera labels and connection health, and use native adapter states for VIS.",
+				"de": "Native Spoolman-Integration für vier Slots und konfigurierbare Telegram-Warnungen; Kameranamen und Verbindungsstatus korrigiert. VIS verwendet die Adapter-Datenpunkte direkt."
+			},
 			"0.0.13": {
 				"en": "Align state roles with the ioBroker role model and add an optional help message for AI agents and script authors.",
 				"de": "Gleicht die State-Rollen an das ioBroker-Rollenmodell an und ergänzt eine optionale Help-Nachricht für KI-Agenten und Skriptautoren.",
@@ -80,32 +84,6 @@
 				"pl": "Dodano ETA wydruku, warstwy, diagnostykę i dynamicznie wykrywaną telemetrię wentylatorów oraz czujników tylko do odczytu.",
 				"uk": "Додано ETA друку, шари, діагностику та динамічно виявлену телеметрію вентиляторів і датчиків лише для читання.",
 				"zh-cn": "新增打印预计完成时间、层信息、诊断数据，以及动态发现的只读风扇和传感器遥测。"
-			},
-			"0.0.5": {
-				"en": "Improve ioBroker metadata, configuration safety, camera object IDs and translations.",
-				"de": "Verbessert ioBroker-Metadaten, Konfigurationssicherheit, Kameraobjekt-IDs und Übersetzungen.",
-				"ru": "Улучшены метаданные ioBroker, безопасность конфигурации, идентификаторы объектов камер и переводы.",
-				"pt": "Melhora os metadados do ioBroker, a segurança da configuração, os IDs dos objetos de câmera e as traduções.",
-				"nl": "Verbetert ioBroker-metagegevens, configuratieveiligheid, cameraobject-ID's en vertalingen.",
-				"fr": "Améliore les métadonnées ioBroker, la sécurité de la configuration, les identifiants des objets caméra et les traductions.",
-				"it": "Migliora metadati ioBroker, sicurezza della configurazione, ID degli oggetti fotocamera e traduzioni.",
-				"es": "Mejora los metadatos de ioBroker, la seguridad de configuración, los ID de objetos de cámara y las traducciones.",
-				"pl": "Ulepszono metadane ioBroker, bezpieczeństwo konfiguracji, identyfikatory obiektów kamer i tłumaczenia.",
-				"uk": "Поліпшено метадані ioBroker, безпеку конфігурації, ідентифікатори об’єктів камер і переклади.",
-				"zh-cn": "改进 ioBroker 元数据、配置安全性、摄像头对象 ID 和翻译。"
-			},
-			"0.0.4": {
-				"en": "Add capability-gated PAXX12 E0–E3 tool, temperature and manual extrusion controls.",
-				"de": "Fügt fähigkeitsgeprüfte PAXX12-Steuerungen für E0–E3, Temperaturen und manuelle Extrusion hinzu.",
-				"ru": "Добавлено управление инструментами E0–E3 PAXX12, температурой и ручной экструзией с проверкой возможностей.",
-				"pt": "Adiciona controles PAXX12 com verificação de recursos para ferramentas E0–E3, temperatura e extrusão manual.",
-				"nl": "Voegt door mogelijkheden beveiligde PAXX12-bediening toe voor E0–E3, temperatuur en handmatige extrusie.",
-				"fr": "Ajoute des commandes PAXX12 E0–E3, de température et d’extrusion manuelle limitées aux capacités détectées.",
-				"it": "Aggiunge controlli PAXX12 E0–E3, temperatura ed estrusione manuale limitati alle capacità rilevate.",
-				"es": "Añade controles PAXX12 E0–E3, de temperatura y extrusión manual limitados a las capacidades detectadas.",
-				"pl": "Dodano sterowanie PAXX12 E0–E3, temperaturą i ręczną ekstruzją zależne od wykrytych możliwości.",
-				"uk": "Додано керування PAXX12 E0–E3, температурою та ручною екструзією лише для виявлених можливостей.",
-				"zh-cn": "新增受能力检测限制的 PAXX12 E0–E3 工具、温度和手动挤出控制。"
 			}
 		},
 		"titleLang": {
@@ -134,8 +112,16 @@
 			"uk": "Інтегрує 3D-принтери Snapmaker U1 через Moonraker.",
 			"zh-cn": "通过 Moonraker 集成 Snapmaker U1 3D 打印机。"
 		},
-		"authors": ["Negalein <negalein@gmail.com>"],
-		"keywords": ["snapmaker", "u1", "3d-printer", "moonraker", "klipper"],
+		"authors": [
+			"Negalein <negalein@gmail.com>"
+		],
+		"keywords": [
+			"snapmaker",
+			"u1",
+			"3d-printer",
+			"moonraker",
+			"klipper"
+		],
 		"licenseInformation": {
 			"type": "free",
 			"license": "MIT"
@@ -179,7 +165,19 @@
 		"firmware": "auto",
 		"requestTimeout": 10,
 		"pollInterval": 30,
-		"spoolmanEnabled": false
+		"spoolmanEnabled": false,
+		"spoolmanUrl": "",
+		"spoolmanInterval": 30,
+		"spoolmanWarnLimit": 300,
+		"spoolmanEmptyLimit": 100,
+		"spoolmanWeekdayStart": 7,
+		"spoolmanWeekdayEnd": 22,
+		"spoolmanWeekendStart": 10,
+		"spoolmanWeekendEnd": 20,
+		"spoolmanAlarmInWindow": false,
+		"spoolmanTelegramEnabled": false,
+		"spoolmanTelegramInstance": "telegram.0",
+		"spoolmanTelegramUser": ""
 	},
 	"objects": [],
 	"instanceObjects": [

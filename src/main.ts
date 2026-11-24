@@ -3,6 +3,7 @@
  */
 
 import * as utils from "@iobroker/adapter-core";
+import { SpoolmanService } from "./lib/spoolman";
 import {
 	checkControlSafety,
 	controlActions,
@@ -23,6 +24,8 @@ import {
 import { pollIntervalMs, requestTimeoutMs } from "./lib/config";
 import {
 	cameraObjectId,
+	cameraLabel,
+	cameraOptions,
 	cameraUrl,
 	discoverCameras,
 	getGcodeFileMetadata,
@@ -559,6 +562,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 ];
 
 class SnapmakerU1 extends utils.Adapter {
+	private spoolmanService?: SpoolmanService;
 	private pollTimer?: ioBroker.Timeout;
 	private stopping = false;
 	private connectionFailed = false;
@@ -594,12 +598,26 @@ class SnapmakerU1 extends utils.Adapter {
 				this.sendTo(
 					obj.from,
 					obj.command,
-					cameras.filter(c => c.enabled).map(c => ({ label: c.name, value: c.uid })),
+					cameraOptions(cameras, this.config.selectedCameras ?? []),
 					obj.callback,
 				);
 			} catch (error) {
 				this.log.warn(`Camera discovery failed: ${String(error)}`);
-				this.sendTo(obj.from, obj.command, [], obj.callback);
+				// Stored names keep selected cameras readable while Moonraker is unavailable.
+				const options: Array<{ label: string; value: string }> = [];
+				for (const uid of this.config.selectedCameras ?? []) {
+					try {
+						const name = (await this.getStateAsync(`cameras.${cameraObjectId(uid)}.name`))?.val;
+						options.push({
+							label:
+								typeof name === "string" && name.trim() ? name.trim() : `Camera ${options.length + 1}`,
+							value: uid,
+						});
+					} catch {
+						options.push({ label: `Camera ${options.length + 1}`, value: uid });
+					}
+				}
+				this.sendTo(obj.from, obj.command, options, obj.callback);
 			}
 		});
 		this.on("stateChange", (id, state) => {
@@ -658,6 +676,14 @@ class SnapmakerU1 extends utils.Adapter {
 
 	/** Initializes the adapter after ioBroker has loaded the instance configuration. */
 	private async onReady(): Promise<void> {
+		if (this.config.spoolmanEnabled) {
+			try {
+				this.spoolmanService = new SpoolmanService(this);
+				await this.spoolmanService.initialize();
+			} catch (error) {
+				this.log.error(`Spoolman configuration: ${String(error)}`);
+			}
+		}
 		await this.setStateAsync("info.connection", false, true);
 		for (const channel of [
 			"afc",
@@ -863,10 +889,14 @@ class SnapmakerU1 extends utils.Adapter {
 		});
 		if (this.config.selectedCameras?.length) {
 			const cameras = await discoverCameras(this.config.host, this.config.port, this.getRequestTimeoutMs());
-			for (const camera of cameras.filter(c => this.config.selectedCameras.includes(c.uid))) {
+			for (const [index, camera] of cameras.entries()) {
+				if (!this.config.selectedCameras.includes(camera.uid)) {
+					continue;
+				}
 				const id = `cameras.${cameraObjectId(camera.uid)}`;
-				await this.setObjectNotExistsAsync(id, { type: "channel", common: { name: "Camera" }, native: {} });
-				await this.extendObjectAsync(id, { common: { name: "Camera" } });
+				const name = cameraLabel(camera, index);
+				await this.setObjectNotExistsAsync(id, { type: "channel", common: { name }, native: {} });
+				await this.extendObjectAsync(id, { common: { name } });
 				for (const [key, value] of Object.entries({
 					name: camera.name,
 					enabled: camera.enabled,
@@ -1286,6 +1316,7 @@ class SnapmakerU1 extends utils.Adapter {
 
 	/** Maps polling or post-command Moonraker state into ioBroker states. */
 	private async updateStatusStates(status: Record<string, unknown>): Promise<void> {
+		this.spoolmanService?.request(status);
 		const values = mapStatus(status);
 		for (const [id, value] of Object.entries(values)) {
 			await this.setStateChangedAsync(`printer.${id}`, value, true);
@@ -1321,7 +1352,7 @@ class SnapmakerU1 extends utils.Adapter {
 				this.config.port,
 				this.getRequestTimeoutMs(),
 				this.config.spoolmanEnabled,
-				supportsControl(this.config.firmware),
+				this.config.spoolmanEnabled || supportsControl(this.config.firmware),
 				this.discoveredTelemetryObjects,
 			);
 			if (this.stopping) {
@@ -1333,6 +1364,9 @@ class SnapmakerU1 extends utils.Adapter {
 				this.log.debug(`Toolhead capability discovery failed: ${String(error)}`);
 			}
 			await this.updateStatusStates(status);
+			if (this.stopping) {
+				return;
+			}
 			await this.setStateChangedAsync("info.connection", true, true);
 			await this.setStateChangedAsync("printer.info.hostname", printerInfo.hostname ?? "", true);
 			await this.setStateChangedAsync("printer.info.firmware", printerInfo.softwareVersion ?? "", true);
@@ -1362,6 +1396,7 @@ class SnapmakerU1 extends utils.Adapter {
 			}
 			await this.setStateChangedAsync("info.connection", false, true);
 			const message = `Could not reach Moonraker: ${error instanceof Error ? error.message : String(error)}`;
+			await this.spoolmanService?.disconnect(message);
 			await this.setStateChangedAsync("printer.info.ready", false, true);
 			await this.setStateChangedAsync("printer.info.lastError", message, true);
 			if (this.connectionFailed) {
@@ -1396,17 +1431,18 @@ class SnapmakerU1 extends utils.Adapter {
 	 *
 	 * @param callback
 	 */
-	private onUnload(callback: () => void): void {
+	private async onUnload(callback: () => void): Promise<void> {
 		this.stopping = true;
 		try {
+			const spoolmanStopped = this.spoolmanService?.stop();
 			if (this.pollTimer) {
 				this.clearTimeout(this.pollTimer);
 				this.pollTimer = undefined;
 			}
-			void this.setStateAsync("info.connection", false, true);
-			callback();
+			await Promise.all([spoolmanStopped, this.setStateAsync("info.connection", false, true)]);
 		} catch (error) {
 			this.log.error(`Error during unloading: ${(error as Error).message}`);
+		} finally {
 			callback();
 		}
 	}
