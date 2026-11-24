@@ -8,7 +8,7 @@ Enable the optional integration and configure the Spoolman base URL, e.g. `http:
 | --- | --- | --- |
 | Enable integration | off | Start native service |
 | Base URL | empty | HTTP(S) server, no embedded credentials, query or fragment |
-| Update interval | 300 seconds | Weight refresh, 5–3600 seconds; changed lane IDs bypass cache |
+| Update interval | 30 seconds | Weight refresh, 5–3600 seconds; changed lane IDs bypass cache. Existing configured intervals are retained. |
 | Warning / empty threshold | 300 / 100 g | Strictly below threshold; empty must be less than warning |
 | Weekday start / end | 7 / 22 | Monday–Friday warning hours |
 | Weekend start / end | 10 / 20 | Saturday/Sunday warning hours |
@@ -20,13 +20,17 @@ Enable the optional integration and configure the Spoolman base URL, e.g. `http:
 
 Window hours use the ioBroker host timezone (e.g. Europe/Vienna), range 0–24, inclusive start and exclusive end. Overnight windows are supported; equal bounds mean all day. Printer polling determines detection latency; API refresh is evaluated at the next printer poll after the interval expires.
 
+For responsive updates, configure both the printer polling interval and the Spoolman update interval (for example 5 seconds each). A previously saved 300-second Spoolman interval is not changed automatically by updating the adapter. HTTP and state-processing time add to the polling delay.
+
+`apiConnected` is the health of native monitoring, not an independent probe of the Spoolman server while the printer is offline. A failed printer poll invalidates it and clears `druck_laeuft`; spool assignments, weights and notification latches are retained. Reconnection forces a fresh API read. Graceful adapter stop awaits the offline state writes. After an abrupt process kill, persisted states may remain stale; also check `system.adapter.snapmaker-u1.0.alive` when displaying availability.
+
 ## Native states
 
 States are acknowledged and read-only under `snapmaker-u1.0.spoolman` (replace instance number).
 
 | Path | Meaning |
 | --- | --- |
-| apiConnected | Last native update succeeded, separate from Moonraker bridge connection |
+| apiConnected | Native monitoring has a successful Spoolman snapshot and an available printer; false at startup, on printer/API failure and on graceful adapter stop |
 | lastError / lastUpdate | Native integration error / timestamp of last successful API fetch |
 | warnzeit_aktiv / druck_laeuft | Warning window / printing flag |
 | aktiv.1 … aktiv.4 | Fixed mapping T0/E0 … T3/E3 |

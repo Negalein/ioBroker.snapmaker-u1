@@ -112,6 +112,81 @@ function mockApi(weight = 250): void {
 		);
 }
 describe("Spoolman service integration", () => {
+	it("resets persisted health on startup and on graceful stop without clearing spool values", async () => {
+		mockApi(500);
+		const h = harness();
+		h.states.set("spoolman.apiConnected", true);
+		h.states.set("spoolman.druck_laeuft", true);
+		await h.service.initialize();
+		expect(h.states.get("spoolman.apiConnected")).to.equal(false);
+		expect(h.states.get("spoolman.druck_laeuft")).to.equal(false);
+		h.service.request(snapshot());
+		await settle();
+		expect(h.states.get("spoolman.apiConnected")).to.equal(true);
+		h.adapter.config.spoolmanLegacyMirror = true;
+		await h.service.stop();
+		expect(h.states.get("spoolman.apiConnected")).to.equal(false);
+		expect(h.states.get("spoolman.druck_laeuft")).to.equal(false);
+		expect(h.states.get("0_userdata.0.3DDrucker.Spoolman.druck_laeuft")).to.equal(false);
+		expect(h.states.get("spoolman.aktiv.1.remaining_weight")).to.equal(500);
+	});
+
+	it("invalidates printer-offline requests and fetches fresh weights after reconnect", async () => {
+		mockApi(500);
+		const h = harness();
+		h.service.request(snapshot([1, 0, 0, 0]));
+		await settle();
+		let release: () => void = () => undefined;
+		globalThis.fetch = async () => {
+			await new Promise<void>(resolve => {
+				release = resolve;
+			});
+			return new Response(JSON.stringify({ id: 2, remaining_weight: 10, filament: {} }));
+		};
+		h.service.request(snapshot([2, 0, 0, 0]));
+		await settle();
+		await h.service.disconnect("Printer unavailable");
+		expect(h.states.get("spoolman.apiConnected")).to.equal(false);
+		expect(h.states.get("spoolman.druck_laeuft")).to.equal(false);
+		release();
+		await settle();
+		expect(h.states.get("spoolman.apiConnected")).to.equal(false);
+		expect(h.states.get("spoolman.lastError")).to.equal("Printer unavailable");
+		expect(h.states.get("spoolman.aktiv.1.spool_id")).to.equal(1);
+		expect(h.messages).to.have.length(0);
+		mockApi(450);
+		h.service.request(snapshot([1, 0, 0, 0]));
+		await settle();
+		expect(h.states.get("spoolman.apiConnected")).to.equal(true);
+		expect(h.states.get("spoolman.aktiv.1.remaining_weight")).to.equal(450);
+		await h.service.stop();
+	});
+
+	it("refreshes unchanged assignments when the configured weight interval expires", async () => {
+		const originalNow = Date.now;
+		let now = originalNow();
+		Date.now = () => now;
+		const h = harness();
+		h.adapter.config.spoolmanInterval = 30;
+		try {
+			mockApi(500);
+			h.service.request(snapshot([1, 0, 0, 0]));
+			await settle();
+			mockApi(450);
+			now += 29_000;
+			h.service.request(snapshot([1, 0, 0, 0]));
+			await settle();
+			expect(h.states.get("spoolman.aktiv.1.remaining_weight")).to.equal(500);
+			now += 1_000;
+			h.service.request(snapshot([1, 0, 0, 0]));
+			await settle();
+			expect(h.states.get("spoolman.aktiv.1.remaining_weight")).to.equal(450);
+		} finally {
+			Date.now = originalNow;
+			await h.service.stop();
+		}
+	});
+
 	it("reads four lanes, warns once, restores notification latches after restart", async () => {
 		mockApi();
 		const h = harness();
@@ -122,12 +197,12 @@ describe("Spoolman service integration", () => {
 		h.service.request(snapshot());
 		await settle();
 		expect(h.messages).to.have.length(4);
-		h.service.stop();
+		await h.service.stop();
 		const restarted = new SpoolmanService(h.adapter);
 		restarted.request(snapshot());
 		await settle();
 		expect(h.messages).to.have.length(4);
-		restarted.stop();
+		await restarted.stop();
 	});
 	it("rearms a replacement, clears unloaded lanes, and isolates API failures", async () => {
 		mockApi();
@@ -143,7 +218,7 @@ describe("Spoolman service integration", () => {
 		await settle();
 		expect(h.states.get("spoolman.apiConnected")).to.equal(false);
 		expect(h.states.get("spoolman.aktiv.1.spool_id")).to.equal(5);
-		h.service.stop();
+		await h.service.stop();
 	});
 	it("defers notifications while idle and evaluates them from cached weights on print start", async () => {
 		mockApi(50);
@@ -155,7 +230,7 @@ describe("Spoolman service integration", () => {
 		await settle();
 		expect(h.messages).to.have.length(4);
 		expect(h.states.get("spoolman.aktiv.1.alarm")).to.equal(true);
-		h.service.stop();
+		await h.service.stop();
 	});
 	it("does not mirror by default and mirrors exact legacy paths when selected", async () => {
 		mockApi(500);
@@ -167,7 +242,7 @@ describe("Spoolman service integration", () => {
 		h.service.request(snapshot());
 		await settle();
 		expect(h.states.get("0_userdata.0.3DDrucker.Spoolman.aktiv.1.remaining_weight")).to.equal(500);
-		h.service.stop();
+		await h.service.stop();
 	});
 	it("drops outdated responses and stops without publishing late HTTP results", async () => {
 		const h = harness();
@@ -190,7 +265,7 @@ describe("Spoolman service integration", () => {
 		};
 		h.service.request(snapshot([1, 0, 0, 0]));
 		await settle();
-		h.service.stop();
+		await h.service.stop();
 		release();
 		await settle();
 		expect(h.states.has("spoolman.aktiv.1.spool_id")).to.equal(false);
@@ -222,13 +297,13 @@ describe("Spoolman safeguards", () => {
 		h.service.request(snapshot());
 		await settle();
 		expect(h.messages).to.have.length(4);
-		h.service.stop();
+		await h.service.stop();
 		const restricted = harness();
 		Object.assign(restricted.adapter.config, h.adapter.config, { spoolmanAlarmInWindow: true });
 		restricted.service.request(snapshot());
 		await settle();
 		expect(restricted.messages).to.have.length(0);
-		restricted.service.stop();
+		await restricted.service.stop();
 	});
 	it("replaces obsolete in-flight lane assignments without publishing stale IDs", async () => {
 		const h = harness();
@@ -267,6 +342,6 @@ describe("Spoolman safeguards", () => {
 		release();
 		await settle();
 		expect(seen).to.deep.equal([2]);
-		h.service.stop();
+		await h.service.stop();
 	});
 });

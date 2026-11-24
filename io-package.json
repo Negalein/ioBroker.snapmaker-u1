@@ -181,7 +181,7 @@
 		"pollInterval": 30,
 		"spoolmanEnabled": false,
 		"spoolmanUrl": "",
-		"spoolmanInterval": 300,
+		"spoolmanInterval": 30,
 		"spoolmanWarnLimit": 300,
 		"spoolmanEmptyLimit": 100,
 		"spoolmanWeekdayStart": 7,

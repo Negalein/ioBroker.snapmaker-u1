@@ -323,7 +323,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "�C",
+		unit: "°C",
 	},
 	{
 		id: "printer.control.tools.tool1.target",
@@ -333,7 +333,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "�C",
+		unit: "°C",
 	},
 	{
 		id: "printer.control.tools.tool2.target",
@@ -343,7 +343,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "�C",
+		unit: "°C",
 	},
 	{
 		id: "printer.control.tools.tool3.target",
@@ -353,7 +353,7 @@ const controlStateDefinitions: readonly ControlStateDefinition[] = [
 		read: true,
 		write: true,
 		def: 0,
-		unit: "�C",
+		unit: "°C",
 	},
 	{
 		id: "printer.control.toolhead.change.e0",
@@ -679,6 +679,7 @@ class SnapmakerU1 extends utils.Adapter {
 		if (this.config.spoolmanEnabled) {
 			try {
 				this.spoolmanService = new SpoolmanService(this);
+				await this.spoolmanService.initialize();
 			} catch (error) {
 				this.log.error(`Spoolman configuration: ${String(error)}`);
 			}
@@ -1363,6 +1364,9 @@ class SnapmakerU1 extends utils.Adapter {
 				this.log.debug(`Toolhead capability discovery failed: ${String(error)}`);
 			}
 			await this.updateStatusStates(status);
+			if (this.stopping) {
+				return;
+			}
 			await this.setStateChangedAsync("info.connection", true, true);
 			await this.setStateChangedAsync("printer.info.hostname", printerInfo.hostname ?? "", true);
 			await this.setStateChangedAsync("printer.info.firmware", printerInfo.softwareVersion ?? "", true);
@@ -1392,6 +1396,7 @@ class SnapmakerU1 extends utils.Adapter {
 			}
 			await this.setStateChangedAsync("info.connection", false, true);
 			const message = `Could not reach Moonraker: ${error instanceof Error ? error.message : String(error)}`;
+			await this.spoolmanService?.disconnect(message);
 			await this.setStateChangedAsync("printer.info.ready", false, true);
 			await this.setStateChangedAsync("printer.info.lastError", message, true);
 			if (this.connectionFailed) {
@@ -1426,18 +1431,18 @@ class SnapmakerU1 extends utils.Adapter {
 	 *
 	 * @param callback
 	 */
-	private onUnload(callback: () => void): void {
+	private async onUnload(callback: () => void): Promise<void> {
 		this.stopping = true;
-		this.spoolmanService?.stop();
 		try {
+			const spoolmanStopped = this.spoolmanService?.stop();
 			if (this.pollTimer) {
 				this.clearTimeout(this.pollTimer);
 				this.pollTimer = undefined;
 			}
-			void this.setStateAsync("info.connection", false, true);
-			callback();
+			await Promise.all([spoolmanStopped, this.setStateAsync("info.connection", false, true)]);
 		} catch (error) {
 			this.log.error(`Error during unloading: ${(error as Error).message}`);
+		} finally {
 			callback();
 		}
 	}

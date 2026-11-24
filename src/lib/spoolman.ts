@@ -104,6 +104,7 @@ const legacy = "0_userdata.0.3DDrucker.Spoolman";
 /** Read-only Spoolman service. Never sends printer commands or accounts consumption. */
 export class SpoolmanService {
 	private stopped = false;
+	private generation = 0;
 	private running = false;
 	private pending?: Record<string, unknown>;
 	private lastFetch = 0;
@@ -116,11 +117,37 @@ export class SpoolmanService {
 	public constructor(private adapter: ioBroker.Adapter) {
 		this.base = validateSpoolman(adapter.config);
 	}
-	/** Cancels outstanding HTTP work on unload. */
-	public stop(): void {
-		this.stopped = true;
+	/** Resets persisted health before accepting the first live printer snapshot. */
+	public async initialize(): Promise<void> {
+		await this.write("apiConnected", false);
+		await this.write("druck_laeuft", false, true);
+	}
+	/** Invalidates queued/in-flight snapshots when the printer becomes unavailable. */
+	public async disconnect(reason: string): Promise<void> {
+		if (this.stopped) {
+			return;
+		}
+		this.generation++;
 		this.pending = undefined;
 		this.abort?.abort();
+		this.lastIds = "";
+		this.lastFetch = 0;
+		this.cache.clear();
+		await this.write("apiConnected", false);
+		await this.write("druck_laeuft", false, true);
+		await this.write("lastError", reason);
+	}
+	/** Cancels outstanding work and persists offline health before unload completes. */
+	public async stop(): Promise<void> {
+		this.stopped = true;
+		this.generation++;
+		this.pending = undefined;
+		this.abort?.abort();
+		await this.adapter.setStateChangedAsync("spoolman.apiConnected", false, true);
+		await this.adapter.setStateChangedAsync("spoolman.druck_laeuft", false, true);
+		if (this.adapter.config.spoolmanLegacyMirror) {
+			await this.adapter.setForeignStateChangedAsync(`${legacy}.druck_laeuft`, false, true);
+		}
 	}
 	/** Queues the latest complete printer snapshot. */
 	public request(status: Record<string, unknown>): void {
@@ -137,13 +164,20 @@ export class SpoolmanService {
 		try {
 			while (this.pending && !this.stopped) {
 				const status = this.pending;
+				const generation = this.generation;
 				this.pending = undefined;
 				try {
-					await this.update(status);
+					await this.update(status, generation);
 				} catch (e) {
-					if (!this.stopped) {
-						await this.write("apiConnected", false);
-						await this.write("lastError", e instanceof Error ? e.message : "Spoolman request failed");
+					if (!this.stopped && generation === this.generation) {
+						this.lastIds = "";
+						await this.write("apiConnected", false, false, generation);
+						await this.write(
+							"lastError",
+							e instanceof Error ? e.message : "Spoolman request failed",
+							false,
+							generation,
+						);
 						this.adapter.log.debug(`Spoolman update failed: ${String(e)}`);
 					}
 				}
@@ -152,8 +186,13 @@ export class SpoolmanService {
 			this.running = false;
 		}
 	}
-	private async write(id: string, value: string | number | boolean, mirror = false): Promise<void> {
-		if (this.stopped) {
+	private async write(
+		id: string,
+		value: string | number | boolean,
+		mirror = false,
+		generation = this.generation,
+	): Promise<void> {
+		if (this.stopped || generation !== this.generation) {
 			return;
 		}
 		const own = `spoolman.${id}`;
@@ -180,11 +219,11 @@ export class SpoolmanService {
 			});
 			this.objects.add(own);
 		}
-		if (this.stopped) {
+		if (this.stopped || generation !== this.generation) {
 			return;
 		}
 		await this.adapter.setStateChangedAsync(own, value, true);
-		if (mirror && this.adapter.config.spoolmanLegacyMirror) {
+		if (mirror && this.adapter.config.spoolmanLegacyMirror && generation === this.generation && !this.stopped) {
 			const target = `${legacy}.${id}`;
 			if (!this.objects.has(target)) {
 				const parts = target.split(".");
@@ -209,12 +248,14 @@ export class SpoolmanService {
 				});
 				this.objects.add(target);
 			}
-			if (!this.stopped) {
+			if (!this.stopped && generation === this.generation) {
 				await this.adapter.setForeignStateChangedAsync(target, value, true);
 			}
 		}
 	}
-	private async update(status: Record<string, unknown>): Promise<void> {
+	private async update(status: Record<string, unknown>, generation: number): Promise<void> {
+		const write = (id: string, value: string | number | boolean, mirror = false): Promise<void> =>
+			this.write(id, value, mirror, generation);
 		const c = this.adapter.config;
 		const now = new Date();
 		const weekend = [0, 6].includes(now.getDay());
@@ -224,8 +265,8 @@ export class SpoolmanService {
 			weekend ? c.spoolmanWeekendEnd : c.spoolmanWeekdayEnd,
 		);
 		const printing = (status.print_stats as { state?: string })?.state === "printing";
-		await this.write("warnzeit_aktiv", window, true);
-		await this.write("druck_laeuft", printing, true);
+		await write("warnzeit_aktiv", window, true);
+		await write("druck_laeuft", printing, true);
 		// Missing AFC telemetry is unknown, not an unloaded lane.
 		const ids = Array.from({ length: 4 }, (_, i) => (status[`AFC_lane E${i}`] as { spool_id?: unknown })?.spool_id);
 		if (ids.some(id => id === undefined)) {
@@ -271,7 +312,11 @@ export class SpoolmanService {
 				),
 			);
 		const newerPrinting = this.pending && (this.pending.print_stats as { state?: string })?.state === "printing";
-		if (this.stopped || (this.pending && (newerIds !== signature || newerPrinting !== printing))) {
+		if (
+			this.stopped ||
+			generation !== this.generation ||
+			(this.pending && (newerIds !== signature || newerPrinting !== printing))
+		) {
 			return;
 		}
 		for (let i = 0; i < 4; i++) {
@@ -292,7 +337,7 @@ export class SpoolmanService {
 				printing &&
 				(alarm ? (!c.spoolmanAlarmInWindow || window) && !alarmed : slot.status === "WARN" && window && !warned)
 			) {
-				if (this.stopped) {
+				if (this.stopped || generation !== this.generation) {
 					return;
 				}
 				const reply = await this.adapter.sendToAsync(
@@ -316,16 +361,19 @@ export class SpoolmanService {
 			slot.warnung = Boolean(warned);
 			slot.alarm = Boolean(alarmed);
 			for (const [key, value] of Object.entries(slot)) {
-				await this.write(`${prefix}.${key}`, value, true);
+				await write(`${prefix}.${key}`, value, true);
 			}
+		}
+		if (this.stopped || generation !== this.generation) {
+			return;
 		}
 		this.lastIds = signature;
 		if (due) {
 			this.lastFetch = Date.now();
 			this.cache = data;
 		}
-		await this.write("apiConnected", true);
-		await this.write("lastError", "");
-		await this.write("lastUpdate", this.lastFetch);
+		await write("apiConnected", true);
+		await write("lastError", "");
+		await write("lastUpdate", this.lastFetch);
 	}
 }

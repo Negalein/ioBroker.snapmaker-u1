@@ -119,6 +119,8 @@
     },
     "spoolmanInterval": {
       "type": "number",
+      "min": 5,
+      "max": 3600,
       "label": "Spoolman update interval (seconds)",
       "newLine": true,
       "xs": 12,
