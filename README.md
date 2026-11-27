@@ -162,7 +162,7 @@ Snapmaker and U1 are trademarks of their respective owners. This is an independe
 
 ### 0.0.14 (2026-11-24)
 
-- (Negalein) Add native four-lane Spoolman API monitoring and configurable Telegram warnings. Publish data exclusively under `snapmaker-u1.N.spoolman`; migrate VIS widgets to these native states.
+- (Negalein) Add native four-lane Spoolman API monitoring and configurable Telegram warnings. Publish data exclusively under `snapmaker-u1.N.spoolman`; migrate own VIS HTML Widget to these native states.
 - (Negalein) Fix readable camera labels, reset Spoolman health on disconnect/stop, and refresh weights every 30 seconds by default.
 - Live Telegram delivery and the three VIS widgets still require acceptance on the active server.
 
